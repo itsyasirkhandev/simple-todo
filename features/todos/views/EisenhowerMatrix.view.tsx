@@ -206,7 +206,6 @@ export const EisenhowerMatrix = () => {
                         <div className="anim-matrix-quadrant">
                             <DailyTrackingDashboard
                                 dailyTodos={todos.filter(t => t.isDaily)}
-                                onSaveProgress={handleSaveDashboardProgress}
                             />
                         </div>
                     )}

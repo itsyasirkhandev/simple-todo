@@ -1,247 +1,545 @@
 /*
  * File Name:     DailyTrackingDashboard.tsx
- * Description:   Dashboard for viewing daily task completion history with today-only interaction.
+ * Description:   Analytics dashboard for viewing daily task completion with a calendar heatmap.
+ *                Entirely read-only — no editing capabilities.
  * Author:        Antigravity
  * Created Date:  2026-02-28
  */
 
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
 import { Calendar } from '@/components/ui/calendar'
-import { Checkbox } from '@/components/ui/checkbox'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Todo, DailyProgress } from '../types/todo.types'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { Badge } from '@/components/ui/badge'
+import { Todo } from '../types/todo.types'
 import { cn } from '@/lib/utils'
-import { CalendarDays, CheckCircle2, Circle, TrendingUp } from 'lucide-react'
-import { format, startOfDay } from 'date-fns'
+import {
+    CalendarDays,
+    CheckCircle2,
+    Circle,
+    TrendingUp,
+    Flame,
+    Trophy,
+    BarChart2,
+    Eye,
+} from 'lucide-react'
+import {
+    format,
+    startOfDay,
+    subDays,
+    eachDayOfInterval,
+    isSameDay,
+    differenceInCalendarDays,
+    startOfWeek,
+    endOfWeek,
+} from 'date-fns'
 
 /**
  * Props for the DailyTrackingDashboard component.
  * @property {Todo[]} dailyTodos - List of daily-tracked tasks.
- * @property {Function} onSaveProgress - Callback to persist progress changes.
  */
 interface DailyTrackingDashboardProps {
     dailyTodos: Todo[]
-    onSaveProgress: (todoId: string, dateKey: string, progress: DailyProgress) => void
 }
 
 /**
- * Dashboard that displays a read-only calendar with completion history
- * and allows users to mark only today's tasks as completed.
- * @param {DailyTrackingDashboardProps} props - Component properties.
- * @returns {JSX.Element} The rendered dashboard.
+ * Calculates the current consecutive completion streak for a task.
+ * @param {Record<string, { isCompleted: boolean }>} progress - The daily progress record.
+ * @returns {number} The current streak length in days.
  */
-export function DailyTrackingDashboard({ dailyTodos, onSaveProgress }: DailyTrackingDashboardProps) {
+function calculateCurrentStreak(progress: Record<string, { isCompleted: boolean }> | undefined): number {
+    if (!progress) return 0
+
+    const today = startOfDay(new Date())
+    let streak = 0
+    let checkDate = today
+
+    // Check today first, if not completed, start from yesterday
+    const todayKey = format(today, "yyyy-MM-dd")
+    if (!progress[todayKey]?.isCompleted) {
+        checkDate = subDays(today, 1)
+    }
+
+    while (true) {
+        const key = format(checkDate, "yyyy-MM-dd")
+        if (progress[key]?.isCompleted) {
+            streak++
+            checkDate = subDays(checkDate, 1)
+        } else {
+            break
+        }
+    }
+
+    return streak
+}
+
+/**
+ * Calculates the best (longest) consecutive completion streak for a task.
+ * @param {Record<string, { isCompleted: boolean }>} progress - The daily progress record.
+ * @returns {number} The longest streak in days.
+ */
+function calculateBestStreak(progress: Record<string, { isCompleted: boolean }> | undefined): number {
+    if (!progress) return 0
+
+    const completedDates = Object.entries(progress)
+        .filter(([, p]) => p.isCompleted)
+        .map(([dateStr]) => new Date(dateStr + "T00:00:00"))
+        .sort((a, b) => a.getTime() - b.getTime())
+
+    if (completedDates.length === 0) return 0
+
+    let bestStreak = 1
+    let currentStreak = 1
+
+    for (let i = 1; i < completedDates.length; i++) {
+        const diff = differenceInCalendarDays(completedDates[i], completedDates[i - 1])
+        if (diff === 1) {
+            currentStreak++
+            bestStreak = Math.max(bestStreak, currentStreak)
+        } else {
+            currentStreak = 1
+        }
+    }
+
+    return bestStreak
+}
+
+/**
+ * Calculates how many completions fall within the current week (Mon–Sun).
+ * @param {Record<string, { isCompleted: boolean }>} progress - The daily progress record.
+ * @returns {number} The number of completions this week.
+ */
+function calculateThisWeekCompletions(progress: Record<string, { isCompleted: boolean }> | undefined): number {
+    if (!progress) return 0
+
+    const today = startOfDay(new Date())
+    const weekStart = startOfWeek(today, { weekStartsOn: 1 })
+    const weekEnd = endOfWeek(today, { weekStartsOn: 1 })
+    const days = eachDayOfInterval({ start: weekStart, end: weekEnd })
+
+    return days.filter(day => {
+        const key = format(day, "yyyy-MM-dd")
+        return progress[key]?.isCompleted
+    }).length
+}
+
+/**
+ * Read-only analytics dashboard for daily task tracking.
+ * Shows a calendar heatmap, streak analytics, and per-task statistics.
+ * Users can view their past completion history but cannot edit anything.
+ *
+ * @param {DailyTrackingDashboardProps} props - Component properties.
+ * @returns {JSX.Element} The rendered analytics dashboard.
+ */
+export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardProps) {
     const [selectedTodoId, setSelectedTodoId] = useState<string | null>(dailyTodos[0]?.id || null)
 
     const today = startOfDay(new Date())
     const todayKey = format(today, "yyyy-MM-dd")
 
     const selectedTodo = dailyTodos.find(t => t.id === selectedTodoId)
-
     const selectedDailyProgress = selectedTodo?.dailyProgress
 
     /** Dates where the selected task was marked as completed */
-    const completedDates = selectedDailyProgress
-        ? Object.entries(selectedDailyProgress)
+    const completedDates = useMemo(() => {
+        if (!selectedDailyProgress) return []
+        return Object.entries(selectedDailyProgress)
             .filter(([, progress]) => progress.isCompleted)
             .map(([dateStr]) => new Date(dateStr + "T00:00:00"))
-        : []
+    }, [selectedDailyProgress])
 
-    const completedCount = completedDates.length
-    const isTodayCompleted = selectedTodo?.dailyProgress?.[todayKey]?.isCompleted ?? false
+    /** Aggregated analytics for the selected task */
+    const analytics = useMemo(() => {
+        const totalCompleted = completedDates.length
+        const currentStreak = calculateCurrentStreak(selectedDailyProgress)
+        const bestStreak = calculateBestStreak(selectedDailyProgress)
+        const thisWeek = calculateThisWeekCompletions(selectedDailyProgress)
+        const isTodayDone = selectedDailyProgress?.[todayKey]?.isCompleted ?? false
 
-    /**
-     * Handles toggling today's completion status for the selected task.
-     * @param {boolean} checked - The new checked state.
-     */
-    const handleTodayToggle = (checked: boolean) => {
-        if (!selectedTodo) return
-        const existingProgress = selectedTodo.dailyProgress?.[todayKey]
-        onSaveProgress(selectedTodo.id, todayKey, {
-            isCompleted: checked,
-            completedSubTasks: existingProgress?.completedSubTasks ?? [],
-            notes: existingProgress?.notes ?? "",
+        return { totalCompleted, currentStreak, bestStreak, thisWeek, isTodayDone }
+    }, [completedDates, selectedDailyProgress, todayKey])
+
+    /** Global analytics across all daily tasks */
+    const globalAnalytics = useMemo(() => {
+        let totalCompletionsAcrossAll = 0
+        dailyTodos.forEach(todo => {
+            if (todo.dailyProgress) {
+                totalCompletionsAcrossAll += Object.values(todo.dailyProgress).filter(p => p.isCompleted).length
+            }
         })
-    }
+
+        const todayCompletedCount = dailyTodos.filter(t => t.dailyProgress?.[todayKey]?.isCompleted).length
+
+        return { totalCompletionsAcrossAll, todayCompletedCount, totalTasks: dailyTodos.length }
+    }, [dailyTodos, todayKey])
 
     if (dailyTodos.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-96 border border-dashed border-border/40 bg-card/50 p-12 text-center">
                 <CalendarDays className="h-16 w-16 text-muted-foreground mb-4 opacity-50" />
                 <h2 className="text-2xl font-serif font-semibold tracking-tighter uppercase mb-2">No Daily Tasks</h2>
-                <p className="text-muted-foreground max-w-md">Activate the &quot;Daily Task&quot; switch when creating a new task to see it here.</p>
+                <p className="text-muted-foreground max-w-md">Activate the &quot;Daily Task&quot; switch when creating a new task to see your analytics here.</p>
             </div>
         )
     }
 
     return (
-        <div className="flex flex-col md:flex-row border border-border/40 bg-card/50 shadow-sm overflow-hidden rounded-none">
-            {/* Sidebar List */}
-            <div className="w-full md:w-1/3 border-b md:border-b-0 md:border-r border-border/40 bg-muted/5 flex flex-col">
-                <div className="p-6 border-b border-border/40">
-                    <h2 className="text-2xl font-serif font-semibold tracking-tighter uppercase">Daily Tasks</h2>
-                    <p className="text-sm text-muted-foreground mt-1">Select a task to view progress</p>
+        <TooltipProvider delayDuration={100}>
+            <div className="space-y-8">
+                {/* Global Summary Bar */}
+                <div className="flex flex-wrap items-center gap-6 py-4 border-b border-border/30">
+                    <div className="flex items-center gap-2">
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Analytics</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">Today:</span>
+                        <Badge variant="secondary" className="rounded-none font-semibold">
+                            {globalAnalytics.todayCompletedCount} / {globalAnalytics.totalTasks}
+                        </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">All time:</span>
+                        <Badge variant="outline" className="rounded-none font-semibold">
+                            {globalAnalytics.totalCompletionsAcrossAll} completions
+                        </Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">{format(today, "EEEE, MMM d")}</span>
+                    </div>
                 </div>
-                <ScrollArea className="flex-1 p-4">
-                    <div className="space-y-2">
-                        {dailyTodos.map(todo => {
-                            const todoTodayCompleted = todo.dailyProgress?.[todayKey]?.isCompleted ?? false
-                            const todoTotalCompleted = todo.dailyProgress
-                                ? Object.values(todo.dailyProgress).filter(p => p.isCompleted).length
-                                : 0
+
+                <div className="flex flex-col md:flex-row gap-8">
+                    {/* Task Selector Sidebar */}
+                    <div className="w-full md:w-64 shrink-0 space-y-4">
+                        <h3 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground pb-2 border-b border-border/30">
+                            Tasks
+                        </h3>
+                        <ScrollArea className="max-h-96">
+                            <div className="space-y-1">
+                                {dailyTodos.map(todo => {
+                                    const todoTotalCompleted = todo.dailyProgress
+                                        ? Object.values(todo.dailyProgress).filter(p => p.isCompleted).length
+                                        : 0
+                                    const todoTodayDone = todo.dailyProgress?.[todayKey]?.isCompleted ?? false
+                                    const isSelected = selectedTodoId === todo.id
+
+                                    return (
+                                        <button
+                                            key={todo.id}
+                                            onClick={() => setSelectedTodoId(todo.id)}
+                                            className={cn(
+                                                "w-full text-left px-4 py-4 transition-all duration-300 border-l-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                                                isSelected
+                                                    ? "border-l-primary bg-primary/5"
+                                                    : "border-l-transparent hover:border-l-border hover:bg-muted/20"
+                                            )}
+                                        >
+                                            <div className="flex items-center justify-between gap-2">
+                                                <span className={cn(
+                                                    "text-base font-semibold truncate",
+                                                    isSelected ? "text-foreground" : "text-muted-foreground"
+                                                )}>
+                                                    {todo.title}
+                                                </span>
+                                                {todoTodayDone ? (
+                                                    <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                                                ) : (
+                                                    <Circle className="h-4 w-4 text-muted-foreground/40 shrink-0" />
+                                                )}
+                                            </div>
+                                            <div className="mt-1 text-sm text-muted-foreground">
+                                                {todoTotalCompleted} day{todoTotalCompleted !== 1 ? 's' : ''} tracked
+                                            </div>
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                        </ScrollArea>
+                    </div>
+
+                    {/* Main Analytics Panel */}
+                    {selectedTodo ? (
+                        <div className="flex-1 min-w-0 space-y-8">
+                            {/* Task Title Header */}
+                            <div className="space-y-1">
+                                <h2 className="text-3xl font-serif font-semibold tracking-tighter">
+                                    {selectedTodo.title}
+                                </h2>
+                                <div className="flex items-center gap-4">
+                                    {analytics.isTodayDone ? (
+                                        <span className="flex items-center gap-1 text-sm text-primary font-semibold">
+                                            <CheckCircle2 className="h-4 w-4" />
+                                            Done today
+                                        </span>
+                                    ) : (
+                                        <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                                            <Circle className="h-4 w-4" />
+                                            Not done today
+                                        </span>
+                                    )}
+                                    {analytics.currentStreak > 0 && (
+                                        <span className="flex items-center gap-1 text-sm text-primary font-semibold">
+                                            <Flame className="h-4 w-4" />
+                                            {analytics.currentStreak} day streak
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Stats Grid */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <StatCard
+                                    icon={<BarChart2 className="h-4 w-4" />}
+                                    label="Total Days"
+                                    value={analytics.totalCompleted}
+                                />
+                                <StatCard
+                                    icon={<Flame className="h-4 w-4" />}
+                                    label="Current Streak"
+                                    value={analytics.currentStreak}
+                                    highlight={analytics.currentStreak > 0}
+                                />
+                                <StatCard
+                                    icon={<Trophy className="h-4 w-4" />}
+                                    label="Best Streak"
+                                    value={analytics.bestStreak}
+                                />
+                                <StatCard
+                                    icon={<TrendingUp className="h-4 w-4" />}
+                                    label="This Week"
+                                    value={`${analytics.thisWeek}/7`}
+                                />
+                            </div>
+
+                            {/* Calendar View — Large & Prominent */}
+                            <div className="space-y-4">
+                                <h4 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/30 pb-2">
+                                    Completion Calendar
+                                </h4>
+                                <div className="bg-card border border-border/40 p-8 shadow-sm">
+                                    <Calendar
+                                        mode="multiple"
+                                        selected={completedDates}
+                                        className="rounded-none font-sans w-full [--cell-size:--spacing(12)]"
+                                        disabled={() => true}
+                                        modifiers={{
+                                            completed: completedDates,
+                                            today: [today],
+                                        }}
+                                        modifiersClassNames={{
+                                            completed: "bg-primary/20 text-primary font-semibold",
+                                        }}
+                                        classNames={{
+                                            root: "w-full",
+                                            caption_label: "select-none font-semibold text-2xl font-serif tracking-tighter",
+                                            weekday: "text-muted-foreground rounded-md flex-1 font-semibold text-sm select-none",
+                                        }}
+                                    />
+                                    {/* Legend */}
+                                    <div className="flex items-center gap-8 mt-8 pt-6 border-t border-border/30 justify-center w-full">
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-4 w-4 rounded-none bg-primary/20 border border-primary/40" />
+                                            <span className="text-sm text-muted-foreground">Completed</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="h-4 w-4 rounded-none bg-accent border border-border" />
+                                            <span className="text-sm text-muted-foreground">Today</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Heatmap — Last 12 Weeks */}
+                            <div className="space-y-4">
+                                <h4 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/30 pb-2">
+                                    Last 12 Weeks Activity
+                                </h4>
+                                <HeatmapGrid
+                                    progress={selectedDailyProgress}
+                                    weeks={12}
+                                />
+                            </div>
+
+                            {/* Sub-tasks read-only view */}
+                            {selectedTodo.subTasks && selectedTodo.subTasks.length > 0 && (
+                                <div className="space-y-4">
+                                    <h4 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/30 pb-2">
+                                        Daily Items
+                                    </h4>
+                                    <div className="space-y-1 bg-card border border-border/40 p-4 shadow-sm">
+                                        {selectedTodo.subTasks.map(task => (
+                                            <div key={task.id} className="flex items-center gap-4 py-2 px-2">
+                                                <Circle className="h-4 w-4 text-muted-foreground/40 shrink-0" />
+                                                <span className="text-base text-muted-foreground">
+                                                    {task.title}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="flex-1 flex items-center justify-center p-8">
+                            <p className="text-base font-serif tracking-tighter text-muted-foreground">Select a task from the sidebar</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </TooltipProvider>
+    )
+}
+
+/* ─────────────────── Internal Sub-components ─────────────────── */
+
+/**
+ * Props for the StatCard sub-component.
+ * @property {React.ReactNode} icon - The icon displayed next to the label.
+ * @property {string} label - The metric label.
+ * @property {string | number} value - The metric value.
+ * @property {boolean} [highlight] - Whether to apply an accent highlight.
+ */
+interface StatCardProps {
+    icon: React.ReactNode
+    label: string
+    value: string | number
+    highlight?: boolean
+}
+
+/**
+ * Read-only statistic card for displaying a single metric.
+ * @param {StatCardProps} props - Component properties.
+ * @returns {JSX.Element} The rendered stat card.
+ */
+function StatCard({ icon, label, value, highlight }: StatCardProps) {
+    return (
+        <div className={cn(
+            "border p-4 space-y-2 transition-all duration-300",
+            highlight
+                ? "border-primary/30 bg-primary/5"
+                : "border-border/40 bg-card/50"
+        )}>
+            <div className="flex items-center gap-2 text-muted-foreground">
+                {icon}
+                <span className="text-sm font-semibold uppercase tracking-wider">{label}</span>
+            </div>
+            <p className="text-3xl font-serif font-semibold tracking-tighter">{value}</p>
+        </div>
+    )
+}
+
+/**
+ * Props for the HeatmapGrid sub-component.
+ * @property {Record<string, { isCompleted: boolean }>} [progress] - Daily progress data.
+ * @property {number} weeks - Number of weeks to display.
+ */
+interface HeatmapGridProps {
+    progress: Record<string, { isCompleted: boolean }> | undefined
+    weeks: number
+}
+
+/**
+ * GitHub-style contribution heatmap showing daily completions over recent weeks.
+ * Each cell represents a day and is color-coded based on completion status.
+ * Entirely read-only.
+ *
+ * @param {HeatmapGridProps} props - Component properties.
+ * @returns {JSX.Element} The rendered heatmap.
+ */
+function HeatmapGrid({ progress, weeks }: HeatmapGridProps) {
+    const today = startOfDay(new Date())
+    const startDate = subDays(today, weeks * 7 - 1)
+
+    const days = useMemo(() => {
+        return eachDayOfInterval({ start: startDate, end: today })
+    }, [startDate, today])
+
+    /** Organize days into weeks for the grid */
+    const weekColumns = useMemo(() => {
+        const columns: Date[][] = []
+        let currentWeek: Date[] = []
+
+        days.forEach((day, index) => {
+            currentWeek.push(day)
+            if ((index + 1) % 7 === 0 || index === days.length - 1) {
+                columns.push(currentWeek)
+                currentWeek = []
+            }
+        })
+
+        return columns
+    }, [days])
+
+    const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+    return (
+        <div className="bg-card border border-border/40 p-8 shadow-sm overflow-x-auto">
+            <div className="flex gap-2 min-w-fit">
+                {/* Day labels */}
+                <div className="flex flex-col gap-2 mr-2 pt-8">
+                    {dayLabels.map((label, i) => (
+                        <div key={label} className={cn(
+                            "h-6 flex items-center text-sm text-muted-foreground",
+                            i % 2 !== 0 && "opacity-0" // show only Mon, Wed, Fri, Sun
+                        )}>
+                            {label}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Week columns */}
+                {weekColumns.map((week, weekIndex) => (
+                    <div key={weekIndex} className="flex flex-col gap-2">
+                        {/* Month label for first day of month */}
+                        <div className="h-8 flex items-end">
+                            {week[0] && week[0].getDate() <= 7 && (
+                                <span className="text-sm text-muted-foreground">
+                                    {format(week[0], "MMM")}
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Day cells */}
+                        {week.map(day => {
+                            const key = format(day, "yyyy-MM-dd")
+                            const isCompleted = progress?.[key]?.isCompleted ?? false
+                            const isToday = isSameDay(day, today)
 
                             return (
-                                <button
-                                    key={todo.id}
-                                    onClick={() => setSelectedTodoId(todo.id)}
-                                    className={cn(
-                                        "w-full text-left p-4 transition-all duration-200 border rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-                                        selectedTodoId === todo.id
-                                            ? "border-primary/40 bg-primary/5 shadow-sm"
-                                            : "border-transparent hover:border-border/40 hover:bg-muted/20"
-                                    )}
-                                >
-                                    <div className="font-semibold text-base truncate flex items-center justify-between">
-                                        {todo.title}
-                                        {todoTodayCompleted ? (
-                                            <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                                        ) : (
-                                            <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
-                                        )}
-                                    </div>
-                                    <div className="text-sm text-muted-foreground mt-1 flex items-center gap-2">
-                                        <span className="bg-primary/20 text-primary px-2 py-0.5 rounded-full text-sm font-semibold uppercase tracking-wider">
-                                            {todoTotalCompleted} days
-                                        </span>
-                                    </div>
-                                </button>
+                                <Tooltip key={key}>
+                                    <TooltipTrigger asChild>
+                                        <div
+                                            className={cn(
+                                                "h-6 w-6 rounded-sm transition-colors duration-200 cursor-default",
+                                                isCompleted
+                                                    ? "bg-primary/60"
+                                                    : "bg-muted/40",
+                                                isToday && "ring-1 ring-primary ring-offset-1 ring-offset-background"
+                                            )}
+                                        />
+                                    </TooltipTrigger>
+                                    <TooltipContent side="top" className="rounded-none text-sm">
+                                        <p className="font-semibold">{format(day, "MMM d, yyyy")}</p>
+                                        <p className="text-muted-foreground">
+                                            {isCompleted ? "✓ Completed" : "Not completed"}
+                                        </p>
+                                    </TooltipContent>
+                                </Tooltip>
                             )
                         })}
                     </div>
-                </ScrollArea>
+                ))}
             </div>
 
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col min-w-0 bg-background relative">
-                {selectedTodo ? (
-                    <>
-                        {/* Header */}
-                        <div className="p-6 md:p-8 border-b border-border/30 flex items-center justify-between sticky top-0 bg-background/95 backdrop-blur z-10">
-                            <div>
-                                <h3 className="text-3xl font-serif font-semibold tracking-tighter uppercase break-words">{selectedTodo.title}</h3>
-                                <p className="text-muted-foreground mt-1 text-sm font-semibold tracking-wide uppercase">
-                                    {format(today, "EEEE, MMMM d, yyyy")}
-                                </p>
-                            </div>
-                        </div>
-
-                        <div className="flex-1 overflow-y-auto p-6 md:p-8">
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
-                                {/* Left Side: Read-only Calendar */}
-                                <div className="space-y-8">
-                                    <div className="bg-card border border-border/40 p-4 shadow-sm inline-block rounded-none">
-                                        <Calendar
-                                            mode="multiple"
-                                            selected={completedDates}
-                                            className="rounded-none font-sans"
-                                            disabled={() => true}
-                                            modifiers={{
-                                                completed: completedDates,
-                                                today: [today],
-                                            }}
-                                            modifiersClassNames={{
-                                                completed: "bg-primary/20 text-primary font-semibold",
-                                            }}
-                                        />
-                                        {/* Legend */}
-                                        <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border/30 justify-center">
-                                            <div className="flex items-center gap-2">
-                                                <div className="h-4 w-4 rounded-none bg-primary/20 border border-primary/40" />
-                                                <span className="text-sm text-muted-foreground">Completed</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="h-4 w-4 rounded-none bg-accent border border-border" />
-                                                <span className="text-sm text-muted-foreground">Today</span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Stats Card */}
-                                    <div className="bg-muted/5 border border-border/40 p-6 rounded-none space-y-4">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2">
-                                                <TrendingUp className="h-5 w-5 text-primary" />
-                                                <span className="text-sm font-semibold uppercase tracking-wider">Total Completed</span>
-                                            </div>
-                                            <span className="text-3xl font-serif font-semibold tracking-tighter">{completedCount}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Right Side: Today's Completion */}
-                                <div className="space-y-8">
-                                    {/* Today's Task Checkbox */}
-                                    <div>
-                                        <h4 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/30 pb-2 mb-4">
-                                            Today&apos;s Progress
-                                        </h4>
-                                        <div className={cn(
-                                            "p-6 border transition-all duration-300",
-                                            isTodayCompleted
-                                                ? "border-primary/30 bg-primary/5"
-                                                : "border-border/40 hover:border-primary/30"
-                                        )}>
-                                            <div className="flex items-center space-x-4">
-                                                <Checkbox
-                                                    id="dashboard-today-complete"
-                                                    checked={isTodayCompleted}
-                                                    onCheckedChange={(checked) => handleTodayToggle(checked as boolean)}
-                                                    className="h-6 w-6 border border-primary data-[state=checked]:bg-primary rounded-none"
-                                                />
-                                                <div className="flex-1">
-                                                    <label
-                                                        htmlFor="dashboard-today-complete"
-                                                        className="text-base font-semibold uppercase tracking-wider cursor-pointer leading-none block"
-                                                    >
-                                                        {isTodayCompleted ? "Completed Today ✓" : "Mark Today Complete"}
-                                                    </label>
-                                                    <p className="text-sm text-muted-foreground mt-2">
-                                                        Check this when you&apos;ve successfully completed the task for today.
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* Sub-tasks Read-Only View */}
-                                    {selectedTodo.subTasks && selectedTodo.subTasks.length > 0 && (
-                                        <div>
-                                            <h4 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/30 pb-2 mb-4">
-                                                Daily Items
-                                            </h4>
-                                            <div className="space-y-2 bg-card border border-border/40 p-4 shadow-sm rounded-none">
-                                                {selectedTodo.subTasks.map(task => (
-                                                    <div key={task.id} className="flex items-center space-x-4 p-2">
-                                                        <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
-                                                        <span className="text-base text-muted-foreground">
-                                                            {task.title}
-                                                        </span>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </>
-                ) : (
-                    <div className="h-full flex items-center justify-center p-8 opacity-50">
-                        <p className="text-base font-serif tracking-tighter uppercase">Select a task from the sidebar</p>
-                    </div>
-                )}
+            {/* Heatmap Legend */}
+            <div className="flex items-center gap-2 mt-6 pt-4 border-t border-border/30">
+                <span className="text-sm text-muted-foreground mr-1">Less</span>
+                <div className="h-4 w-4 rounded-sm bg-muted/40" />
+                <div className="h-4 w-4 rounded-sm bg-primary/60" />
+                <span className="text-sm text-muted-foreground ml-1">More</span>
             </div>
         </div>
     )
