@@ -103,12 +103,12 @@ export function DailyTrackerModal({ isOpen, onClose, todo, onSave }: DailyTracke
             <DialogContent className="sm:max-w-2xl bg-card border-border/50 rounded-2xl shadow-xl p-0 overflow-hidden">
                 <div className="absolute top-0 right-0 h-32 w-32 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
 
-                <DialogHeader className="p-12 pb-8 relative z-10 border-b border-border/10">
+                <DialogHeader className="p-6 sm:p-12 pb-6 sm:pb-8 relative z-10 border-b border-border/10">
                     <div className="flex items-center gap-2 text-primary mb-4">
                         <Calendar className="h-4 w-4" />
                         <span className="text-sm font-medium font-sans tracking-tight">Chronos Protocol</span>
                     </div>
-                    <DialogTitle className="text-3xl font-sans font-bold tracking-tighter text-foreground mb-2">
+                    <DialogTitle className="text-2xl sm:text-3xl font-sans font-bold tracking-tighter text-foreground mb-2">
                         {todo.title}
                     </DialogTitle>
                     <DialogDescription className="text-sm font-medium font-sans text-muted-foreground">
@@ -116,9 +116,9 @@ export function DailyTrackerModal({ isOpen, onClose, todo, onSave }: DailyTracke
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="p-12 pt-8 space-y-10 relative z-10">
+                <div className="p-6 sm:p-12 pt-6 sm:pt-8 space-y-6 sm:space-y-10 relative z-10">
                     {/* Status Dashboard */}
-                    <div className="flex items-center justify-between p-8 bg-background border border-border/50 rounded-xl shadow-sm group">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 sm:p-8 bg-background border border-border/50 rounded-xl shadow-sm group gap-4">
                         <div className="space-y-2">
                             <div className="flex items-center gap-3">
                                 <Sparkles className="h-4 w-4 text-primary" />
@@ -170,7 +170,7 @@ export function DailyTrackerModal({ isOpen, onClose, todo, onSave }: DailyTracke
                                             <div
                                                 key={subTask.id}
                                                 className={cn(
-                                                    "flex items-center gap-6 p-6 transition-all duration-500 bg-background border border-border/50 rounded-lg",
+                                                    "flex items-start gap-4 sm:gap-6 p-4 sm:p-6 transition-all duration-500 bg-background border border-border/50 rounded-lg",
                                                     isChecked
                                                         ? "opacity-60 border-primary/20 bg-primary/5"
                                                         : "hover:border-primary/50"
@@ -180,12 +180,12 @@ export function DailyTrackerModal({ isOpen, onClose, todo, onSave }: DailyTracke
                                                     id={`modal-subtask-${subTask.id}`}
                                                     checked={isChecked}
                                                     onCheckedChange={(checked) => handleSubTaskToggle(subTask.id, checked as boolean)}
-                                                    className="h-6 w-6 border-2 border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary rounded-md shrink-0 transition-all"
+                                                    className="h-5 w-5 sm:h-6 sm:w-6 border-2 border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary rounded-md shrink-0 transition-all mt-0.5 sm:mt-0"
                                                 />
                                                 <label
                                                     htmlFor={`modal-subtask-${subTask.id}`}
                                                     className={cn(
-                                                        "text-lg font-sans font-normal cursor-pointer leading-tight transition-all duration-500",
+                                                        "text-base sm:text-lg font-sans font-normal cursor-pointer leading-tight transition-all duration-500",
                                                         isChecked ? "line-through text-muted-foreground" : "text-foreground"
                                                     )}
                                                 >

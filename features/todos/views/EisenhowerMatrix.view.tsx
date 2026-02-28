@@ -99,7 +99,7 @@ export const EisenhowerMatrix = () => {
     }
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground p-8 md:p-12 pt-32 md:pt-40 relative">
+        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground p-4 sm:p-8 md:p-12 pt-28 sm:pt-32 md:pt-40 relative">
             {/* Background Texture Overlay */}
             <div className="fixed inset-0 pointer-events-none z-0 bg-background/50" />
 
@@ -114,32 +114,35 @@ export const EisenhowerMatrix = () => {
                     <button
                         onClick={() => setActiveTab('view')}
                         className={cn(
-                            "group flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium font-sans tracking-tight transition-all duration-300 rounded-full",
+                            "group flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 text-[11px] sm:text-[13px] font-medium font-sans tracking-tight transition-all duration-300 rounded-full",
                             activeTab === 'view' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                         )}
                     >
-                        <LayoutGrid className={cn("h-4 w-4 transition-transform group-hover:scale-110", activeTab === 'view' ? "text-primary/80" : "text-muted-foreground")} />
-                        View Tasks
+                        <LayoutGrid className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:scale-110", activeTab === 'view' ? "text-primary/80" : "text-muted-foreground")} />
+                        <span className="hidden sm:inline">View Tasks</span>
+                        <span className="sm:hidden">Tasks</span>
                     </button>
                     <button
                         onClick={() => setActiveTab('create')}
                         className={cn(
-                            "group flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium font-sans tracking-tight transition-all duration-300 rounded-full",
+                            "group flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 text-[11px] sm:text-[13px] font-medium font-sans tracking-tight transition-all duration-300 rounded-full",
                             activeTab === 'create' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                         )}
                     >
-                        <PlusCircle className={cn("h-4 w-4 transition-transform group-hover:rotate-90", activeTab === 'create' ? "text-primary/80" : "text-muted-foreground")} />
-                        Create Task
+                        <PlusCircle className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:rotate-90", activeTab === 'create' ? "text-primary/80" : "text-muted-foreground")} />
+                        <span className="hidden sm:inline">Create Task</span>
+                        <span className="sm:hidden">Create</span>
                     </button>
                     <button
                         onClick={() => setActiveTab('track')}
                         className={cn(
-                            "group flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium font-sans tracking-tight transition-all duration-300 relative rounded-full",
+                            "group flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 text-[11px] sm:text-[13px] font-medium font-sans tracking-tight transition-all duration-300 relative rounded-full",
                             activeTab === 'track' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                         )}
                     >
-                        <Activity className={cn("h-4 w-4 transition-transform group-hover:scale-110", activeTab === 'track' ? "text-primary/80 animate-pulse" : "text-muted-foreground")} />
-                        Track Progress
+                        <Activity className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:scale-110", activeTab === 'track' ? "text-primary/80 animate-pulse" : "text-muted-foreground")} />
+                        <span className="hidden sm:inline">Track Progress</span>
+                        <span className="sm:hidden">Track</span>
                         {activeTab !== 'track' && todos.some(t => t.isDaily) && (
                             <span className="absolute top-2 right-4 flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60"></span>
@@ -158,7 +161,7 @@ export const EisenhowerMatrix = () => {
                             <Sparkles className="h-4 w-4" />
                             <span className="text-sm font-medium font-sans tracking-tight">Command Center</span>
                         </div>
-                        <h1 className="text-4xl md:text-5xl font-sans font-bold tracking-tighter text-foreground">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-sans font-bold tracking-tighter text-foreground">
                             Yasir&apos;s <span className="text-muted-foreground">Todo</span>
                         </h1>
                     </div>

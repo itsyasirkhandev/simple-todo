@@ -155,105 +155,107 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                 (isDaily ? allSubTasksCompleted : todo.isCompleted) ? "bg-muted-foreground/30" : "bg-primary"
                             )} />
 
-                            <div className="flex items-start gap-6 p-6">
-                                {/* Precision Status Toggle */}
-                                <div className="mt-1 shrink-0">
-                                    {!isDaily ? (
-                                        <button
-                                            onClick={() => onToggle(todo.id)}
-                                            className="relative flex items-center justify-center p-1 rounded-full transition-transform active:scale-90"
-                                            aria-label={todo.isCompleted ? "Unmark as completed" : "Mark as completed"}
-                                        >
-                                            {todo.isCompleted ? (
-                                                <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground">
-                                                    <Check className="h-4 w-4" />
-                                                </div>
-                                            ) : (
-                                                <div className="h-6 w-6 rounded-full border-2 border-primary/40 group-hover:border-primary transition-colors flex items-center justify-center">
-                                                    <div className="h-2 w-2 rounded-full bg-primary opacity-0 group-hover:opacity-40 transition-opacity" />
-                                                </div>
-                                            )}
-                                        </button>
-                                    ) : (
-                                        <div className="relative flex items-center justify-center h-6 w-6">
-                                            {allSubTasksCompleted ? (
-                                                <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground shadow-sm">
-                                                    <CheckCircle2 className="h-4 w-4" />
-                                                </div>
-                                            ) : (
-                                                <div className="h-6 w-6 flex items-center justify-center text-primary/60 group-hover:text-primary transition-colors">
-                                                    <Layers className="h-5 w-5" />
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Editorial Content Area */}
-                                <div className="flex-1 space-y-4 min-w-0">
-                                    {isEditing ? (
-                                        <div className="space-y-4 pr-8">
-                                            <Input
-                                                value={editTitle}
-                                                onChange={(e) => setEditTitle(e.target.value)}
-                                                className="h-12 text-base font-medium font-sans tracking-tight bg-background/50 border-border/50 focus-visible:border-primary rounded-lg"
-                                                autoFocus
-                                            />
-                                            <Textarea
-                                                value={editDescription}
-                                                onChange={(e) => setEditDescription(e.target.value)}
-                                                className="min-h-24 text-sm font-normal font-sans bg-background/50 border-border/50 focus-visible:border-primary rounded-lg resize-none"
-                                            />
-                                            <div className="flex gap-2">
-                                                <Button size="sm" onClick={handleSave} className="h-10 px-4 text-sm font-medium rounded-md tracking-tight">
-                                                    <Check className="h-4 w-4 mr-2" /> Save Changes
-                                                </Button>
-                                                <Button size="sm" variant="ghost" onClick={cancelEdit} className="h-10 px-4 text-sm font-medium rounded-md">
-                                                    <X className="h-4 w-4 mr-2" /> Discard
-                                                </Button>
+                            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 p-4 sm:p-6">
+                                <div className="flex items-start gap-4 sm:gap-6 flex-1 w-full min-w-0">
+                                    {/* Precision Status Toggle */}
+                                    <div className="mt-1 shrink-0">
+                                        {!isDaily ? (
+                                            <button
+                                                onClick={() => onToggle(todo.id)}
+                                                className="relative flex items-center justify-center p-1 rounded-full transition-transform active:scale-90"
+                                                aria-label={todo.isCompleted ? "Unmark as completed" : "Mark as completed"}
+                                            >
+                                                {todo.isCompleted ? (
+                                                    <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground">
+                                                        <Check className="h-4 w-4" />
+                                                    </div>
+                                                ) : (
+                                                    <div className="h-6 w-6 rounded-full border-2 border-primary/40 group-hover:border-primary transition-colors flex items-center justify-center">
+                                                        <div className="h-2 w-2 rounded-full bg-primary opacity-0 group-hover:opacity-40 transition-opacity" />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        ) : (
+                                            <div className="relative flex items-center justify-center h-6 w-6">
+                                                {allSubTasksCompleted ? (
+                                                    <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground shadow-sm">
+                                                        <CheckCircle2 className="h-4 w-4" />
+                                                    </div>
+                                                ) : (
+                                                    <div className="h-6 w-6 flex items-center justify-center text-primary/60 group-hover:text-primary transition-colors">
+                                                        <Layers className="h-5 w-5" />
+                                                    </div>
+                                                )}
                                             </div>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <div className="space-y-1">
-                                                <div className="flex items-baseline gap-3">
-                                                    <h3 className={cn(
-                                                        "text-base font-semibold font-sans tracking-tight transition-all duration-300 break-words min-w-0",
-                                                        (isDaily ? allSubTasksCompleted : todo.isCompleted) && "line-through text-muted-foreground/60"
-                                                    )}>
-                                                        {todo.title}
-                                                    </h3>
-                                                    {isDaily && (
-                                                        <span className="text-xs font-medium font-sans text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full shrink-0">
-                                                            {totalSubTasks > 0 ? `${completedCount}/${totalSubTasks}` : 'Daily Routine'}
+                                        )}
+                                    </div>
+
+                                    {/* Editorial Content Area */}
+                                    <div className="flex-1 space-y-4 min-w-0">
+                                        {isEditing ? (
+                                            <div className="space-y-4 pr-8">
+                                                <Input
+                                                    value={editTitle}
+                                                    onChange={(e) => setEditTitle(e.target.value)}
+                                                    className="h-12 text-base font-medium font-sans tracking-tight bg-background/50 border-border/50 focus-visible:border-primary rounded-lg"
+                                                    autoFocus
+                                                />
+                                                <Textarea
+                                                    value={editDescription}
+                                                    onChange={(e) => setEditDescription(e.target.value)}
+                                                    className="min-h-24 text-sm font-normal font-sans bg-background/50 border-border/50 focus-visible:border-primary rounded-lg resize-none"
+                                                />
+                                                <div className="flex gap-2">
+                                                    <Button size="sm" onClick={handleSave} className="h-10 px-4 text-sm font-medium rounded-md tracking-tight">
+                                                        <Check className="h-4 w-4 mr-2" /> Save Changes
+                                                    </Button>
+                                                    <Button size="sm" variant="ghost" onClick={cancelEdit} className="h-10 px-4 text-sm font-medium rounded-md">
+                                                        <X className="h-4 w-4 mr-2" /> Discard
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <div className="space-y-1">
+                                                    <div className="flex items-baseline gap-3">
+                                                        <h3 className={cn(
+                                                            "text-base font-semibold font-sans tracking-tight transition-all duration-300 break-words min-w-0",
+                                                            (isDaily ? allSubTasksCompleted : todo.isCompleted) && "line-through text-muted-foreground/60"
+                                                        )}>
+                                                            {todo.title}
+                                                        </h3>
+                                                        {isDaily && (
+                                                            <span className="text-xs font-medium font-sans text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full shrink-0">
+                                                                {totalSubTasks > 0 ? `${completedCount}/${totalSubTasks}` : 'Daily Routine'}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    {todo.description && (
+                                                        <p className="text-sm font-normal text-muted-foreground font-sans line-clamp-3 leading-relaxed break-words">
+                                                            {todo.description}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground/70 font-sans">
+                                                    <span className="flex items-center gap-1.5">
+                                                        <Clock className="h-3 w-3" />
+                                                        {format(new Date(todo.createdAt), "MMM d, yyyy")}
+                                                    </span>
+                                                    {isDaily && totalSubTasks > 0 && (
+                                                        <span className="flex items-center gap-1.5 text-primary/60">
+                                                            <ListChecks className="h-3 w-3" />
+                                                            {totalSubTasks} sub-tasks
                                                         </span>
                                                     )}
                                                 </div>
-                                                {todo.description && (
-                                                    <p className="text-sm font-normal text-muted-foreground font-sans line-clamp-3 leading-relaxed break-words">
-                                                        {todo.description}
-                                                    </p>
-                                                )}
-                                            </div>
-
-                                            <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground/70 font-sans">
-                                                <span className="flex items-center gap-1.5">
-                                                    <Clock className="h-3 w-3" />
-                                                    {format(new Date(todo.createdAt), "MMM d, yyyy")}
-                                                </span>
-                                                {isDaily && totalSubTasks > 0 && (
-                                                    <span className="flex items-center gap-1.5 text-primary/60">
-                                                        <ListChecks className="h-3 w-3" />
-                                                        {totalSubTasks} sub-tasks
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </>
-                                    )}
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Floating Action Panel */}
-                                <div className="flex flex-col gap-2 shrink-0 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
+                                <div className="flex flex-row sm:flex-col gap-2 shrink-0 w-full sm:w-auto justify-end mt-2 sm:mt-0 sm:translate-x-4 opacity-100 sm:opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 sm:border-t-0 border-t border-border/20 pt-3 sm:pt-0">
                                     {isDaily && !isEditing && onTrackDaily && (
                                         <Button
                                             variant="outline"
@@ -290,7 +292,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                             {isDaily && totalSubTasks > 0 && !isEditing && (
                                 <Collapsible open={isSubTasksOpen} onOpenChange={setIsSubTasksOpen}>
                                     <CollapsibleTrigger asChild>
-                                        <button className="w-full flex items-center justify-between px-6 py-3 border-t border-border/20 bg-muted/5 hover:bg-muted/10 transition-colors">
+                                        <button className="w-full flex items-center justify-between px-4 sm:px-6 py-3 border-t border-border/20 bg-muted/5 hover:bg-muted/10 transition-colors">
                                             <span className="text-xs font-medium font-sans text-muted-foreground flex items-center gap-2">
                                                 <Plus className={cn("h-3 w-3 transition-transform duration-300", isSubTasksOpen && "rotate-45")} />
                                                 Progress Details
@@ -302,7 +304,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                         </button>
                                     </CollapsibleTrigger>
                                     <CollapsibleContent>
-                                        <div className="border-t border-border/10 bg-muted/5 p-6 pt-2 space-y-3">
+                                        <div className="border-t border-border/10 bg-muted/5 px-4 sm:px-6 py-4 pt-2 space-y-3">
                                             {subTasks.map((subTask) => {
                                                 const isChecked = completedSubTaskIds.includes(subTask.id)
                                                 return (

@@ -62,8 +62,8 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, o
             type === 'unurgent-important' && "before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-primary before:opacity-60",
             type === 'unurgent-unimportant' && "before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-muted-foreground/30 before:opacity-60"
         )}>
-            <div className="p-8 pb-4">
-                <div className="flex items-center justify-between mb-4">
+            <div className="p-5 sm:p-6 md:p-8 pb-3 md:pb-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2 md:mb-4">
                     <div className="flex items-center gap-3">
                         {icons[type]}
                         <h2 className="text-lg font-sans font-semibold tracking-tight text-foreground transition-all">
@@ -84,7 +84,7 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, o
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         className={cn(
-                            "flex-1 overflow-y-auto px-6 pb-8 space-y-1 transition-colors duration-300 scrollbar-thin scrollbar-thumb-primary/10",
+                            "flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 pb-6 md:pb-8 space-y-1 transition-colors duration-300 scrollbar-thin scrollbar-thumb-primary/10",
                             snapshot.isDraggingOver && "bg-primary/[0.03]"
                         )}
                     >

@@ -100,18 +100,18 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(handleFormSubmit)}
-                className="space-y-12 border border-border/50 bg-card p-12 shadow-sm rounded-2xl relative overflow-hidden"
+                className="space-y-8 md:space-y-12 border border-border/50 bg-card p-6 sm:p-8 md:p-12 shadow-sm rounded-2xl relative overflow-hidden"
             >
                 {/* Decorative Background Element */}
                 <div className="absolute -top-24 -right-24 h-64 w-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
                 <div className="space-y-8 relative z-10">
-                    <header className="space-y-2 border-b border-border/50 pb-8">
+                    <header className="space-y-2 border-b border-border/50 pb-6 md:pb-8">
                         <div className="flex items-center gap-2 text-primary">
                             <Sparkles className="h-5 w-5" />
                             <span className="text-sm font-medium font-sans tracking-tight">New Objective</span>
                         </div>
-                        <h2 className="text-3xl font-sans font-bold tracking-tighter text-foreground">
+                        <h2 className="text-2xl md:text-3xl font-sans font-bold tracking-tighter text-foreground">
                             Define your next task
                         </h2>
                     </header>
@@ -153,7 +153,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                             )}
                         />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
                             <FormField
                                 control={form.control}
                                 name="priority"
@@ -220,7 +220,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
 
                         {isDaily && (
                             <div className="space-y-6 pt-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <div className="flex items-center justify-between border-b border-border/50 pb-4">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/50 pb-4">
                                     <FormLabel className="text-sm font-medium font-sans text-primary">
                                         Layered Objectives (Sub-tasks)
                                     </FormLabel>
