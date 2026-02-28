@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import { Suspense } from "react";
 
 const EisenhowerMatrix = dynamic(() => import("@/features/todos").then((mod) => mod.EisenhowerMatrix), {
   ssr: true,
@@ -10,6 +11,10 @@ const EisenhowerMatrix = dynamic(() => import("@/features/todos").then((mod) => 
  * @returns {JSX.Element} The rendered home page.
  */
 export default function Home() {
-  return <EisenhowerMatrix />;
+  return (
+    <Suspense fallback={null}>
+      <EisenhowerMatrix />
+    </Suspense>
+  );
 }
 

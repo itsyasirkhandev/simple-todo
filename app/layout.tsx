@@ -9,6 +9,7 @@ import { siteConfig } from "@/lib/site-config";
 import { TopNav } from "@/features/core";
 import { ModeToggle } from "@/components/mode-toggle";
 import "./globals.css";
+import { Suspense } from "react";
 
 const fontSans = DM_Sans({
   subsets: ["latin"],
@@ -79,7 +80,9 @@ export default function RootLayout({
             <div className="fixed top-8 right-8 z-50">
               <ModeToggle />
             </div>
-            <TopNav />
+            <Suspense fallback={null}>
+              <TopNav />
+            </Suspense>
             {children}
             <Toaster />
           </TooltipProvider>
