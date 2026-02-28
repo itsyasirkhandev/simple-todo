@@ -20,6 +20,16 @@ export const todoSchema = z.object({
         'unurgent-important',
         'unurgent-unimportant',
     ]),
+    isDaily: z.boolean().default(false).optional(),
+    subTasks: z.array(z.object({
+        id: z.string(),
+        title: z.string().min(1, 'Sub-task must not be empty').max(100, 'Sub-task is too long')
+    })).optional(),
+    dailyProgress: z.record(z.string(), z.object({
+        isCompleted: z.boolean(),
+        completedSubTasks: z.array(z.string()),
+        notes: z.string()
+    })).optional(),
 });
 
 /**

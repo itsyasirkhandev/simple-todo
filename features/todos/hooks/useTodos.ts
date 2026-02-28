@@ -72,6 +72,8 @@ export const useTodos = () => {
                 order: maxOrder + 1,
                 createdAt: Date.now(),
                 updatedAt: Date.now(),
+                isDaily: data.isDaily,
+                subTasks: data.subTasks && data.subTasks.length > 0 ? data.subTasks : undefined,
             };
             return [newTodo, ...prev];
         });

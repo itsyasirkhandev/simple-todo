@@ -19,6 +19,18 @@ export type TodoPriority =
   | 'unurgent-unimportant';
 
 /**
+ * Represents the daily progress for a specific date (YYYY-MM-DD).
+ * @property {boolean} isCompleted - Whether the main daily task is completed.
+ * @property {string[]} completedSubTasks - Array of completed sub-task IDs.
+ * @property {string} notes - Optional daily notes.
+ */
+export interface DailyProgress {
+  isCompleted: boolean;
+  completedSubTasks: string[];
+  notes: string;
+}
+
+/**
  * Represents a single Todo item in the application.
  * @property {string} id - Unique identifier (UUID).
  * @property {string} title - The main task description.
@@ -28,6 +40,9 @@ export type TodoPriority =
  * @property {number} [order] - Sort order within a quadrant.
  * @property {number} createdAt - Creation timestamp.
  * @property {number} updatedAt - Last update timestamp.
+ * @property {boolean} [isDaily] - Whether this is a repeating daily task.
+ * @property {{ id: string, title: string }[]} [subTasks] - Optional sub-tasks.
+ * @property {Record<string, DailyProgress>} [dailyProgress] - Progress record keyed by YYYY-MM-DD.
  */
 export interface Todo {
   id: string;
@@ -38,5 +53,8 @@ export interface Todo {
   order?: number;
   createdAt: number;
   updatedAt: number;
+  isDaily?: boolean;
+  subTasks?: { id: string; title: string }[];
+  dailyProgress?: Record<string, DailyProgress>;
 }
 

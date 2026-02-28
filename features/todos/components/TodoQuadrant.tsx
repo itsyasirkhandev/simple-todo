@@ -30,6 +30,8 @@ interface TodoQuadrantProps {
     onToggle: (id: string) => void
     onDelete: (id: string) => void
     onEdit: (id: string, data: Partial<Todo>) => void
+    onTrackDaily?: (todo: Todo) => void
+    isDragDisabled?: boolean
 }
 
 const icons = {
@@ -44,7 +46,7 @@ const icons = {
  * @param {TodoQuadrantProps} props - Component properties.
  * @returns {JSX.Element} The rendered quadrant component.
  */
-export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit }: TodoQuadrantProps) {
+export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, onTrackDaily, isDragDisabled }: TodoQuadrantProps) {
     return (
         <div className={cn(
             "flex flex-col h-full min-h-96 rounded-none p-6 border-4 transition-all duration-300 overflow-hidden bg-background shadow-xl",
@@ -66,7 +68,7 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit }:
                 </div>
             </div>
 
-            <Droppable droppableId={type}>
+            <Droppable droppableId={type} isDropDisabled={isDragDisabled}>
                 {(provided, snapshot) => (
                     <div
                         ref={provided.innerRef}
@@ -85,6 +87,8 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit }:
                                     onToggle={onToggle}
                                     onDelete={onDelete}
                                     onEdit={onEdit}
+                                    onTrackDaily={onTrackDaily}
+                                    isDragDisabled={isDragDisabled}
                                 />
                             ))
                         ) : (

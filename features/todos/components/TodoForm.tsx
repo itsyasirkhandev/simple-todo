@@ -7,10 +7,10 @@
 
 "use client"
 
-import React from 'react'
-import { useForm } from 'react-hook-form'
+import React, { useEffect } from 'react'
+import { useForm, useFieldArray, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, AlertCircle, Zap, Target, Cloud } from 'lucide-react'
+import { Plus, AlertCircle, Zap, Target, Cloud, Trash2 } from 'lucide-react'
 import { todoSchema, TodoFormValues } from '../schemas/todo.schema'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,9 +20,11 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
+    FormDescription,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { Switch } from '@/components/ui/switch'
 import {
     Select,
     SelectContent,
@@ -53,9 +55,28 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
             title: '',
             description: '',
             priority: 'urgent-important',
+            isDaily: false,
+            subTasks: [],
             ...defaultValues,
         },
     })
+
+    const { fields, append, remove } = useFieldArray({
+        name: "subTasks",
+        control: form.control,
+    });
+
+    const isDaily = useWatch({
+        control: form.control,
+        name: "isDaily",
+    });
+
+    // Automatically clear subTasks if isDaily is turned off
+    useEffect(() => {
+        if (!isDaily && fields.length > 0) {
+            form.setValue('subTasks', [], { shouldValidate: true });
+        }
+    }, [isDaily, fields.length, form]);
 
     const handleFormSubmit = (values: TodoFormValues) => {
         onSubmit(values)
@@ -63,6 +84,8 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
             title: '',
             description: '',
             priority: values.priority, // Keep the same priority for quick adding
+            isDaily: false,
+            subTasks: [],
         })
     }
 
@@ -95,7 +118,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                 <FormLabel className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Notes (Optional)</FormLabel>
                                 <FormControl>
                                     <Textarea
-                                        placeholder="Completing my coding project"
+                                        placeholder="Add context or details..."
                                         className="min-h-24 border-2 border-border bg-background transition-all focus:border-foreground focus:ring-0 rounded-none"
                                         {...field}
                                     />
@@ -104,6 +127,84 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                             </FormItem>
                         )}
                     />
+
+                    <FormField
+                        control={form.control}
+                        name="isDaily"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-none border-2 border-border p-4 shadow-sm">
+                                <div className="space-y-0.5">
+                                    <FormLabel className="text-base font-semibold uppercase tracking-widest text-foreground">
+                                        Daily Task
+                                    </FormLabel>
+                                    <FormDescription className="text-sm text-muted-foreground">
+                                        Track this task every day and manage sub-tasks.
+                                    </FormDescription>
+                                </div>
+                                <FormControl>
+                                    <Switch
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                        aria-readonly
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+
+                    {isDaily && (
+                        <div className="space-y-4 rounded-none border-2 border-border p-4 bg-muted/20">
+                            <div className="flex items-center justify-between">
+                                <FormLabel className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
+                                    Sub-Tasks
+                                </FormLabel>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => append({ id: crypto.randomUUID(), title: '' })}
+                                    className="h-8 rounded-none border-2 transition-all hover:bg-foreground hover:text-background"
+                                >
+                                    <Plus className="h-4 w-4 mr-1" /> Add
+                                </Button>
+                            </div>
+                            <div className="space-y-3">
+                                {fields.map((field, index) => (
+                                    <FormField
+                                        key={field.id}
+                                        control={form.control}
+                                        name={`subTasks.${index}.title`}
+                                        render={({ field: inputField }) => (
+                                            <FormItem className="flex items-start gap-2 space-y-0 relative">
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="e.g., Watch 1 video"
+                                                        {...inputField}
+                                                        className="h-10 pr-10 border-2 border-border bg-background transition-all focus:border-foreground focus:ring-0 rounded-none"
+                                                    />
+                                                </FormControl>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => remove(index)}
+                                                    className="h-10 w-10 absolute top-0 right-0 text-muted-foreground hover:text-destructive hover:bg-transparent rounded-none"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                ))}
+                                {fields.length === 0 && (
+                                    <p className="text-sm text-muted-foreground text-center py-4 border-2 border-dashed border-border">
+                                        No sub-tasks added.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    )}
 
                     <FormField
                         control={form.control}

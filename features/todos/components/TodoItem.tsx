@@ -8,13 +8,12 @@
 "use client"
 
 import React, { useRef, useState } from 'react'
-import { Trash2, CheckCircle2, Circle, Clock, Pencil, X, Check } from 'lucide-react'
+import { Trash2, CheckCircle2, Circle, Clock, Pencil, X, Check, CalendarDays } from 'lucide-react'
 import { Draggable } from '@hello-pangea/dnd'
 import { Todo } from '../types/todo.types'
 import { useTodoItemAnimations } from '../hooks/useTodoAnimations'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 
@@ -33,6 +32,8 @@ interface TodoItemProps {
     onToggle: (id: string) => void
     onDelete: (id: string) => void
     onEdit: (id: string, data: Partial<Todo>) => void
+    onTrackDaily?: (todo: Todo) => void
+    isDragDisabled?: boolean
     className?: string
 }
 
@@ -41,7 +42,7 @@ interface TodoItemProps {
  * @param {TodoItemProps} props - Component properties.
  * @returns {JSX.Element} The rendered task item.
  */
-export function TodoItem({ todo, index, onToggle, onDelete, onEdit, className }: TodoItemProps) {
+export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily, isDragDisabled, className }: TodoItemProps) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [isEditing, setIsEditing] = useState(false)
     const [editTitle, setEditTitle] = useState(todo.title)
@@ -76,7 +77,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, className }:
     }
 
     return (
-        <Draggable draggableId={todo.id} index={index}>
+        <Draggable draggableId={todo.id} index={index} isDragDisabled={isDragDisabled}>
             {(provided, snapshot) => (
                 <div
                     ref={provided.innerRef}
@@ -131,12 +132,19 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, className }:
                                         </div>
                                     ) : (
                                         <>
-                                            <h3 className={cn(
-                                                "text-base font-semibold leading-none tracking-tight transition-all font-serif",
-                                                todo.isCompleted && "line-through text-muted-foreground"
-                                            )}>
-                                                {todo.title}
-                                            </h3>
+                                            <div className="flex items-center gap-2">
+                                                <h3 className={cn(
+                                                    "text-base font-semibold leading-none tracking-tight transition-all font-serif",
+                                                    todo.isCompleted && "line-through text-muted-foreground"
+                                                )}>
+                                                    {todo.title}
+                                                </h3>
+                                                {todo.isDaily && (
+                                                    <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary uppercase tracking-wider">
+                                                        Daily
+                                                    </span>
+                                                )}
+                                            </div>
                                             {todo.description && (
                                                 <p className="text-sm text-muted-foreground line-clamp-2">
                                                     {todo.description}
@@ -154,6 +162,17 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, className }:
                                 </div>
 
                                 <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    {todo.isDaily && !isEditing && onTrackDaily && (
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() => onTrackDaily(todo)}
+                                            className="h-8 w-8 text-foreground hover:bg-foreground/10"
+                                            title="Track Daily Progress"
+                                        >
+                                            <CalendarDays className="h-4 w-4" />
+                                        </Button>
+                                    )}
                                     {!isEditing && (
                                         <Button
                                             variant="ghost"
