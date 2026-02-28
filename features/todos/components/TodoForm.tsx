@@ -176,19 +176,19 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                                 <SelectItem value="urgent-unimportant" className="focus:bg-accent/10 focus:text-accent py-3">
                                                     <div className="flex items-center gap-3">
                                                         <Zap className="h-5 w-5 text-accent" />
-                                                        <span className="font-semibold">Urgent & Delegate</span>
+                                                        <span className="font-semibold">Urgent & Un-Important</span>
                                                     </div>
                                                 </SelectItem>
                                                 <SelectItem value="unurgent-important" className="focus:bg-primary/10 focus:text-primary py-3">
                                                     <div className="flex items-center gap-3">
                                                         <Target className="h-5 w-5 text-primary" />
-                                                        <span className="font-semibold">Not Urgent & Strategic</span>
+                                                        <span className="font-semibold">Un-Urgent & Important</span>
                                                     </div>
                                                 </SelectItem>
                                                 <SelectItem value="unurgent-unimportant" className="focus:bg-muted/10 focus:text-muted-foreground py-3">
                                                     <div className="flex items-center gap-3">
                                                         <Cloud className="h-5 w-5 text-muted-foreground/60" />
-                                                        <span className="font-semibold">Not Urgent & Trivial</span>
+                                                        <span className="font-semibold">Un-Urgent & Un-Important</span>
                                                     </div>
                                                 </SelectItem>
                                             </SelectContent>
