@@ -7,6 +7,7 @@
 export const ROUTES = {
     // Public Routes
     HOME: '/',
+    JOURNAL: '/journal',
 
     // Auth Routes
     AUTH: {

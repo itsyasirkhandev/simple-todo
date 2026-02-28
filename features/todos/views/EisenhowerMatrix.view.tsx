@@ -9,8 +9,8 @@
 
 import React, { useRef, useState } from 'react'
 import { DragDropContext, DropResult } from '@hello-pangea/dnd'
-import { ModeToggle } from '@/components/mode-toggle'
-import { cn } from '@/lib/utils'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { ROUTES } from '@/constants/routes'
 import { TodoPriority } from '../types/todo.types'
 import { useTodos } from '../hooks/useTodos'
 import { useMatrixAnimations } from '../hooks/useTodoAnimations'
@@ -20,7 +20,7 @@ import { DailyTrackerModal } from '../components/DailyTrackerModal'
 import { DailyTrackingDashboard } from '../components/DailyTrackingDashboard'
 import { Todo, DailyProgress } from '../types/todo.types'
 import { TodoFormValues } from '../schemas/todo.schema'
-import { Sparkles, LayoutGrid, PlusCircle, Activity } from 'lucide-react'
+import { Sparkles } from 'lucide-react'
 
 type TabView = 'view' | 'create' | 'track'
 
@@ -33,9 +33,13 @@ type TabView = 'view' | 'create' | 'track'
  */
 export const EisenhowerMatrix = () => {
     const { todos, isLoaded, addTodo, toggleTodo, deleteTodo, getTodosByPriority, reorderTodo, updateTodo } = useTodos()
+    const searchParams = useSearchParams()
+    const router = useRouter()
     const containerRef = useRef<HTMLDivElement>(null)
     const [trackingTodo, setTrackingTodo] = useState<Todo | null>(null)
-    const [activeTab, setActiveTab] = useState<TabView>('view')
+
+    // URL-driven Tab State
+    const activeTab = (searchParams.get('tab') as TabView) || 'view'
 
     // Isolated Animation Logic
     useMatrixAnimations(containerRef)
@@ -95,63 +99,13 @@ export const EisenhowerMatrix = () => {
 
     const handleFormSubmit = (data: TodoFormValues) => {
         addTodo(data)
-        setActiveTab('view') // Return to view after creation
+        router.push(`${ROUTES.HOME}?tab=view`)
     }
 
     return (
         <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground p-4 sm:p-8 md:p-12 pt-28 sm:pt-32 md:pt-40 relative">
             {/* Background Texture Overlay */}
             <div className="fixed inset-0 pointer-events-none z-0 bg-background/50" />
-
-            {/* Floating Utility Controls */}
-            <div className="fixed top-8 right-8 z-50">
-                <ModeToggle />
-            </div>
-
-            {/* Navigation Header - Premium Control Center */}
-            <header className="fixed top-8 left-1/2 -translate-x-1/2 z-40 w-max max-w-[90vw] animate-in slide-in-from-top-4 duration-700">
-                <nav className="flex items-center p-1.5 bg-background/80 backdrop-blur-xl border border-border/50 shadow-sm rounded-full transition-all duration-500">
-                    <button
-                        onClick={() => setActiveTab('view')}
-                        className={cn(
-                            "group flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 text-[11px] sm:text-[13px] font-medium font-sans tracking-tight transition-all duration-300 rounded-full",
-                            activeTab === 'view' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                        )}
-                    >
-                        <LayoutGrid className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:scale-110", activeTab === 'view' ? "text-primary/80" : "text-muted-foreground")} />
-                        <span className="hidden sm:inline">View Tasks</span>
-                        <span className="sm:hidden">Tasks</span>
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('create')}
-                        className={cn(
-                            "group flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 text-[11px] sm:text-[13px] font-medium font-sans tracking-tight transition-all duration-300 rounded-full",
-                            activeTab === 'create' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                        )}
-                    >
-                        <PlusCircle className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:rotate-90", activeTab === 'create' ? "text-primary/80" : "text-muted-foreground")} />
-                        <span className="hidden sm:inline">Create Task</span>
-                        <span className="sm:hidden">Create</span>
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('track')}
-                        className={cn(
-                            "group flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2.5 text-[11px] sm:text-[13px] font-medium font-sans tracking-tight transition-all duration-300 relative rounded-full",
-                            activeTab === 'track' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-                        )}
-                    >
-                        <Activity className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4 transition-transform group-hover:scale-110", activeTab === 'track' ? "text-primary/80 animate-pulse" : "text-muted-foreground")} />
-                        <span className="hidden sm:inline">Track Progress</span>
-                        <span className="sm:hidden">Track</span>
-                        {activeTab !== 'track' && todos.some(t => t.isDaily) && (
-                            <span className="absolute top-2 right-4 flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                            </span>
-                        )}
-                    </button>
-                </nav>
-            </header>
 
             <main className="max-w-6xl mx-auto space-y-12 relative z-10">
                 {/* Visual Branding Section - Only visible in View mode to keep focus */}

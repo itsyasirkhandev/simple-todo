@@ -147,7 +147,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                             "bg-card border border-border/50",
                             "hover:border-primary/50 hover:bg-card/80 shadow-sm hover:shadow-md",
                             (isDaily ? allSubTasksCompleted : todo.isCompleted) && "opacity-60 grayscale",
-                            snapshot.isDragging && "shadow-2xl border-primary scale-[1.02]"
+                            snapshot.isDragging && "shadow-2xl border-primary scale-105"
                         )}>
                             {/* Accent Bar */}
                             <div className={cn(

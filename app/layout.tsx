@@ -6,6 +6,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { siteConfig } from "@/lib/site-config";
+import { TopNav } from "@/features/core";
+import { ModeToggle } from "@/components/mode-toggle";
 import "./globals.css";
 
 const fontSans = DM_Sans({
@@ -74,6 +76,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TooltipProvider>
+            <div className="fixed top-8 right-8 z-50">
+              <ModeToggle />
+            </div>
+            <TopNav />
             {children}
             <Toaster />
           </TooltipProvider>

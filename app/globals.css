@@ -232,6 +232,14 @@
   transform: translate(-50%, -50%);
 }
 
+@utility min-h-journal-editor {
+  min-height: 400px;
+}
+
+@utility min-h-journal-editor-lg {
+  min-height: 500px;
+}
+
 @utility max-w-alert-dialog {
   max-width: calc(100% - 2rem);
 }

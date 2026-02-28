@@ -6,3 +6,4 @@
  */
 
 export { NotFoundView } from './views/NotFoundView';
+export { TopNav } from './components/TopNav';
