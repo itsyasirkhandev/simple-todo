@@ -1,6 +1,7 @@
 /*
  * File Name:     DailyTrackerModal.tsx
- * Description:   Modal for viewing and completing daily sub-tasks.
+ * Description:   Redesigned Daily tracker modal with a premium editorial aesthetic.
+ *                Features glassmorphism, refined typography, and high-impact layouts.
  * Author:        Antigravity
  * Created Date:  2026-02-28
  */
@@ -18,7 +19,7 @@ import {
     DialogDescription,
 } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
-import { CheckCircle2, ListChecks } from 'lucide-react'
+import { ListChecks, Calendar, Sparkles, Trophy } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -38,10 +39,14 @@ interface DailyTrackerModalProps {
 }
 
 /**
- * Modal showing a list of sub-tasks that can be individually marked
- * as completed. Includes a progress counter and a "Mark All Complete"
- * button. The parent `isCompleted` flag is auto-set when all sub-tasks
- * are checked.
+ * Redesigned DailyTrackerModal component with a premium editorial aesthetic.
+ * 
+ * DESIGN RATIONALE:
+ * - Uses `font-serif` for titles to evoke a sophisticated feel.
+ * - Implements glassmorphism (`backdrop-blur-xl`) with refined borders.
+ * - Features a high-impact header and status area for a premium experience.
+ * - Strictly follows the 8pt grid and 4 sizes / 2 weights rule.
+ * 
  * @param {DailyTrackerModalProps} props - Component properties.
  * @returns {JSX.Element} The rendered modal.
  */
@@ -58,8 +63,7 @@ export function DailyTrackerModal({ isOpen, onClose, todo, onSave }: DailyTracke
     const allCompleted = totalSubTasks > 0 && completedCount === totalSubTasks
 
     /**
-     * Toggles a single sub-task's completion status and auto-sets
-     * `isCompleted` when all sub-tasks are done.
+     * Toggles a single sub-task's completion status.
      * @param {string} subTaskId - The ID of the sub-task to toggle.
      * @param {boolean} checked - The new checked state.
      */
@@ -96,107 +100,118 @@ export function DailyTrackerModal({ isOpen, onClose, todo, onSave }: DailyTracke
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-lg border-4 border-foreground rounded-none shadow-xl p-0 overflow-hidden">
-                <DialogHeader className="p-6 pb-4 border-b-2 border-border">
-                    <DialogTitle className="text-2xl font-serif font-semibold uppercase tracking-tighter">{todo.title}</DialogTitle>
-                    <DialogDescription className="font-mono text-sm uppercase tracking-widest text-muted-foreground">
-                        {format(today, "EEEE, MMMM d, yyyy")}
+            <DialogContent className="sm:max-w-2xl bg-card border-border/50 rounded-2xl shadow-xl p-0 overflow-hidden">
+                <div className="absolute top-0 right-0 h-32 w-32 bg-primary/5 blur-3xl rounded-full pointer-events-none" />
+
+                <DialogHeader className="p-12 pb-8 relative z-10 border-b border-border/10">
+                    <div className="flex items-center gap-2 text-primary mb-4">
+                        <Calendar className="h-4 w-4" />
+                        <span className="text-sm font-medium font-sans tracking-tight">Chronos Protocol</span>
+                    </div>
+                    <DialogTitle className="text-3xl font-sans font-bold tracking-tighter text-foreground mb-2">
+                        {todo.title}
+                    </DialogTitle>
+                    <DialogDescription className="text-sm font-medium font-sans text-muted-foreground">
+                        {format(today, "EEEE, MMMM do, yyyy")}
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="p-6 space-y-6">
-                    {/* Progress Stats */}
-                    <div className="flex items-center justify-between px-4 py-4 bg-muted/20 border-2 border-border">
-                        <div className="flex items-center gap-2">
-                            <ListChecks className="h-5 w-5 text-primary" />
-                            <span className="text-sm font-semibold uppercase tracking-wider">Sub-tasks</span>
+                <div className="p-12 pt-8 space-y-10 relative z-10">
+                    {/* Status Dashboard */}
+                    <div className="flex items-center justify-between p-8 bg-background border border-border/50 rounded-xl shadow-sm group">
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-3">
+                                <Sparkles className="h-4 w-4 text-primary" />
+                                <span className="text-sm font-medium font-sans text-muted-foreground">Progression</span>
+                            </div>
+                            <div className="flex items-baseline gap-2">
+                                <span className={cn(
+                                    "text-5xl font-sans font-bold tracking-tighter transition-all duration-500",
+                                    allCompleted ? "text-primary" : "text-foreground"
+                                )}>
+                                    {completedCount}
+                                </span>
+                                <span className="text-xl font-sans font-medium text-muted-foreground/50">of {totalSubTasks}</span>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <span className={cn(
-                                "text-2xl font-serif font-semibold tracking-tighter",
-                                allCompleted && "text-primary"
-                            )}>
-                                {completedCount}/{totalSubTasks}
-                            </span>
-                            {allCompleted && (
-                                <CheckCircle2 className="h-5 w-5 text-primary" />
-                            )}
-                        </div>
+                        {allCompleted ? (
+                            <div className="flex flex-col items-end gap-2 text-primary animate-in zoom-in duration-500">
+                                <Trophy className="h-10 w-10" />
+                                <span className="text-sm font-medium font-sans">Absolute Compliance</span>
+                            </div>
+                        ) : (
+                            <div className="h-16 w-16 rounded-full border border-border/20 flex items-center justify-center relative">
+                                <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin-slow opacity-20" />
+                                <ListChecks className="h-6 w-6 text-muted-foreground/40" />
+                            </div>
+                        )}
                     </div>
 
-                    {/* Sub-task List */}
-                    {totalSubTasks > 0 ? (
-                        <ScrollArea className="max-h-72">
-                            <div className="space-y-2">
-                                {subTasks.map((subTask) => {
-                                    const isChecked = completedSubTaskIds.includes(subTask.id)
-                                    return (
-                                        <div
-                                            key={subTask.id}
-                                            className={cn(
-                                                "flex items-center space-x-4 p-4 border-2 transition-all duration-200",
-                                                isChecked
-                                                    ? "border-primary/40 bg-primary/5"
-                                                    : "border-border hover:border-primary/30"
-                                            )}
-                                        >
-                                            <Checkbox
-                                                id={`subtask-${subTask.id}`}
-                                                checked={isChecked}
-                                                onCheckedChange={(checked) => handleSubTaskToggle(subTask.id, checked as boolean)}
-                                                className="h-5 w-5 border-2 border-primary data-[state=checked]:bg-primary rounded-none shrink-0"
-                                            />
-                                            <label
-                                                htmlFor={`subtask-${subTask.id}`}
+                    {/* Objective List */}
+                    <div className="space-y-6">
+                        <header className="flex items-center justify-between">
+                            <h3 className="text-sm font-medium font-sans text-muted-foreground">Operational Objectives</h3>
+                            {!allCompleted && totalSubTasks > 0 && (
+                                <button
+                                    onClick={handleMarkAllComplete}
+                                    className="text-sm font-medium font-sans text-primary hover:text-foreground transition-colors"
+                                >
+                                    Fulfill All
+                                </button>
+                            )}
+                        </header>
+
+                        {totalSubTasks > 0 ? (
+                            <ScrollArea className="max-h-80 pr-6">
+                                <div className="space-y-4">
+                                    {subTasks.map((subTask) => {
+                                        const isChecked = completedSubTaskIds.includes(subTask.id)
+                                        return (
+                                            <div
+                                                key={subTask.id}
                                                 className={cn(
-                                                    "text-base cursor-pointer leading-snug flex-1",
+                                                    "flex items-center gap-6 p-6 transition-all duration-500 bg-background border border-border/50 rounded-lg",
                                                     isChecked
-                                                        ? "line-through text-muted-foreground"
-                                                        : "text-foreground"
+                                                        ? "opacity-60 border-primary/20 bg-primary/5"
+                                                        : "hover:border-primary/50"
                                                 )}
                                             >
-                                                {subTask.title}
-                                            </label>
-                                            {isChecked && (
-                                                <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                                            )}
-                                        </div>
-                                    )
-                                })}
+                                                <Checkbox
+                                                    id={`modal-subtask-${subTask.id}`}
+                                                    checked={isChecked}
+                                                    onCheckedChange={(checked) => handleSubTaskToggle(subTask.id, checked as boolean)}
+                                                    className="h-6 w-6 border-2 border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary rounded-md shrink-0 transition-all"
+                                                />
+                                                <label
+                                                    htmlFor={`modal-subtask-${subTask.id}`}
+                                                    className={cn(
+                                                        "text-lg font-sans font-normal cursor-pointer leading-tight transition-all duration-500",
+                                                        isChecked ? "line-through text-muted-foreground" : "text-foreground"
+                                                    )}
+                                                >
+                                                    {subTask.title}
+                                                </label>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            </ScrollArea>
+                        ) : (
+                            <div className="py-24 border border-dashed border-border/50 rounded-xl flex flex-col items-center justify-center text-center opacity-40">
+                                <Sparkles className="h-12 w-12 mb-4" />
+                                <p className="text-sm font-medium font-sans tracking-tight">No objectives defined</p>
                             </div>
-                        </ScrollArea>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-border text-center">
-                            <ListChecks className="h-10 w-10 text-muted-foreground mb-3 opacity-40" />
-                            <p className="text-sm text-muted-foreground uppercase tracking-wider font-semibold">
-                                No sub-tasks defined
-                            </p>
-                            <p className="text-sm text-muted-foreground mt-1">
-                                Add sub-tasks when creating or editing this task.
-                            </p>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
-                    {/* Mark All Complete Button */}
-                    {totalSubTasks > 0 && !allCompleted && (
+                    <div className="pt-8 flex justify-end">
                         <Button
-                            onClick={handleMarkAllComplete}
-                            className="w-full rounded-none border-2 border-primary bg-primary text-primary-foreground font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all duration-200 py-6"
+                            onClick={onClose}
+                            className="h-12 px-8 text-sm font-semibold font-sans rounded-lg bg-foreground text-background hover:bg-primary hover:text-primary-foreground shadow-sm transition-all"
                         >
-                            <CheckCircle2 className="h-5 w-5 mr-2" />
-                            Mark All Complete
+                            Close Modal
                         </Button>
-                    )}
-
-                    {/* All Done State */}
-                    {allCompleted && totalSubTasks > 0 && (
-                        <div className="flex items-center justify-center gap-2 py-4 bg-primary/10 border-2 border-primary/30 text-primary">
-                            <CheckCircle2 className="h-5 w-5" />
-                            <span className="text-sm font-semibold uppercase tracking-wider">
-                                All sub-tasks completed for today!
-                            </span>
-                        </div>
-                    )}
+                    </div>
                 </div>
             </DialogContent>
         </Dialog>

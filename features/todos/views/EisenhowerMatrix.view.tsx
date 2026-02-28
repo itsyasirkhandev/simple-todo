@@ -1,6 +1,6 @@
 /*
  * File Name:     EisenhowerMatrix.view.tsx
- * Description:   Main orchestrator for the 4 quadrants of the Eisenhower Matrix.
+ * Description:   Main orchestrator for the Eisenhower Matrix with a premium editorial dashboard.
  * Author:        Antigravity
  * Created Date:  2026-02-28
  */
@@ -20,13 +20,14 @@ import { DailyTrackerModal } from '../components/DailyTrackerModal'
 import { DailyTrackingDashboard } from '../components/DailyTrackingDashboard'
 import { Todo, DailyProgress } from '../types/todo.types'
 import { TodoFormValues } from '../schemas/todo.schema'
+import { Sparkles, LayoutGrid, PlusCircle, Activity } from 'lucide-react'
 
 type TabView = 'view' | 'create' | 'track'
 
 /**
  * Main dashboard view for the Eisenhower Matrix.
  * Orchestrates task loading, drag-and-drop state, and quadrant rendering.
- * Implements View Isolation by acting as the primary entry point for the App Router.
+ * Redesigned for a high-end, editorial experience.
  * 
  * @returns {JSX.Element} The rendered matrix page.
  */
@@ -79,6 +80,7 @@ export const EisenhowerMatrix = () => {
         updateTodo(trackingTodo.id, { dailyProgress: updatedDailyProgress })
         setTrackingTodo(updatedTodo)
     }
+
     const handleSaveDashboardProgress = (todoId: string, dateKey: string, progress: DailyProgress) => {
         const targetTodo = todos.find(t => t.id === todoId)
         if (!targetTodo) return
@@ -97,54 +99,76 @@ export const EisenhowerMatrix = () => {
     }
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground p-6 md:p-8 pt-24 md:pt-28">
-            {/* Floating Mode Toggle */}
-            <div className="fixed top-6 right-6 z-50">
+        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground p-8 md:p-12 pt-32 md:pt-40 relative">
+            {/* Background Texture Overlay */}
+            <div className="fixed inset-0 pointer-events-none z-0 bg-background/50" />
+
+            {/* Floating Utility Controls */}
+            <div className="fixed top-8 right-8 z-50">
                 <ModeToggle />
             </div>
 
-            {/* Sticky Navigation - Tab Switchers */}
-            <nav className="anim-matrix-header fixed top-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 p-2 rounded-full bg-background/80 backdrop-blur-xl border border-border/60 shadow-lg transition-all">
-                <button
-                    onClick={() => setActiveTab('view')}
-                    className={cn(
-                        "px-6 py-3 rounded-full text-base font-semibold tracking-tight transition-all duration-300 whitespace-nowrap",
-                        activeTab === 'view' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                    )}
-                >
-                    View Tasks
-                </button>
-                <button
-                    onClick={() => setActiveTab('create')}
-                    className={cn(
-                        "px-6 py-3 rounded-full text-base font-semibold tracking-tight transition-all duration-300 whitespace-nowrap",
-                        activeTab === 'create' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                    )}
-                >
-                    Create Task
-                </button>
-                <button
-                    onClick={() => setActiveTab('track')}
-                    className={cn(
-                        "px-6 py-3 rounded-full text-base font-semibold tracking-tight transition-all duration-300 whitespace-nowrap flex items-center gap-2",
-                        activeTab === 'track' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
-                    )}
-                >
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                    </span>
-                    Track Tasks
-                </button>
-            </nav>
+            {/* Navigation Header - Premium Control Center */}
+            <header className="fixed top-8 left-1/2 -translate-x-1/2 z-40 w-max max-w-[90vw] animate-in slide-in-from-top-4 duration-700">
+                <nav className="flex items-center p-1.5 bg-background/80 backdrop-blur-xl border border-border/50 shadow-sm rounded-full transition-all duration-500">
+                    <button
+                        onClick={() => setActiveTab('view')}
+                        className={cn(
+                            "group flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium font-sans tracking-tight transition-all duration-300 rounded-full",
+                            activeTab === 'view' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        )}
+                    >
+                        <LayoutGrid className={cn("h-4 w-4 transition-transform group-hover:scale-110", activeTab === 'view' ? "text-primary/80" : "text-muted-foreground")} />
+                        View Tasks
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('create')}
+                        className={cn(
+                            "group flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium font-sans tracking-tight transition-all duration-300 rounded-full",
+                            activeTab === 'create' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        )}
+                    >
+                        <PlusCircle className={cn("h-4 w-4 transition-transform group-hover:rotate-90", activeTab === 'create' ? "text-primary/80" : "text-muted-foreground")} />
+                        Create Task
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('track')}
+                        className={cn(
+                            "group flex items-center gap-2 px-6 py-2.5 text-[13px] font-medium font-sans tracking-tight transition-all duration-300 relative rounded-full",
+                            activeTab === 'track' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                        )}
+                    >
+                        <Activity className={cn("h-4 w-4 transition-transform group-hover:scale-110", activeTab === 'track' ? "text-primary/80 animate-pulse" : "text-muted-foreground")} />
+                        Track Progress
+                        {activeTab !== 'track' && todos.some(t => t.isDaily) && (
+                            <span className="absolute top-2 right-4 flex h-2 w-2">
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                            </span>
+                        )}
+                    </button>
+                </nav>
+            </header>
 
-            <div className="max-w-6xl mx-auto space-y-8 relative z-10">
+            <main className="max-w-6xl mx-auto space-y-12 relative z-10">
+                {/* Visual Branding Section - Only visible in View mode to keep focus */}
+                {activeTab === 'view' && (
+                    <div className="space-y-3 opacity-90 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+                        <div className="flex items-center gap-2 text-primary">
+                            <Sparkles className="h-4 w-4" />
+                            <span className="text-sm font-medium font-sans tracking-tight">Command Center</span>
+                        </div>
+                        <h1 className="text-4xl md:text-5xl font-sans font-bold tracking-tighter text-foreground">
+                            Yasir's <span className="text-muted-foreground">Todo</span>
+                        </h1>
+                    </div>
+                )}
 
-                <div>
+                <section className="relative min-h-96">
                     {activeTab === 'view' && (
                         <DragDropContext onDragEnd={handleDragEnd}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="anim-matrix-quadrant overflow-hidden">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                                <div className="anim-matrix-quadrant relative">
                                     <TodoQuadrant
                                         title="Urgent & Important"
                                         type="urgent-important"
@@ -156,9 +180,9 @@ export const EisenhowerMatrix = () => {
                                         onSaveDailyProgress={handleSaveDashboardProgress}
                                     />
                                 </div>
-                                <div className="anim-matrix-quadrant overflow-hidden">
+                                <div className="anim-matrix-quadrant relative">
                                     <TodoQuadrant
-                                        title="Important, Not Urgent"
+                                        title="Un-Urgent & Important"
                                         type="unurgent-important"
                                         todos={getTodosByPriority('unurgent-important')}
                                         onToggle={toggleTodo}
@@ -168,9 +192,9 @@ export const EisenhowerMatrix = () => {
                                         onSaveDailyProgress={handleSaveDashboardProgress}
                                     />
                                 </div>
-                                <div className="anim-matrix-quadrant overflow-hidden">
+                                <div className="anim-matrix-quadrant relative">
                                     <TodoQuadrant
-                                        title="Urgent, Not Important"
+                                        title="Urgent & Un-Important"
                                         type="urgent-unimportant"
                                         todos={getTodosByPriority('urgent-unimportant')}
                                         onToggle={toggleTodo}
@@ -180,9 +204,9 @@ export const EisenhowerMatrix = () => {
                                         onSaveDailyProgress={handleSaveDashboardProgress}
                                     />
                                 </div>
-                                <div className="anim-matrix-quadrant overflow-hidden">
+                                <div className="anim-matrix-quadrant relative">
                                     <TodoQuadrant
-                                        title="Not Urgent, Not Important"
+                                        title="Un-Urgent & Un-Important"
                                         type="unurgent-unimportant"
                                         todos={getTodosByPriority('unurgent-unimportant')}
                                         onToggle={toggleTodo}
@@ -197,7 +221,7 @@ export const EisenhowerMatrix = () => {
                     )}
 
                     {activeTab === 'create' && (
-                        <div className="max-w-2xl mx-auto py-8 anim-matrix-quadrant">
+                        <div className="max-w-4xl mx-auto py-12 anim-matrix-quadrant">
                             <TodoForm onSubmit={handleFormSubmit} />
                         </div>
                     )}
@@ -209,7 +233,7 @@ export const EisenhowerMatrix = () => {
                             />
                         </div>
                     )}
-                </div>
+                </section>
 
                 {trackingTodo && (
                     <DailyTrackerModal
@@ -219,7 +243,7 @@ export const EisenhowerMatrix = () => {
                         onSave={handleSaveDailyProgress}
                     />
                 )}
-            </div>
+            </main>
         </div>
     )
 }

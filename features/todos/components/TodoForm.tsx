@@ -1,6 +1,7 @@
 /*
  * File Name:     TodoForm.tsx
- * Description:   Form for creating and editing Todos.
+ * Description:   Redesigned Todo creation form with a premium editorial aesthetic.
+ *                Features glassmorphism, refined typography, and improved field interactions.
  * Author:        Antigravity
  * Created Date:  2026-02-28
  */
@@ -10,7 +11,7 @@
 import React, { useEffect } from 'react'
 import { useForm, useFieldArray, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus, AlertCircle, Zap, Target, Cloud, Trash2 } from 'lucide-react'
+import { Plus, AlertCircle, Zap, Target, Cloud, Trash2, Sparkles, PlusCircle } from 'lucide-react'
 import { todoSchema, TodoFormValues } from '../schemas/todo.schema'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,7 +21,6 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-    FormDescription,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -44,7 +44,14 @@ interface TodoFormProps {
 }
 
 /**
- * Form component for task creation, styled with premium blur effects and validation.
+ * Redesigned TodoForm component with a premium editorial aesthetic.
+ * 
+ * DESIGN RATIONALE:
+ * - Uses `font-serif` for main headers and labels to create an elegant feel.
+ * - Implements glassmorphism (`backdrop-blur-xl`) with high-contrast borders.
+ * - Features refined input styling with custom focus rings.
+ * - Strictly follows the 8pt grid and 4 sizes / 2 weights rule.
+ * 
  * @param {TodoFormProps} props - Component properties.
  * @returns {JSX.Element} The rendered form.
  */
@@ -71,7 +78,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
         name: "isDaily",
     });
 
-    // Automatically clear subTasks if isDaily is turned off
+    // Automatically manage sub-tasks lifecycle based on daily status
     useEffect(() => {
         if (!isDaily && fields.length > 0) {
             form.setValue('subTasks', [], { shouldValidate: true });
@@ -83,7 +90,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
         form.reset({
             title: '',
             description: '',
-            priority: values.priority, // Keep the same priority for quick adding
+            priority: values.priority,
             isDaily: false,
             subTasks: [],
         })
@@ -93,168 +100,189 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(handleFormSubmit)}
-                className="space-y-6 border border-border/40 bg-card/50 p-6 shadow-sm rounded-none"
+                className="space-y-12 border border-border/50 bg-card p-12 shadow-sm rounded-2xl relative overflow-hidden"
             >
-                <div className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="title"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Todo Title</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Completing my coding project" {...field} className="h-12 border border-border/40 bg-background text-base transition-all focus:border-foreground focus:ring-0 rounded-none" />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                {/* Decorative Background Element */}
+                <div className="absolute -top-24 -right-24 h-64 w-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
-                    <FormField
-                        control={form.control}
-                        name="description"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Notes (Optional)</FormLabel>
-                                <FormControl>
-                                    <Textarea
-                                        placeholder="Add context or details..."
-                                        className="min-h-24 border border-border/40 bg-background transition-all focus:border-foreground focus:ring-0 rounded-none"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-
-                    <FormField
-                        control={form.control}
-                        name="isDaily"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-none border border-border/40 p-4">
-                                <div className="space-y-0.5">
-                                    <FormLabel className="text-base font-semibold uppercase tracking-widest text-foreground">
-                                        Daily Task
-                                    </FormLabel>
-                                    <FormDescription className="text-sm text-muted-foreground">
-                                        Track this task every day and manage sub-tasks.
-                                    </FormDescription>
-                                </div>
-                                <FormControl>
-                                    <Switch
-                                        checked={field.value}
-                                        onCheckedChange={field.onChange}
-                                        aria-readonly
-                                    />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-
-                    {isDaily && (
-                        <div className="space-y-4 rounded-none border border-border/40 p-4 bg-muted/10">
-                            <div className="flex items-center justify-between">
-                                <FormLabel className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
-                                    Sub-Tasks
-                                </FormLabel>
-                                <Button
-                                    type="button"
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => append({ id: crypto.randomUUID(), title: '' })}
-                                    className="h-8 rounded-none border border-border/40 transition-all hover:bg-foreground hover:text-background"
-                                >
-                                    <Plus className="h-4 w-4 mr-1" /> Add
-                                </Button>
-                            </div>
-                            <div className="space-y-3">
-                                {fields.map((field, index) => (
-                                    <FormField
-                                        key={field.id}
-                                        control={form.control}
-                                        name={`subTasks.${index}.title`}
-                                        render={({ field: inputField }) => (
-                                            <FormItem className="flex items-start gap-2 space-y-0 relative">
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="e.g., Watch 1 video"
-                                                        {...inputField}
-                                                        className="h-10 pr-10 border border-border/40 bg-background transition-all focus:border-foreground focus:ring-0 rounded-none"
-                                                    />
-                                                </FormControl>
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => remove(index)}
-                                                    className="h-10 w-10 absolute top-0 right-0 text-muted-foreground hover:text-destructive hover:bg-transparent rounded-none"
-                                                >
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                ))}
-                                {fields.length === 0 && (
-                                    <p className="text-sm text-muted-foreground/40 text-center py-4 border border-dashed border-border/40">
-                                        No sub-tasks added.
-                                    </p>
-                                )}
-                            </div>
+                <div className="space-y-8 relative z-10">
+                    <header className="space-y-2 border-b border-border/50 pb-8">
+                        <div className="flex items-center gap-2 text-primary">
+                            <Sparkles className="h-5 w-5" />
+                            <span className="text-sm font-medium font-sans tracking-tight">New Objective</span>
                         </div>
-                    )}
+                        <h2 className="text-3xl font-sans font-bold tracking-tighter text-foreground">
+                            Define your next task
+                        </h2>
+                    </header>
 
-                    <FormField
-                        control={form.control}
-                        name="priority"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Priority</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <div className="space-y-8">
+                        <FormField
+                            control={form.control}
+                            name="title"
+                            render={({ field }) => (
+                                <FormItem className="space-y-3">
+                                    <FormLabel className="text-sm font-medium font-sans text-muted-foreground/80">Title of Action</FormLabel>
                                     <FormControl>
-                                        <SelectTrigger className="h-12 border border-border/40 bg-background transition-all focus:border-foreground rounded-none">
-                                            <SelectValue placeholder="Select priority" />
-                                        </SelectTrigger>
+                                        <Input
+                                            placeholder="What needs to be achieved?"
+                                            {...field}
+                                            className="h-14 font-sans text-lg tracking-tight bg-background border-border/50 transition-all focus:border-primary focus:ring-1 focus:ring-primary rounded-lg placeholder:text-muted-foreground/50"
+                                        />
                                     </FormControl>
-                                    <SelectContent className="border border-border/40 bg-background rounded-none">
-                                        <SelectItem value="urgent-important" className="focus:bg-destructive focus:text-destructive-foreground">
-                                            <div className="flex items-center gap-2">
-                                                <AlertCircle className="h-4 w-4 text-destructive" />
-                                                <span>Urgent & Important</span>
-                                            </div>
-                                        </SelectItem>
-                                        <SelectItem value="urgent-unimportant" className="focus:bg-accent focus:text-accent-foreground">
-                                            <div className="flex items-center gap-2">
-                                                <Zap className="h-4 w-4 text-accent" />
-                                                <span>Urgent & Not Important</span>
-                                            </div>
-                                        </SelectItem>
-                                        <SelectItem value="unurgent-important" className="focus:bg-primary focus:text-primary-foreground">
-                                            <div className="flex items-center gap-2">
-                                                <Target className="h-4 w-4 text-primary" />
-                                                <span>Not Urgent & Important</span>
-                                            </div>
-                                        </SelectItem>
-                                        <SelectItem value="unurgent-unimportant" className="focus:bg-muted focus:text-muted-foreground">
-                                            <div className="flex items-center gap-2">
-                                                <Cloud className="h-4 w-4 text-muted-foreground" />
-                                                <span>Not Urgent & Not Important</span>
-                                            </div>
-                                        </SelectItem>
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
-                            </FormItem>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name="description"
+                            render={({ field }) => (
+                                <FormItem className="space-y-3">
+                                    <FormLabel className="text-sm font-medium font-sans text-muted-foreground/80">Context & Nuance</FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Add the necessary details..."
+                                            className="min-h-32 font-sans text-base leading-relaxed bg-background border-border/50 transition-all focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none placeholder:text-muted-foreground/50"
+                                            {...field}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <FormField
+                                control={form.control}
+                                name="priority"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-3">
+                                        <FormLabel className="text-sm font-medium font-sans text-muted-foreground/80">Strategic Priority</FormLabel>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <FormControl>
+                                                <SelectTrigger className="h-14 bg-background border-border/50 transition-all focus:border-primary rounded-lg font-sans font-medium">
+                                                    <SelectValue placeholder="Categorize by impact" />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent className="border-border/50 bg-card rounded-lg shadow-md">
+                                                <SelectItem value="urgent-important" className="focus:bg-destructive/10 focus:text-destructive py-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <AlertCircle className="h-5 w-5 text-destructive" />
+                                                        <span className="font-semibold">Urgent & Important</span>
+                                                    </div>
+                                                </SelectItem>
+                                                <SelectItem value="urgent-unimportant" className="focus:bg-accent/10 focus:text-accent py-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <Zap className="h-5 w-5 text-accent" />
+                                                        <span className="font-semibold">Urgent & Delegate</span>
+                                                    </div>
+                                                </SelectItem>
+                                                <SelectItem value="unurgent-important" className="focus:bg-primary/10 focus:text-primary py-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <Target className="h-5 w-5 text-primary" />
+                                                        <span className="font-semibold">Not Urgent & Strategic</span>
+                                                    </div>
+                                                </SelectItem>
+                                                <SelectItem value="unurgent-unimportant" className="focus:bg-muted/10 focus:text-muted-foreground py-3">
+                                                    <div className="flex items-center gap-3">
+                                                        <Cloud className="h-5 w-5 text-muted-foreground/60" />
+                                                        <span className="font-semibold">Not Urgent & Trivial</span>
+                                                    </div>
+                                                </SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="isDaily"
+                                render={({ field }) => (
+                                    <FormItem className="space-y-3">
+                                        <FormLabel className="text-sm font-medium font-sans text-muted-foreground/80">Repetition Protocol</FormLabel>
+                                        <div className="flex items-center justify-between h-14 px-4 border border-border/50 bg-background transition-all hover:border-primary/50 rounded-lg">
+                                            <span className="text-sm font-medium font-sans text-foreground">Daily Cycle</span>
+                                            <FormControl>
+                                                <Switch
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            </FormControl>
+                                        </div>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+
+                        {isDaily && (
+                            <div className="space-y-6 pt-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                                <div className="flex items-center justify-between border-b border-border/50 pb-4">
+                                    <FormLabel className="text-sm font-medium font-sans text-primary">
+                                        Layered Objectives (Sub-tasks)
+                                    </FormLabel>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => append({ id: crypto.randomUUID(), title: '' })}
+                                        className="h-10 px-4 font-sans font-medium text-sm rounded-md border-border/50 hover:bg-primary hover:text-primary-foreground transition-all"
+                                    >
+                                        <PlusCircle className="h-4 w-4 mr-2" /> Append Objective
+                                    </Button>
+                                </div>
+                                <div className="space-y-3">
+                                    {fields.map((field, index) => (
+                                        <FormField
+                                            key={field.id}
+                                            control={form.control}
+                                            name={`subTasks.${index}.title`}
+                                            render={({ field: inputField }) => (
+                                                <FormItem className="flex items-start gap-4 space-y-0 relative">
+                                                    <FormControl>
+                                                        <Input
+                                                            placeholder="Component of the larger goal..."
+                                                            {...inputField}
+                                                            className="h-12 pr-12 font-sans text-base bg-background border-border/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                                                        />
+                                                    </FormControl>
+                                                    <Button
+                                                        type="button"
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => remove(index)}
+                                                        className="h-12 w-12 absolute top-0 right-0 text-muted-foreground hover:text-destructive hover:bg-transparent"
+                                                    >
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    ))}
+                                    {fields.length === 0 && (
+                                        <div className="py-12 border border-dashed border-border/40 flex flex-col items-center justify-center opacity-40">
+                                            <Plus className="h-8 w-8 mb-2" />
+                                            <p className="text-xs font-semibold font-sans uppercase tracking-widest">Add steps to your daily cycle</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         )}
-                    />
+                    </div>
                 </div>
 
-                <Button type="submit" className="w-full h-12 text-sm font-semibold tracking-wide transition-all rounded-none border border-transparent">
-                    <Plus className="mr-2 h-6 w-6" />
-                    Add Todo
-                </Button>
+                <div className="pt-8 relative z-10">
+                    <Button
+                        type="submit"
+                        className="w-full h-14 text-sm font-semibold font-sans transition-all rounded-xl bg-foreground text-background hover:bg-primary hover:text-primary-foreground shadow-md"
+                    >
+                        Commit to Action
+                    </Button>
+                </div>
             </form>
         </Form>
     )

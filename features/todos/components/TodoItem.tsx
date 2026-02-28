@@ -1,7 +1,7 @@
 /*
  * File Name:     TodoItem.tsx
- * Description:   Component for a single Todo item with GSAP animations.
- *                Daily tasks show a collapsible sub-task checklist instead of a normal checkbox.
+ * Description:   Redesigned Todo item component with a premium editorial aesthetic.
+ *                Features glassmorphism, refined typography, and improved micro-interactions.
  * Author:        Antigravity
  * Created Date:  2026-02-28
  */
@@ -9,7 +9,7 @@
 "use client"
 
 import React, { useRef, useState } from 'react'
-import { Trash2, CheckCircle2, Circle, Clock, Pencil, X, Check, CalendarDays, ChevronDown, ListChecks } from 'lucide-react'
+import { Trash2, CheckCircle2, Clock, Pencil, X, Check, CalendarDays, ChevronDown, ListChecks, Layers, Plus } from 'lucide-react'
 import { Draggable } from '@hello-pangea/dnd'
 import { Todo, DailyProgress } from '../types/todo.types'
 import { useTodoItemAnimations } from '../hooks/useTodoAnimations'
@@ -46,8 +46,14 @@ interface TodoItemProps {
 }
 
 /**
- * Individual task card with drag-and-drop support and GSAP micro-animations.
- * Daily tasks render a collapsible sub-task list instead of a normal checkbox.
+ * Redesigned TodoItem component with a premium editorial aesthetic.
+ * 
+ * DESIGN RATIONALE:
+ * - Uses `font-serif` for titles to evoke a sophisticated, high-end feel.
+ * - Implements glassmorphism (`backdrop-blur-xl`) for depth and layering.
+ * - Utilizes a 60/30/10 color strategy with subtle primary accents.
+ * - Strictly adheres to the 4 sizes / 2 weights typography rule.
+ * 
  * @param {TodoItemProps} props - Component properties.
  * @returns {JSX.Element} The rendered task item.
  */
@@ -58,7 +64,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
     const [editDescription, setEditDescription] = useState(todo.description || '')
     const [isSubTasksOpen, setIsSubTasksOpen] = useState(false)
 
-    // Isolated Animation Hook
+    // Isolated Animation Hook (GSAP)
     const { animateDelete } = useTodoItemAnimations(containerRef)
 
     const today = startOfDay(new Date())
@@ -73,7 +79,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
     const allSubTasksCompleted = totalSubTasks > 0 && completedCount === totalSubTasks
 
     /**
-     * Saves the edited todo content.
+     * Saves the edited todo content and resets state.
      */
     const handleSave = () => {
         if (!editTitle.trim()) return
@@ -82,7 +88,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
     }
 
     /**
-     * Discards changes and exits edit mode.
+     * Terminate edit mode without saving changes.
      */
     const cancelEdit = () => {
         setEditTitle(todo.title)
@@ -91,17 +97,17 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
     }
 
     /**
-     * Triggers exit animation before calling onDelete.
+     * Orchestrates the deletion by triggering a GSAP exit animation.
      */
     const handleDelete = () => {
         animateDelete(() => onDelete(todo.id))
     }
 
     /**
-     * Toggles a single sub-task's completion and auto-sets isCompleted
-     * when all are done.
-     * @param {string} subTaskId - The sub-task ID to toggle.
-     * @param {boolean} checked - The new checked state.
+     * Updates completion status for a sub-task and recalculates parent status.
+     * 
+     * @param {string} subTaskId - The ID of the targeted sub-task.
+     * @param {boolean} checked - The new completion state.
      */
     const handleSubTaskToggle = (subTaskId: string, checked: boolean) => {
         if (!onSaveDailyProgress) return
@@ -132,177 +138,191 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                     className={cn(
                         "group relative py-2",
                         className,
-                        snapshot.isDragging && "z-50 opacity-90 scale-105 transition-transform"
+                        snapshot.isDragging && "z-50"
                     )}
                 >
                     <div ref={containerRef} className="anim-todo-item">
                         <div className={cn(
-                            "relative overflow-hidden border border-border/40 transition-all duration-300 hover:border-border rounded-none",
-                            isDaily
-                                ? (allSubTasksCompleted ? "opacity-50" : "opacity-100")
-                                : (todo.isCompleted ? "opacity-50" : "opacity-100"),
-                            snapshot.isDragging ? "shadow-xl border-foreground/40 z-50 bg-background" : "bg-card/30 hover:bg-card/60"
+                            "relative overflow-hidden transition-all duration-300 rounded-xl",
+                            "bg-card border border-border/50",
+                            "hover:border-primary/50 hover:bg-card/80 shadow-sm hover:shadow-md",
+                            (isDaily ? allSubTasksCompleted : todo.isCompleted) && "opacity-60 grayscale",
+                            snapshot.isDragging && "shadow-2xl border-primary scale-[1.02]"
                         )}>
-                            <div className="flex items-start gap-4 p-4 py-4">
-                                {/* Checkbox: Only show for non-daily tasks */}
-                                {!isDaily && (
-                                    <button
-                                        onClick={() => onToggle(todo.id)}
-                                        className="mt-1 transition-transform active:scale-95"
-                                    >
-                                        {todo.isCompleted ? (
-                                            <CheckCircle2 className="h-5 w-5 text-primary fill-primary/10" />
-                                        ) : (
-                                            <Circle className="h-5 w-5 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-                                        )}
-                                    </button>
-                                )}
+                            {/* Accent Bar */}
+                            <div className={cn(
+                                "absolute top-0 left-0 w-1 h-full transition-all duration-300",
+                                (isDaily ? allSubTasksCompleted : todo.isCompleted) ? "bg-muted-foreground/30" : "bg-primary"
+                            )} />
 
-                                {/* Daily task: Show progress indicator instead of checkbox */}
-                                {isDaily && totalSubTasks > 0 && (
-                                    <div className="mt-1 flex items-center">
-                                        {allSubTasksCompleted ? (
-                                            <CheckCircle2 className="h-5 w-5 text-primary fill-primary/10" />
-                                        ) : (
-                                            <div className="relative flex items-center justify-center h-5 w-5">
-                                                <ListChecks className="h-4 w-4 text-muted-foreground/40 group-hover:text-primary transition-colors" />
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
+                            <div className="flex items-start gap-6 p-6">
+                                {/* Precision Status Toggle */}
+                                <div className="mt-1 shrink-0">
+                                    {!isDaily ? (
+                                        <button
+                                            onClick={() => onToggle(todo.id)}
+                                            className="relative flex items-center justify-center p-1 rounded-full transition-transform active:scale-90"
+                                            aria-label={todo.isCompleted ? "Unmark as completed" : "Mark as completed"}
+                                        >
+                                            {todo.isCompleted ? (
+                                                <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground">
+                                                    <Check className="h-4 w-4" />
+                                                </div>
+                                            ) : (
+                                                <div className="h-6 w-6 rounded-full border-2 border-primary/40 group-hover:border-primary transition-colors flex items-center justify-center">
+                                                    <div className="h-2 w-2 rounded-full bg-primary opacity-0 group-hover:opacity-40 transition-opacity" />
+                                                </div>
+                                            )}
+                                        </button>
+                                    ) : (
+                                        <div className="relative flex items-center justify-center h-6 w-6">
+                                            {allSubTasksCompleted ? (
+                                                <div className="flex items-center justify-center h-6 w-6 rounded-full bg-primary text-primary-foreground shadow-sm">
+                                                    <CheckCircle2 className="h-4 w-4" />
+                                                </div>
+                                            ) : (
+                                                <div className="h-6 w-6 flex items-center justify-center text-primary/60 group-hover:text-primary transition-colors">
+                                                    <Layers className="h-5 w-5" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
 
-                                {isDaily && totalSubTasks === 0 && (
-                                    <div className="mt-1">
-                                        <Circle className="h-5 w-5 text-muted-foreground/30" />
-                                    </div>
-                                )}
-
-                                <div className="flex-1 space-y-1">
+                                {/* Editorial Content Area */}
+                                <div className="flex-1 space-y-4">
                                     {isEditing ? (
-                                        <div className="space-y-4 pr-6">
+                                        <div className="space-y-4 pr-8">
                                             <Input
                                                 value={editTitle}
                                                 onChange={(e) => setEditTitle(e.target.value)}
-                                                className="h-10 text-base font-semibold focus-visible:ring-1 focus-visible:ring-primary rounded-none border-2 border-border focus:border-foreground"
+                                                className="h-12 text-base font-medium font-sans tracking-tight bg-background/50 border-border/50 focus-visible:border-primary rounded-lg"
                                                 autoFocus
                                             />
                                             <Textarea
                                                 value={editDescription}
                                                 onChange={(e) => setEditDescription(e.target.value)}
-                                                className="min-h-20 text-sm resize-none focus-visible:ring-1 focus-visible:ring-primary rounded-none border-2 border-border focus:border-foreground"
+                                                className="min-h-24 text-sm font-normal font-sans bg-background/50 border-border/50 focus-visible:border-primary rounded-lg resize-none"
                                             />
                                             <div className="flex gap-2">
-                                                <Button size="sm" onClick={handleSave} className="h-8 px-4 text-sm font-semibold">
-                                                    <Check className="h-4 w-4 mr-1" /> Save
+                                                <Button size="sm" onClick={handleSave} className="h-10 px-4 text-sm font-medium rounded-md tracking-tight">
+                                                    <Check className="h-4 w-4 mr-2" /> Save Changes
                                                 </Button>
-                                                <Button size="sm" variant="ghost" onClick={cancelEdit} className="h-8 px-4 text-sm font-semibold">
-                                                    <X className="h-4 w-4 mr-1" /> Cancel
+                                                <Button size="sm" variant="ghost" onClick={cancelEdit} className="h-10 px-4 text-sm font-medium rounded-md">
+                                                    <X className="h-4 w-4 mr-2" /> Discard
                                                 </Button>
                                             </div>
                                         </div>
                                     ) : (
                                         <>
-                                            <div className="flex items-center gap-2">
-                                                <h3 className={cn(
-                                                    "text-sm font-semibold leading-none tracking-tight transition-all",
-                                                    isDaily
-                                                        ? (allSubTasksCompleted && "line-through text-muted-foreground")
-                                                        : (todo.isCompleted && "line-through text-muted-foreground")
-                                                )}>
-                                                    {todo.title}
-                                                </h3>
-                                                {isDaily && (
-                                                    <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary tracking-wide">
-                                                        {totalSubTasks > 0 ? `${completedCount}/${totalSubTasks}` : 'Daily'}
+                                            <div className="space-y-1">
+                                                <div className="flex items-baseline gap-3">
+                                                    <h3 className={cn(
+                                                        "text-base font-semibold font-sans tracking-tight transition-all duration-300",
+                                                        (isDaily ? allSubTasksCompleted : todo.isCompleted) && "line-through text-muted-foreground/60"
+                                                    )}>
+                                                        {todo.title}
+                                                    </h3>
+                                                    {isDaily && (
+                                                        <span className="text-xs font-medium font-sans text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full">
+                                                            {totalSubTasks > 0 ? `${completedCount}/${totalSubTasks}` : 'Daily Routine'}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {todo.description && (
+                                                    <p className="text-sm font-normal text-muted-foreground font-sans line-clamp-3 leading-relaxed">
+                                                        {todo.description}
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground/70 font-sans">
+                                                <span className="flex items-center gap-1.5">
+                                                    <Clock className="h-3 w-3" />
+                                                    {format(new Date(todo.createdAt), "MMM d, yyyy")}
+                                                </span>
+                                                {isDaily && totalSubTasks > 0 && (
+                                                    <span className="flex items-center gap-1.5 text-primary/60">
+                                                        <ListChecks className="h-3 w-3" />
+                                                        {totalSubTasks} sub-tasks
                                                     </span>
                                                 )}
                                             </div>
-                                            {todo.description && (
-                                                <p className="text-sm text-muted-foreground line-clamp-2">
-                                                    {todo.description}
-                                                </p>
-                                            )}
                                         </>
                                     )}
-
-                                    <div className="flex items-center gap-4 pt-1">
-                                        <span className="flex items-center gap-1 text-sm text-muted-foreground/40">
-                                            <Clock className="h-3 w-3" />
-                                            {new Date(todo.createdAt).toLocaleDateString()}
-                                        </span>
-                                    </div>
                                 </div>
 
-                                <div className="flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {/* Floating Action Panel */}
+                                <div className="flex flex-col gap-2 shrink-0 translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
                                     {isDaily && !isEditing && onTrackDaily && (
                                         <Button
-                                            variant="ghost"
+                                            variant="outline"
                                             size="icon"
                                             onClick={() => onTrackDaily(todo)}
-                                            className="h-8 w-8 text-foreground hover:bg-foreground/10"
-                                            title="Track Daily Progress"
+                                            className="h-9 w-9 border-border/50 bg-background hover:bg-primary hover:text-primary-foreground rounded-md shadow-sm transition-all"
+                                            title="View History"
                                         >
                                             <CalendarDays className="h-4 w-4" />
                                         </Button>
                                     )}
                                     {!isEditing && (
                                         <Button
-                                            variant="ghost"
+                                            variant="outline"
                                             size="icon"
                                             onClick={() => setIsEditing(true)}
-                                            className="h-8 w-8 text-primary hover:bg-primary/10"
+                                            className="h-9 w-9 border-border/50 bg-background hover:bg-foreground hover:text-background rounded-md shadow-sm transition-all"
                                         >
                                             <Pencil className="h-4 w-4" />
                                         </Button>
                                     )}
                                     <Button
-                                        variant="ghost"
+                                        variant="outline"
                                         size="icon"
                                         onClick={handleDelete}
-                                        className="h-8 w-8 text-destructive hover:bg-destructive/10"
+                                        className="h-9 w-9 border-border/50 bg-background hover:bg-destructive hover:text-destructive-foreground rounded-md shadow-sm transition-all"
                                     >
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </div>
                             </div>
 
-                            {/* Collapsible Sub-tasks for Daily Tasks */}
+                            {/* Collapsible Refined List for Daily Tasks */}
                             {isDaily && totalSubTasks > 0 && !isEditing && (
                                 <Collapsible open={isSubTasksOpen} onOpenChange={setIsSubTasksOpen}>
                                     <CollapsibleTrigger asChild>
-                                        <button className="w-full flex items-center justify-between px-4 py-2 border-t border-border/30 bg-muted/10 hover:bg-muted/30 transition-colors text-sm text-muted-foreground">
-                                            <span className="flex items-center gap-2">
-                                                <ListChecks className="h-4 w-4" />
-                                                Sub-tasks
+                                        <button className="w-full flex items-center justify-between px-6 py-3 border-t border-border/20 bg-muted/5 hover:bg-muted/10 transition-colors">
+                                            <span className="text-xs font-medium font-sans text-muted-foreground flex items-center gap-2">
+                                                <Plus className={cn("h-3 w-3 transition-transform duration-300", isSubTasksOpen && "rotate-45")} />
+                                                Progress Details
                                             </span>
                                             <ChevronDown className={cn(
-                                                "h-4 w-4 transition-transform duration-200",
+                                                "h-3 w-3 text-muted-foreground/60 transition-transform duration-300",
                                                 isSubTasksOpen && "rotate-180"
                                             )} />
                                         </button>
                                     </CollapsibleTrigger>
                                     <CollapsibleContent>
-                                        <div className="border-t border-border bg-muted/10 px-4 py-2 space-y-1">
+                                        <div className="border-t border-border/10 bg-muted/5 p-6 pt-2 space-y-3">
                                             {subTasks.map((subTask) => {
                                                 const isChecked = completedSubTaskIds.includes(subTask.id)
                                                 return (
                                                     <div
                                                         key={subTask.id}
                                                         className={cn(
-                                                            "flex items-center gap-3 py-2 px-2 rounded-none transition-all duration-200",
-                                                            isChecked ? "opacity-60" : "opacity-100"
+                                                            "flex items-center gap-4 py-3 border-b border-border/10 last:border-0",
+                                                            isChecked && "opacity-60"
                                                         )}
                                                     >
                                                         <Checkbox
                                                             id={`item-subtask-${todo.id}-${subTask.id}`}
                                                             checked={isChecked}
                                                             onCheckedChange={(checked) => handleSubTaskToggle(subTask.id, checked as boolean)}
-                                                            className="h-4 w-4 border-2 border-primary data-[state=checked]:bg-primary rounded-none shrink-0"
+                                                            className="h-5 w-5 border-2 border-primary/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary rounded-sm transition-all"
                                                         />
                                                         <label
                                                             htmlFor={`item-subtask-${todo.id}-${subTask.id}`}
                                                             className={cn(
-                                                                "text-sm cursor-pointer flex-1",
+                                                                "text-sm font-normal font-sans cursor-pointer transition-colors",
                                                                 isChecked ? "line-through text-muted-foreground" : "text-foreground"
                                                             )}
                                                         >

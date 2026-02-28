@@ -34,6 +34,8 @@ import {
     differenceInCalendarDays,
     startOfWeek,
     endOfWeek,
+    startOfYear,
+    endOfYear,
 } from 'date-fns'
 
 /**
@@ -136,8 +138,8 @@ function calculateThisWeekCompletions(progress: Record<string, { isCompleted: bo
 export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardProps) {
     const [selectedTodoId, setSelectedTodoId] = useState<string | null>(dailyTodos[0]?.id || null)
 
-    const today = startOfDay(new Date())
-    const todayKey = format(today, "yyyy-MM-dd")
+    const today = useMemo(() => startOfDay(new Date()), [])
+    const todayKey = useMemo(() => format(today, "yyyy-MM-dd"), [today])
 
     const selectedTodo = dailyTodos.find(t => t.id === selectedTodoId)
     const selectedDailyProgress = selectedTodo?.dailyProgress
@@ -179,7 +181,7 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
         return (
             <div className="flex flex-col items-center justify-center h-96 border border-dashed border-border/40 bg-card/50 p-12 text-center">
                 <CalendarDays className="h-16 w-16 text-muted-foreground mb-4 opacity-50" />
-                <h2 className="text-2xl font-serif font-semibold tracking-tighter uppercase mb-2">No Daily Tasks</h2>
+                <h2 className="text-xl font-sans font-semibold tracking-tight mb-2">No Daily Tasks</h2>
                 <p className="text-muted-foreground max-w-md">Activate the &quot;Daily Task&quot; switch when creating a new task to see your analytics here.</p>
             </div>
         )
@@ -192,17 +194,17 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
                 <div className="flex flex-wrap items-center gap-6 py-4 border-b border-border/30">
                     <div className="flex items-center gap-2">
                         <Eye className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">Analytics</span>
+                        <span className="text-sm font-medium tracking-tight text-muted-foreground">Analytics</span>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground">Today:</span>
-                        <Badge variant="secondary" className="rounded-none font-semibold">
+                        <Badge variant="secondary" className="rounded-full font-medium">
                             {globalAnalytics.todayCompletedCount} / {globalAnalytics.totalTasks}
                         </Badge>
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-sm text-muted-foreground">All time:</span>
-                        <Badge variant="outline" className="rounded-none font-semibold">
+                        <Badge variant="outline" className="rounded-full font-medium">
                             {globalAnalytics.totalCompletionsAcrossAll} completions
                         </Badge>
                     </div>
@@ -214,7 +216,7 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* Task Selector Sidebar */}
                     <div className="w-full md:w-64 shrink-0 space-y-4">
-                        <h3 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground pb-2 border-b border-border/30">
+                        <h3 className="text-sm font-medium tracking-tight text-muted-foreground pb-2 border-b border-border/30">
                             Tasks
                         </h3>
                         <ScrollArea className="max-h-96">
@@ -265,7 +267,7 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
                         <div className="flex-1 min-w-0 space-y-8">
                             {/* Task Title Header */}
                             <div className="space-y-1">
-                                <h2 className="text-3xl font-serif font-semibold tracking-tighter">
+                                <h2 className="text-2xl font-sans font-bold tracking-tight">
                                     {selectedTodo.title}
                                 </h2>
                                 <div className="flex items-center gap-4">
@@ -316,14 +318,15 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
 
                             {/* Calendar View — Large & Prominent */}
                             <div className="space-y-4">
-                                <h4 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/30 pb-2">
+                                <h4 className="text-sm font-medium tracking-tight text-muted-foreground border-b border-border/30 pb-2">
                                     Completion Calendar
                                 </h4>
-                                <div className="bg-card border border-border p-8 shadow-md">
+                                <div className="bg-card border border-border/50 p-6 rounded-xl shadow-sm">
                                     <Calendar
                                         mode="multiple"
                                         selected={completedDates}
-                                        className="rounded-none font-sans w-full [--cell-size:--spacing(14)]"
+                                        weekStartsOn={0}
+                                        className="rounded-xl font-sans w-full [--cell-size:--spacing(14)]"
                                         disabled={() => true}
                                         modifiers={{
                                             completed: completedDates,
@@ -334,44 +337,38 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
                                         }}
                                         classNames={{
                                             root: "w-full",
-                                            caption_label: "select-none font-semibold text-2xl font-serif tracking-tighter text-foreground",
-                                            weekday: "text-foreground/70 rounded-md flex-1 font-semibold text-sm select-none",
-                                            day: "text-foreground",
-                                            disabled: "text-foreground opacity-100 cursor-default",
+                                            caption_label: "select-none font-bold text-xl font-sans tracking-tight text-foreground",
+                                            weekday: "text-foreground/70 rounded-md flex-1 font-semibold text-sm select-none flex items-center justify-center min-w-(--cell-size)",
+                                            day: "relative w-full h-full p-0 text-center aspect-square select-none text-foreground",
+                                            disabled: "opacity-100 cursor-default",
                                         }}
                                     />
                                     {/* Legend */}
                                     <div className="flex items-center gap-8 mt-8 pt-6 border-t border-border/50 justify-center w-full">
                                         <div className="flex items-center gap-2">
-                                            <div className="h-5 w-5 rounded-none bg-primary/40 border border-primary/50" />
+                                            <div className="h-5 w-5 rounded-md bg-primary/40 border border-primary/50" />
                                             <span className="text-sm font-medium text-foreground/80">Completed</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <div className="h-5 w-5 rounded-none bg-accent border border-border" />
+                                            <div className="h-5 w-5 rounded-md bg-accent border border-border" />
                                             <span className="text-sm font-medium text-foreground/80">Today</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Heatmap — Last 12 Weeks */}
-                            <div className="space-y-4">
-                                <h4 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/30 pb-2">
-                                    Last 12 Weeks Activity
-                                </h4>
-                                <HeatmapGrid
-                                    progress={selectedDailyProgress}
-                                    weeks={12}
-                                />
+                            {/* Heatmap — Annual Activity (Compact GitHub Style) */}
+                            <div className="space-y-4 pt-2">
+                                <HeatmapGrid todo={selectedTodo} />
                             </div>
 
                             {/* Sub-tasks read-only view */}
                             {selectedTodo.subTasks && selectedTodo.subTasks.length > 0 && (
                                 <div className="space-y-4">
-                                    <h4 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/30 pb-2">
+                                    <h4 className="text-sm font-medium tracking-tight text-muted-foreground border-b border-border/30 pb-2">
                                         Daily Items
                                     </h4>
-                                    <div className="space-y-1 bg-card border border-border/40 p-4 shadow-sm">
+                                    <div className="space-y-1 bg-card border border-border/50 p-4 rounded-xl shadow-sm">
                                         {selectedTodo.subTasks.map(task => (
                                             <div key={task.id} className="flex items-center gap-4 py-2 px-2">
                                                 <Circle className="h-4 w-4 text-muted-foreground/40 shrink-0" />
@@ -386,7 +383,7 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
                         </div>
                     ) : (
                         <div className="flex-1 flex items-center justify-center p-8">
-                            <p className="text-base font-serif tracking-tighter text-muted-foreground">Select a task from the sidebar</p>
+                            <p className="text-sm font-medium font-sans text-muted-foreground">Select a task from the sidebar</p>
                         </div>
                     )}
                 </div>
@@ -426,21 +423,19 @@ function StatCard({ icon, label, value, highlight }: StatCardProps) {
         )}>
             <div className="flex items-center gap-2 text-muted-foreground">
                 {icon}
-                <span className="text-sm font-semibold uppercase tracking-wider">{label}</span>
+                <span className="text-sm font-medium tracking-tight">{label}</span>
             </div>
-            <p className="text-3xl font-serif font-semibold tracking-tighter">{value}</p>
+            <p className="text-3xl font-sans font-bold tracking-tight">{value}</p>
         </div>
     )
 }
 
 /**
  * Props for the HeatmapGrid sub-component.
- * @property {Record<string, { isCompleted: boolean }>} [progress] - Daily progress data.
- * @property {number} weeks - Number of weeks to display.
+ * @property {Todo} [todo] - The task data for intensity calculation.
  */
 interface HeatmapGridProps {
-    progress: Record<string, { isCompleted: boolean }> | undefined
-    weeks: number
+    todo?: Todo
 }
 
 /**
@@ -451,13 +446,20 @@ interface HeatmapGridProps {
  * @param {HeatmapGridProps} props - Component properties.
  * @returns {JSX.Element} The rendered heatmap.
  */
-function HeatmapGrid({ progress, weeks }: HeatmapGridProps) {
-    const today = startOfDay(new Date())
-    const startDate = subDays(today, weeks * 7 - 1)
+function HeatmapGrid({ todo }: HeatmapGridProps) {
+    const today = useMemo(() => startOfDay(new Date()), [])
+    const currentYear = today.getFullYear()
+
+    /** 
+     * Display the current calendar year (Jan 1 to Dec 31).
+     * We align to weeks starting on Monday.
+     */
+    const startDate = useMemo(() => startOfWeek(startOfYear(today), { weekStartsOn: 1 }), [today])
+    const endDate = useMemo(() => endOfWeek(endOfYear(today), { weekStartsOn: 1 }), [today])
 
     const days = useMemo(() => {
-        return eachDayOfInterval({ start: startDate, end: today })
-    }, [startDate, today])
+        return eachDayOfInterval({ start: startDate, end: endDate })
+    }, [startDate, endDate])
 
     /** Organize days into weeks for the grid */
     const weekColumns = useMemo(() => {
@@ -478,71 +480,112 @@ function HeatmapGrid({ progress, weeks }: HeatmapGridProps) {
     const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
     return (
-        <div className="bg-card border border-border p-8 shadow-md overflow-x-auto">
-            <div className="flex gap-2 min-w-fit">
-                {/* Day labels */}
-                <div className="flex flex-col gap-2 mr-2 pt-8">
-                    {dayLabels.map((label, i) => (
-                        <div key={label} className={cn(
-                            "h-7 w-7 flex items-center text-sm font-medium text-foreground/70",
-                            i % 2 !== 0 && "opacity-0" // show only Mon, Wed, Fri, Sun
-                        )}>
-                            {label}
+        <div className="bg-card border border-border/50 p-6 rounded-xl shadow-sm group/heatmap">
+            <div className="mb-3 flex items-center justify-between">
+                <h4 className="text-sm font-sans font-semibold tracking-tight text-foreground">
+                    {currentYear} Activity (Year to Date)
+                </h4>
+            </div>
+            <div className="overflow-x-auto">
+                <div className="flex gap-1 min-w-fit">
+                    {/* Day labels */}
+                    <div className="flex flex-col gap-1 mr-2 pt-5">
+                        {dayLabels.map((label, i) => (
+                            <div key={label} className={cn(
+                                "h-3 w-8 flex items-center text-xs font-medium font-sans text-muted-foreground/70",
+                                i % 2 !== 0 && "invisible" // show only Mon, Wed, Fri, Sun
+                            )}>
+                                {label}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Week columns */}
+                    {weekColumns.map((week, weekIndex) => (
+                        <div key={weekIndex} className="flex flex-col gap-1">
+                            {/* Month label for first day of month */}
+                            <div className="h-6 flex items-end">
+                                {week[0] && week[0].getDate() <= 7 && (
+                                    <span className="text-xs font-medium text-foreground/70">
+                                        {format(week[0], "MMM")}
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Day cells */}
+                            <div className="flex flex-col gap-1">
+                                {week.map(day => {
+                                    const key = format(day, "yyyy-MM-dd")
+                                    const dayProgress = todo?.dailyProgress?.[key]
+                                    const isToday = isSameDay(day, today)
+                                    const isFuture = day > today
+
+                                    /**
+                                     * Calculate intensity based on sub-task completion ratio
+                                     * or just 1.0 if no sub-tasks but marked completed.
+                                     */
+                                    let intensity = 0
+                                    if (dayProgress?.isCompleted) {
+                                        intensity = 1
+                                    } else if (dayProgress?.completedSubTasks && todo?.subTasks && todo.subTasks.length > 0) {
+                                        intensity = dayProgress.completedSubTasks.length / todo.subTasks.length
+                                    }
+
+                                    return (
+                                        <Tooltip key={key}>
+                                            <TooltipTrigger asChild>
+                                                <div
+                                                    style={{
+                                                        backgroundColor:
+                                                            isFuture
+                                                                ? 'var(--heatmap-future)'
+                                                                : intensity === 0
+                                                                    ? 'var(--heatmap-empty)'
+                                                                    : undefined,
+                                                    }}
+                                                    className={cn(
+                                                        "h-3 w-3 rounded-sm transition-all duration-300 cursor-default",
+                                                        !isFuture && intensity > 0 && (
+                                                            intensity <= 0.25
+                                                                ? "bg-primary/30"
+                                                                : intensity <= 0.5
+                                                                    ? "bg-primary/55"
+                                                                    : intensity <= 0.75
+                                                                        ? "bg-primary/80"
+                                                                        : "bg-primary"
+                                                        ),
+                                                        isToday && "ring-2 ring-primary ring-offset-1 ring-offset-background z-10"
+                                                    )}
+                                                />
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="rounded-none text-xs px-2 py-1 border border-foreground">
+                                                <p className="font-semibold">{format(day, "MMM d, y")}</p>
+                                                <p className="text-muted-foreground">
+                                                    {intensity > 0 ? `${Math.round(intensity * 100)}%` : "None"}
+                                                </p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    )
+                                })}
+                            </div>
                         </div>
                     ))}
                 </div>
-
-                {/* Week columns */}
-                {weekColumns.map((week, weekIndex) => (
-                    <div key={weekIndex} className="flex flex-col gap-2">
-                        {/* Month label for first day of month */}
-                        <div className="h-8 flex items-end">
-                            {week[0] && week[0].getDate() <= 7 && (
-                                <span className="text-sm font-medium text-foreground/70">
-                                    {format(week[0], "MMM")}
-                                </span>
-                            )}
-                        </div>
-
-                        {/* Day cells */}
-                        {week.map(day => {
-                            const key = format(day, "yyyy-MM-dd")
-                            const isCompleted = progress?.[key]?.isCompleted ?? false
-                            const isToday = isSameDay(day, today)
-
-                            return (
-                                <Tooltip key={key}>
-                                    <TooltipTrigger asChild>
-                                        <div
-                                            className={cn(
-                                                "h-7 w-7 rounded-sm transition-colors duration-200 cursor-default",
-                                                isCompleted
-                                                    ? "bg-primary/70"
-                                                    : "bg-muted/60 border border-border/40",
-                                                isToday && "ring-2 ring-primary ring-offset-1 ring-offset-background"
-                                            )}
-                                        />
-                                    </TooltipTrigger>
-                                    <TooltipContent side="top" className="rounded-none text-sm">
-                                        <p className="font-semibold">{format(day, "MMM d, yyyy")}</p>
-                                        <p className="text-muted-foreground">
-                                            {isCompleted ? "✓ Completed" : "Not completed"}
-                                        </p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            )
-                        })}
-                    </div>
-                ))}
             </div>
 
-            {/* Heatmap Legend */}
-            <div className="flex items-center gap-2 mt-6 pt-4 border-t border-border/50">
-                <span className="text-sm font-medium text-foreground/70 mr-1">Less</span>
-                <div className="h-5 w-5 rounded-sm bg-muted/60 border border-border/40" />
-                <div className="h-5 w-5 rounded-sm bg-primary/70" />
-                <span className="text-sm font-medium text-foreground/70 ml-1">More</span>
+            {/* Heatmap Footer Legend */}
+            <div className="flex items-center justify-end mt-2">
+                <div className="flex items-center gap-1 select-none">
+                    <span className="text-sm font-sans text-muted-foreground mr-1">Less</span>
+                    <div className="h-3 w-3 rounded-sm bg-muted border border-border/20" />
+                    <div className="h-3 w-3 rounded-sm bg-primary/30" />
+                    <div className="h-3 w-3 rounded-sm bg-primary/55" />
+                    <div className="h-3 w-3 rounded-sm bg-primary/80" />
+                    <div className="h-3 w-3 rounded-sm bg-primary" />
+                    <span className="text-sm font-sans text-muted-foreground ml-1">More</span>
+                </div>
             </div>
         </div>
     )
 }
+
