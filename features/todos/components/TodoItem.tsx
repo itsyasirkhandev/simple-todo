@@ -190,7 +190,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                 </div>
 
                                 {/* Editorial Content Area */}
-                                <div className="flex-1 space-y-4">
+                                <div className="flex-1 space-y-4 min-w-0">
                                     {isEditing ? (
                                         <div className="space-y-4 pr-8">
                                             <Input
@@ -218,19 +218,19 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                             <div className="space-y-1">
                                                 <div className="flex items-baseline gap-3">
                                                     <h3 className={cn(
-                                                        "text-base font-semibold font-sans tracking-tight transition-all duration-300",
+                                                        "text-base font-semibold font-sans tracking-tight transition-all duration-300 break-words min-w-0",
                                                         (isDaily ? allSubTasksCompleted : todo.isCompleted) && "line-through text-muted-foreground/60"
                                                     )}>
                                                         {todo.title}
                                                     </h3>
                                                     {isDaily && (
-                                                        <span className="text-xs font-medium font-sans text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full">
+                                                        <span className="text-xs font-medium font-sans text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full shrink-0">
                                                             {totalSubTasks > 0 ? `${completedCount}/${totalSubTasks}` : 'Daily Routine'}
                                                         </span>
                                                     )}
                                                 </div>
                                                 {todo.description && (
-                                                    <p className="text-sm font-normal text-muted-foreground font-sans line-clamp-3 leading-relaxed">
+                                                    <p className="text-sm font-normal text-muted-foreground font-sans line-clamp-3 leading-relaxed break-words">
                                                         {todo.description}
                                                     </p>
                                                 )}
