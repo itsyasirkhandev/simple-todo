@@ -75,8 +75,9 @@ export const EisenhowerMatrix = () => {
             [dateKey]: progress
         }
 
+        const updatedTodo = { ...trackingTodo, dailyProgress: updatedDailyProgress }
         updateTodo(trackingTodo.id, { dailyProgress: updatedDailyProgress })
-        setTrackingTodo(null) // Close modal after save
+        setTrackingTodo(updatedTodo)
     }
     const handleSaveDashboardProgress = (todoId: string, dateKey: string, progress: DailyProgress) => {
         const targetTodo = todos.find(t => t.id === todoId)
@@ -96,60 +97,53 @@ export const EisenhowerMatrix = () => {
     }
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground p-8 md:p-12 pt-24 md:pt-32">
+        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground p-6 md:p-8 pt-20 md:pt-24">
+            {/* Floating Mode Toggle */}
+            <div className="fixed top-6 right-6 z-50">
+                <ModeToggle />
+            </div>
+
             {/* Sticky Navigation - Tab Switchers */}
-            <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 p-1 rounded-full bg-background/60 backdrop-blur-xl border-2 border-primary/20 shadow-2xl transition-all hover:border-primary/40 w-11/12 max-w-fit overflow-x-auto hide-scrollbar">
+            <nav className="anim-matrix-header fixed top-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1 rounded-full bg-background/70 backdrop-blur-xl border border-border/60 shadow-lg transition-all">
                 <button
                     onClick={() => setActiveTab('view')}
                     className={cn(
-                        "px-6 py-2 rounded-full text-sm font-semibold uppercase tracking-tighter transition-all whitespace-nowrap",
-                        activeTab === 'view' ? "bg-primary text-primary-foreground" : "hover:bg-primary/20"
+                        "px-4 py-1.5 rounded-full text-sm font-semibold tracking-tight transition-all duration-300 whitespace-nowrap",
+                        activeTab === 'view' ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
                     )}
                 >
-                    View Tasks
+                    Tasks
                 </button>
-                <div className="w-px h-4 bg-primary/20 shrink-0" />
                 <button
                     onClick={() => setActiveTab('create')}
                     className={cn(
-                        "px-6 py-2 rounded-full text-sm font-semibold uppercase tracking-tighter transition-all whitespace-nowrap",
-                        activeTab === 'create' ? "bg-primary text-primary-foreground" : "hover:bg-primary/20"
+                        "px-4 py-1.5 rounded-full text-sm font-semibold tracking-tight transition-all duration-300 whitespace-nowrap",
+                        activeTab === 'create' ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
                     )}
                 >
-                    Create Task
+                    New
                 </button>
-                <div className="w-px h-4 bg-primary/20 shrink-0" />
                 <button
                     onClick={() => setActiveTab('track')}
                     className={cn(
-                        "px-6 py-2 rounded-full text-sm font-semibold uppercase tracking-tighter transition-all whitespace-nowrap flex items-center gap-2",
-                        activeTab === 'track' ? "bg-primary text-primary-foreground" : "hover:bg-primary/20"
+                        "px-4 py-1.5 rounded-full text-sm font-semibold tracking-tight transition-all duration-300 whitespace-nowrap flex items-center gap-2",
+                        activeTab === 'track' ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
                     )}
                 >
-                    <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-current opacity-50"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-current"></span>
+                    <span className="relative flex h-1.5 w-1.5">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60"></span>
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
                     </span>
-                    Track Tasks
+                    Track
                 </button>
             </nav>
 
-            <div className="fixed inset-0 pointer-events-none opacity-[0.05] bg-grid-slate-900/[0.04] bg-[bottom_1px_center] [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
-
-            <div className="max-w-7xl mx-auto space-y-12 relative z-10">
-                <header className="anim-matrix-header flex flex-col md:flex-row items-center justify-between gap-6 border-b-4 border-foreground pb-8 mb-8">
-                    <h1 className="text-5xl md:text-7xl font-semibold tracking-tighter leading-none font-serif uppercase break-words">
-                        Simple <br /> Todo
-                    </h1>
-                    <div className="flex items-start self-start md:self-auto">
-                        <ModeToggle />
-                    </div>
-                </header>
+            <div className="max-w-6xl mx-auto space-y-8 relative z-10">
 
                 <div>
                     {activeTab === 'view' && (
                         <DragDropContext onDragEnd={handleDragEnd}>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 scroll-mt-24 md:scroll-mt-32">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="anim-matrix-quadrant overflow-hidden">
                                     <TodoQuadrant
                                         title="Urgent & Important"
@@ -159,6 +153,7 @@ export const EisenhowerMatrix = () => {
                                         onDelete={deleteTodo}
                                         onEdit={updateTodo}
                                         onTrackDaily={setTrackingTodo}
+                                        onSaveDailyProgress={handleSaveDashboardProgress}
                                     />
                                 </div>
                                 <div className="anim-matrix-quadrant overflow-hidden">
@@ -170,6 +165,7 @@ export const EisenhowerMatrix = () => {
                                         onDelete={deleteTodo}
                                         onEdit={updateTodo}
                                         onTrackDaily={setTrackingTodo}
+                                        onSaveDailyProgress={handleSaveDashboardProgress}
                                     />
                                 </div>
                                 <div className="anim-matrix-quadrant overflow-hidden">
@@ -181,6 +177,7 @@ export const EisenhowerMatrix = () => {
                                         onDelete={deleteTodo}
                                         onEdit={updateTodo}
                                         onTrackDaily={setTrackingTodo}
+                                        onSaveDailyProgress={handleSaveDashboardProgress}
                                     />
                                 </div>
                                 <div className="anim-matrix-quadrant overflow-hidden">
@@ -192,6 +189,7 @@ export const EisenhowerMatrix = () => {
                                         onDelete={deleteTodo}
                                         onEdit={updateTodo}
                                         onTrackDaily={setTrackingTodo}
+                                        onSaveDailyProgress={handleSaveDashboardProgress}
                                     />
                                 </div>
                             </div>
@@ -199,7 +197,7 @@ export const EisenhowerMatrix = () => {
                     )}
 
                     {activeTab === 'create' && (
-                        <div className="max-w-2xl mx-auto py-12 anim-matrix-quadrant">
+                        <div className="max-w-2xl mx-auto py-8 anim-matrix-quadrant">
                             <TodoForm onSubmit={handleFormSubmit} />
                         </div>
                     )}

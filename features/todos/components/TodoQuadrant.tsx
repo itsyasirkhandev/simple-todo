@@ -8,7 +8,7 @@
 "use client"
 
 import React from 'react'
-import { Todo } from '../types/todo.types'
+import { Todo, DailyProgress } from '../types/todo.types'
 import { TodoItem } from './TodoItem'
 import { Droppable } from '@hello-pangea/dnd'
 import { cn } from '@/lib/utils'
@@ -31,6 +31,7 @@ interface TodoQuadrantProps {
     onDelete: (id: string) => void
     onEdit: (id: string, data: Partial<Todo>) => void
     onTrackDaily?: (todo: Todo) => void
+    onSaveDailyProgress?: (todoId: string, dateKey: string, progress: DailyProgress) => void
     isDragDisabled?: boolean
 }
 
@@ -46,25 +47,19 @@ const icons = {
  * @param {TodoQuadrantProps} props - Component properties.
  * @returns {JSX.Element} The rendered quadrant component.
  */
-export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, onTrackDaily, isDragDisabled }: TodoQuadrantProps) {
+export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, onTrackDaily, onSaveDailyProgress, isDragDisabled }: TodoQuadrantProps) {
     return (
         <div className={cn(
-            "flex flex-col h-full min-h-96 rounded-none p-6 border-4 transition-all duration-300 overflow-hidden bg-background shadow-xl",
-            type === 'urgent-important' && "border-destructive",
-            type === 'urgent-unimportant' && "border-accent",
-            type === 'unurgent-important' && "border-primary",
-            type === 'unurgent-unimportant' && "border-muted"
+            "group/quadrant flex flex-col h-full min-h-80 p-6 border border-border/40 bg-card/50 transition-all duration-300 overflow-hidden rounded-none shadow-sm hover:shadow-md hover:border-border",
+            type === 'urgent-important' && "border-l-4 border-l-destructive",
+            type === 'urgent-unimportant' && "border-l-4 border-l-accent",
+            type === 'unurgent-important' && "border-l-4 border-l-primary",
+            type === 'unurgent-unimportant' && "border-l-4 border-l-muted-foreground/30"
         )}>
-            <div className={cn(
-                "mb-6 border-b-4 pb-4 transition-colors",
-                type === 'urgent-important' && "border-destructive",
-                type === 'urgent-unimportant' && "border-accent",
-                type === 'unurgent-important' && "border-primary",
-                type === 'unurgent-unimportant' && "border-muted"
-            )}>
-                <div className="flex items-center gap-4">
+            <div className="mb-4 pb-4 border-b border-border/30">
+                <div className="flex items-center gap-2">
                     {icons[type]}
-                    <h2 className="text-2xl font-semibold tracking-tighter uppercase font-serif text-foreground break-words leading-none">{title}</h2>
+                    <h2 className="text-sm font-semibold tracking-wider uppercase text-muted-foreground">{title}</h2>
                 </div>
             </div>
 
@@ -74,8 +69,8 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, o
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         className={cn(
-                            "flex-1 overflow-y-auto pr-2 space-y-1 scrollbar-thin scrollbar-thumb-primary/20",
-                            snapshot.isDraggingOver && "bg-black/5 dark:bg-white/5 rounded-xl transition-colors"
+                            "flex-1 overflow-y-auto pr-1 space-y-1 scrollbar-thin scrollbar-thumb-primary/10",
+                            snapshot.isDraggingOver && "bg-primary/5 transition-colors"
                         )}
                     >
                         {todos.length > 0 ? (
@@ -88,12 +83,13 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, o
                                     onDelete={onDelete}
                                     onEdit={onEdit}
                                     onTrackDaily={onTrackDaily}
+                                    onSaveDailyProgress={onSaveDailyProgress}
                                     isDragDisabled={isDragDisabled}
                                 />
                             ))
                         ) : (
-                            <div className="flex flex-col items-center justify-center h-full opacity-30 text-center py-8">
-                                <p className="text-sm font-mono uppercase tracking-widest">No tasks yet</p>
+                            <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                                <p className="text-sm text-muted-foreground/40 tracking-wide">No tasks yet</p>
                             </div>
                         )}
                         {provided.placeholder}

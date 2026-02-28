@@ -93,7 +93,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(handleFormSubmit)}
-                className="space-y-6 rounded-none border-4 border-foreground bg-background p-6 shadow-xl"
+                className="space-y-6 border border-border/40 bg-card/50 p-6 shadow-sm rounded-none"
             >
                 <div className="space-y-4">
                     <FormField
@@ -103,7 +103,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                             <FormItem>
                                 <FormLabel className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Todo Title</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Completing my coding project" {...field} className="h-12 border-2 border-border bg-background text-base transition-all focus:border-foreground focus:ring-0 rounded-none" />
+                                    <Input placeholder="Completing my coding project" {...field} className="h-12 border border-border/40 bg-background text-base transition-all focus:border-foreground focus:ring-0 rounded-none" />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -119,7 +119,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                 <FormControl>
                                     <Textarea
                                         placeholder="Add context or details..."
-                                        className="min-h-24 border-2 border-border bg-background transition-all focus:border-foreground focus:ring-0 rounded-none"
+                                        className="min-h-24 border border-border/40 bg-background transition-all focus:border-foreground focus:ring-0 rounded-none"
                                         {...field}
                                     />
                                 </FormControl>
@@ -132,7 +132,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                         control={form.control}
                         name="isDaily"
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center justify-between rounded-none border-2 border-border p-4 shadow-sm">
+                            <FormItem className="flex flex-row items-center justify-between rounded-none border border-border/40 p-4">
                                 <div className="space-y-0.5">
                                     <FormLabel className="text-base font-semibold uppercase tracking-widest text-foreground">
                                         Daily Task
@@ -153,7 +153,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                     />
 
                     {isDaily && (
-                        <div className="space-y-4 rounded-none border-2 border-border p-4 bg-muted/20">
+                        <div className="space-y-4 rounded-none border border-border/40 p-4 bg-muted/10">
                             <div className="flex items-center justify-between">
                                 <FormLabel className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">
                                     Sub-Tasks
@@ -163,7 +163,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => append({ id: crypto.randomUUID(), title: '' })}
-                                    className="h-8 rounded-none border-2 transition-all hover:bg-foreground hover:text-background"
+                                    className="h-8 rounded-none border border-border/40 transition-all hover:bg-foreground hover:text-background"
                                 >
                                     <Plus className="h-4 w-4 mr-1" /> Add
                                 </Button>
@@ -180,7 +180,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                                     <Input
                                                         placeholder="e.g., Watch 1 video"
                                                         {...inputField}
-                                                        className="h-10 pr-10 border-2 border-border bg-background transition-all focus:border-foreground focus:ring-0 rounded-none"
+                                                        className="h-10 pr-10 border border-border/40 bg-background transition-all focus:border-foreground focus:ring-0 rounded-none"
                                                     />
                                                 </FormControl>
                                                 <Button
@@ -198,7 +198,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                     />
                                 ))}
                                 {fields.length === 0 && (
-                                    <p className="text-sm text-muted-foreground text-center py-4 border-2 border-dashed border-border">
+                                    <p className="text-sm text-muted-foreground/40 text-center py-4 border border-dashed border-border/40">
                                         No sub-tasks added.
                                     </p>
                                 )}
@@ -214,11 +214,11 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                 <FormLabel className="text-sm font-semibold uppercase tracking-widest text-muted-foreground">Priority</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
-                                        <SelectTrigger className="h-12 border-2 border-border bg-background transition-all focus:border-foreground rounded-none">
+                                        <SelectTrigger className="h-12 border border-border/40 bg-background transition-all focus:border-foreground rounded-none">
                                             <SelectValue placeholder="Select priority" />
                                         </SelectTrigger>
                                     </FormControl>
-                                    <SelectContent className="border-2 border-border bg-background rounded-none">
+                                    <SelectContent className="border border-border/40 bg-background rounded-none">
                                         <SelectItem value="urgent-important" className="focus:bg-destructive focus:text-destructive-foreground">
                                             <div className="flex items-center gap-2">
                                                 <AlertCircle className="h-4 w-4 text-destructive" />
@@ -251,7 +251,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                     />
                 </div>
 
-                <Button type="submit" className="w-full h-14 text-base font-semibold uppercase tracking-widest transition-all rounded-none hover:bg-foreground hover:text-background border-2 border-transparent">
+                <Button type="submit" className="w-full h-12 text-sm font-semibold tracking-wide transition-all rounded-none border border-transparent">
                     <Plus className="mr-2 h-6 w-6" />
                     Add Todo
                 </Button>
