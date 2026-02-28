@@ -1,0 +1,50 @@
+/*
+ * File Name:     NotFoundView.tsx
+ * Description:   View component for the 404 Not Found page.
+ * Author:        Antigravity
+ * Created Date:  2026-02-27
+ */
+
+'use client';
+
+import Link from 'next/link';
+import { FileQuestion, Home, ArrowLeft } from 'lucide-react';
+
+import { ROUTES } from '@/constants/routes';
+import { Button } from '@/components/ui/button';
+
+export function NotFoundView() {
+    return (
+        <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
+            <div className="relative mb-8 flex items-center justify-center">
+                <div className="absolute h-32 w-32 animate-pulse rounded-full bg-primary/20 blur-3xl"></div>
+                <FileQuestion className="text-primary relative z-10 h-24 w-24 drop-shadow-md" strokeWidth={1.5} />
+            </div>
+
+            <h1 className="text-foreground mb-4 text-6xl font-extrabold tracking-tight sm:text-7xl">
+                404
+            </h1>
+
+            <h2 className="text-foreground mb-6 text-2xl font-semibold tracking-tight sm:text-3xl">
+                Page Not Found
+            </h2>
+
+            <p className="text-muted-foreground mb-10 max-w-md text-base leading-relaxed sm:text-lg">
+                The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+            </p>
+
+            <div className="flex flex-col gap-4 sm:flex-row">
+                <Button asChild size="lg" className="gap-2 shadow-lg transition-transform hover:scale-105">
+                    <Link href={ROUTES.HOME}>
+                        <Home className="h-4 w-4" />
+                        Back to Home
+                    </Link>
+                </Button>
+                <Button onClick={() => window.history.back()} variant="outline" size="lg" className="gap-2 transition-transform hover:scale-105">
+                    <ArrowLeft className="h-4 w-4" />
+                    Go Back
+                </Button>
+            </div>
+        </div>
+    );
+}
