@@ -486,7 +486,8 @@ function HeatmapGrid({ todo }: HeatmapGridProps) {
             <div className="overflow-x-auto">
                 <div className="flex gap-1 min-w-fit">
                     {/* Day labels */}
-                    <div className="flex flex-col gap-1 mr-2 pt-5">
+                    <div className="flex flex-col gap-1 mr-2">
+                        <div className="h-6" /> {/* Perfect hollow placeholder for month header row */}
                         {dayLabels.map((label, i) => (
                             <div key={label} className={cn(
                                 "h-3 w-8 flex items-center text-xs font-medium font-sans text-muted-foreground/70",
@@ -499,11 +500,11 @@ function HeatmapGrid({ todo }: HeatmapGridProps) {
 
                     {/* Week columns */}
                     {weekColumns.map((week, weekIndex) => (
-                        <div key={weekIndex} className="flex flex-col gap-1">
+                        <div key={weekIndex} className="flex flex-col gap-1 w-3">
                             {/* Month label for first day of month */}
-                            <div className="h-6 flex items-end">
+                            <div className="h-6 relative w-full">
                                 {week[0] && week[0].getDate() <= 7 && (
-                                    <span className="text-xs font-medium text-foreground/70">
+                                    <span className="absolute bottom-1 left-0 text-xs font-medium text-foreground/70 whitespace-nowrap z-10">
                                         {format(week[0], "MMM")}
                                     </span>
                                 )}
