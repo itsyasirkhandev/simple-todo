@@ -11,7 +11,6 @@
 import React, { useState, useMemo } from 'react'
 import { Calendar } from '@/components/ui/calendar'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { Badge } from '@/components/ui/badge'
 import { Todo } from '../types/todo.types'
 import { cn } from '@/lib/utils'
@@ -188,207 +187,205 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
     }
 
     return (
-        <TooltipProvider delayDuration={100}>
-            <div className="space-y-8">
-                {/* Global Summary Bar */}
-                <div className="flex flex-wrap items-center gap-6 py-4 border-b border-border/30">
-                    <div className="flex items-center gap-2">
-                        <Eye className="h-4 w-4 text-muted-foreground" />
-                        <span className="text-sm font-medium tracking-tight text-muted-foreground">Analytics</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">Today:</span>
-                        <Badge variant="secondary" className="rounded-full font-medium">
-                            {globalAnalytics.todayCompletedCount} / {globalAnalytics.totalTasks}
-                        </Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">All time:</span>
-                        <Badge variant="outline" className="rounded-full font-medium">
-                            {globalAnalytics.totalCompletionsAcrossAll} completions
-                        </Badge>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">{format(today, "EEEE, MMM d")}</span>
-                    </div>
+        <div className="space-y-8">
+            {/* Global Summary Bar */}
+            <div className="flex flex-wrap items-center gap-6 py-4 border-b border-border/30">
+                <div className="flex items-center gap-2">
+                    <Eye className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm font-medium tracking-tight text-muted-foreground">Analytics</span>
                 </div>
-
-                <div className="flex flex-col md:flex-row gap-8">
-                    {/* Task Selector Sidebar */}
-                    <div className="w-full md:w-64 shrink-0 space-y-4">
-                        <h3 className="text-sm font-medium tracking-tight text-muted-foreground pb-2 border-b border-border/30">
-                            Tasks
-                        </h3>
-                        <ScrollArea className="max-h-96">
-                            <div className="space-y-1">
-                                {dailyTodos.map(todo => {
-                                    const todoTotalCompleted = todo.dailyProgress
-                                        ? Object.values(todo.dailyProgress).filter(p => p.isCompleted).length
-                                        : 0
-                                    const todoTodayDone = todo.dailyProgress?.[todayKey]?.isCompleted ?? false
-                                    const isSelected = selectedTodoId === todo.id
-
-                                    return (
-                                        <button
-                                            key={todo.id}
-                                            onClick={() => setSelectedTodoId(todo.id)}
-                                            className={cn(
-                                                "w-full text-left px-4 py-4 transition-all duration-300 border-l-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
-                                                isSelected
-                                                    ? "border-l-primary bg-primary/5"
-                                                    : "border-l-transparent hover:border-l-border hover:bg-muted/20"
-                                            )}
-                                        >
-                                            <div className="flex items-center justify-between gap-2">
-                                                <span className={cn(
-                                                    "text-base font-semibold truncate",
-                                                    isSelected ? "text-foreground" : "text-muted-foreground"
-                                                )}>
-                                                    {todo.title}
-                                                </span>
-                                                {todoTodayDone ? (
-                                                    <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                                                ) : (
-                                                    <Circle className="h-4 w-4 text-muted-foreground/40 shrink-0" />
-                                                )}
-                                            </div>
-                                            <div className="mt-1 text-sm text-muted-foreground">
-                                                {todoTotalCompleted} day{todoTotalCompleted !== 1 ? 's' : ''} tracked
-                                            </div>
-                                        </button>
-                                    )
-                                })}
-                            </div>
-                        </ScrollArea>
-                    </div>
-
-                    {/* Main Analytics Panel */}
-                    {selectedTodo ? (
-                        <div className="flex-1 min-w-0 space-y-8">
-                            {/* Task Title Header */}
-                            <div className="space-y-1">
-                                <h2 className="text-2xl font-sans font-bold tracking-tight">
-                                    {selectedTodo.title}
-                                </h2>
-                                <div className="flex items-center gap-4">
-                                    {analytics.isTodayDone ? (
-                                        <span className="flex items-center gap-1 text-sm text-primary font-semibold">
-                                            <CheckCircle2 className="h-4 w-4" />
-                                            Done today
-                                        </span>
-                                    ) : (
-                                        <span className="flex items-center gap-1 text-sm text-muted-foreground">
-                                            <Circle className="h-4 w-4" />
-                                            Not done today
-                                        </span>
-                                    )}
-                                    {analytics.currentStreak > 0 && (
-                                        <span className="flex items-center gap-1 text-sm text-primary font-semibold">
-                                            <Flame className="h-4 w-4" />
-                                            {analytics.currentStreak} day streak
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-
-                            {/* Stats Grid */}
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <StatCard
-                                    icon={<BarChart2 className="h-4 w-4" />}
-                                    label="Total Days"
-                                    value={analytics.totalCompleted}
-                                />
-                                <StatCard
-                                    icon={<Flame className="h-4 w-4" />}
-                                    label="Current Streak"
-                                    value={analytics.currentStreak}
-                                    highlight={analytics.currentStreak > 0}
-                                />
-                                <StatCard
-                                    icon={<Trophy className="h-4 w-4" />}
-                                    label="Best Streak"
-                                    value={analytics.bestStreak}
-                                />
-                                <StatCard
-                                    icon={<TrendingUp className="h-4 w-4" />}
-                                    label="This Week"
-                                    value={`${analytics.thisWeek}/7`}
-                                />
-                            </div>
-
-                            {/* Calendar View — Large & Prominent */}
-                            <div className="space-y-4">
-                                <h4 className="text-sm font-medium tracking-tight text-muted-foreground border-b border-border/30 pb-2">
-                                    Completion Calendar
-                                </h4>
-                                <div className="bg-card border border-border/50 p-6 rounded-xl shadow-sm">
-                                    <Calendar
-                                        mode="multiple"
-                                        selected={completedDates}
-                                        weekStartsOn={0}
-                                        className="rounded-xl font-sans w-full [--cell-size:--spacing(14)]"
-                                        disabled={() => true}
-                                        modifiers={{
-                                            completed: completedDates,
-                                            today: [today],
-                                        }}
-                                        modifiersClassNames={{
-                                            completed: "bg-primary/40 text-primary font-bold ring-1 ring-primary/30",
-                                        }}
-                                        classNames={{
-                                            root: "w-full",
-                                            caption_label: "select-none font-bold text-xl font-sans tracking-tight text-foreground",
-                                            weekday: "text-foreground/70 rounded-md flex-1 font-semibold text-sm select-none flex items-center justify-center min-w-(--cell-size)",
-                                            day: "relative w-full h-full p-0 text-center aspect-square select-none text-foreground",
-                                            disabled: "opacity-100 cursor-default",
-                                        }}
-                                    />
-                                    {/* Legend */}
-                                    <div className="flex items-center gap-8 mt-8 pt-6 border-t border-border/50 justify-center w-full">
-                                        <div className="flex items-center gap-2">
-                                            <div className="h-5 w-5 rounded-md bg-primary/40 border border-primary/50" />
-                                            <span className="text-sm font-medium text-foreground/80">Completed</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="h-5 w-5 rounded-md bg-accent border border-border" />
-                                            <span className="text-sm font-medium text-foreground/80">Today</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Heatmap — Annual Activity (Compact GitHub Style) */}
-                            <div className="space-y-4 pt-2">
-                                <HeatmapGrid todo={selectedTodo} />
-                            </div>
-
-                            {/* Sub-tasks read-only view */}
-                            {selectedTodo.subTasks && selectedTodo.subTasks.length > 0 && (
-                                <div className="space-y-4">
-                                    <h4 className="text-sm font-medium tracking-tight text-muted-foreground border-b border-border/30 pb-2">
-                                        Daily Items
-                                    </h4>
-                                    <div className="space-y-1 bg-card border border-border/50 p-4 rounded-xl shadow-sm">
-                                        {selectedTodo.subTasks.map(task => (
-                                            <div key={task.id} className="flex items-center gap-4 py-2 px-2">
-                                                <Circle className="h-4 w-4 text-muted-foreground/40 shrink-0" />
-                                                <span className="text-base text-muted-foreground">
-                                                    {task.title}
-                                                </span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="flex-1 flex items-center justify-center p-8">
-                            <p className="text-sm font-medium font-sans text-muted-foreground">Select a task from the sidebar</p>
-                        </div>
-                    )}
+                <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Today:</span>
+                    <Badge variant="secondary" className="rounded-full font-medium">
+                        {globalAnalytics.todayCompletedCount} / {globalAnalytics.totalTasks}
+                    </Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">All time:</span>
+                    <Badge variant="outline" className="rounded-full font-medium">
+                        {globalAnalytics.totalCompletionsAcrossAll} completions
+                    </Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">{format(today, "EEEE, MMM d")}</span>
                 </div>
             </div>
-        </TooltipProvider>
+
+            <div className="flex flex-col md:flex-row gap-8">
+                {/* Task Selector Sidebar */}
+                <div className="w-full md:w-64 shrink-0 space-y-4">
+                    <h3 className="text-sm font-medium tracking-tight text-muted-foreground pb-2 border-b border-border/30">
+                        Tasks
+                    </h3>
+                    <ScrollArea className="max-h-96">
+                        <div className="space-y-1">
+                            {dailyTodos.map(todo => {
+                                const todoTotalCompleted = todo.dailyProgress
+                                    ? Object.values(todo.dailyProgress).filter(p => p.isCompleted).length
+                                    : 0
+                                const todoTodayDone = todo.dailyProgress?.[todayKey]?.isCompleted ?? false
+                                const isSelected = selectedTodoId === todo.id
+
+                                return (
+                                    <button
+                                        key={todo.id}
+                                        onClick={() => setSelectedTodoId(todo.id)}
+                                        className={cn(
+                                            "w-full text-left px-4 py-4 transition-all duration-300 border-l-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
+                                            isSelected
+                                                ? "border-l-primary bg-primary/5"
+                                                : "border-l-transparent hover:border-l-border hover:bg-muted/20"
+                                        )}
+                                    >
+                                        <div className="flex items-center justify-between gap-2">
+                                            <span className={cn(
+                                                "text-base font-semibold truncate",
+                                                isSelected ? "text-foreground" : "text-muted-foreground"
+                                            )}>
+                                                {todo.title}
+                                            </span>
+                                            {todoTodayDone ? (
+                                                <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                                            ) : (
+                                                <Circle className="h-4 w-4 text-muted-foreground/40 shrink-0" />
+                                            )}
+                                        </div>
+                                        <div className="mt-1 text-sm text-muted-foreground">
+                                            {todoTotalCompleted} day{todoTotalCompleted !== 1 ? 's' : ''} tracked
+                                        </div>
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </ScrollArea>
+                </div>
+
+                {/* Main Analytics Panel */}
+                {selectedTodo ? (
+                    <div className="flex-1 min-w-0 space-y-8">
+                        {/* Task Title Header */}
+                        <div className="space-y-1">
+                            <h2 className="text-2xl font-sans font-bold tracking-tight">
+                                {selectedTodo.title}
+                            </h2>
+                            <div className="flex items-center gap-4">
+                                {analytics.isTodayDone ? (
+                                    <span className="flex items-center gap-1 text-sm text-primary font-semibold">
+                                        <CheckCircle2 className="h-4 w-4" />
+                                        Done today
+                                    </span>
+                                ) : (
+                                    <span className="flex items-center gap-1 text-sm text-muted-foreground">
+                                        <Circle className="h-4 w-4" />
+                                        Not done today
+                                    </span>
+                                )}
+                                {analytics.currentStreak > 0 && (
+                                    <span className="flex items-center gap-1 text-sm text-primary font-semibold">
+                                        <Flame className="h-4 w-4" />
+                                        {analytics.currentStreak} day streak
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Stats Grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <StatCard
+                                icon={<BarChart2 className="h-4 w-4" />}
+                                label="Total Days"
+                                value={analytics.totalCompleted}
+                            />
+                            <StatCard
+                                icon={<Flame className="h-4 w-4" />}
+                                label="Current Streak"
+                                value={analytics.currentStreak}
+                                highlight={analytics.currentStreak > 0}
+                            />
+                            <StatCard
+                                icon={<Trophy className="h-4 w-4" />}
+                                label="Best Streak"
+                                value={analytics.bestStreak}
+                            />
+                            <StatCard
+                                icon={<TrendingUp className="h-4 w-4" />}
+                                label="This Week"
+                                value={`${analytics.thisWeek}/7`}
+                            />
+                        </div>
+
+                        {/* Calendar View — Large & Prominent */}
+                        <div className="space-y-4">
+                            <h4 className="text-sm font-medium tracking-tight text-muted-foreground border-b border-border/30 pb-2">
+                                Completion Calendar
+                            </h4>
+                            <div className="bg-card border border-border/50 p-6 rounded-xl shadow-sm">
+                                <Calendar
+                                    mode="multiple"
+                                    selected={completedDates}
+                                    weekStartsOn={0}
+                                    className="rounded-xl font-sans w-full [--cell-size:--spacing(14)]"
+                                    disabled={() => true}
+                                    modifiers={{
+                                        completed: completedDates,
+                                        today: [today],
+                                    }}
+                                    modifiersClassNames={{
+                                        completed: "bg-primary/40 text-primary font-bold ring-1 ring-primary/30",
+                                    }}
+                                    classNames={{
+                                        root: "w-full",
+                                        caption_label: "select-none font-bold text-xl font-sans tracking-tight text-foreground",
+                                        weekday: "text-foreground/70 rounded-md flex-1 font-semibold text-sm select-none flex items-center justify-center min-w-(--cell-size)",
+                                        day: "relative w-full h-full p-0 text-center aspect-square select-none text-foreground",
+                                        disabled: "opacity-100 cursor-default",
+                                    }}
+                                />
+                                {/* Legend */}
+                                <div className="flex items-center gap-8 mt-8 pt-6 border-t border-border/50 justify-center w-full">
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-5 w-5 rounded-md bg-primary/40 border border-primary/50" />
+                                        <span className="text-sm font-medium text-foreground/80">Completed</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="h-5 w-5 rounded-md bg-accent border border-border" />
+                                        <span className="text-sm font-medium text-foreground/80">Today</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Heatmap — Annual Activity (Compact GitHub Style) */}
+                        <div className="space-y-4 pt-2">
+                            <HeatmapGrid todo={selectedTodo} />
+                        </div>
+
+                        {/* Sub-tasks read-only view */}
+                        {selectedTodo.subTasks && selectedTodo.subTasks.length > 0 && (
+                            <div className="space-y-4">
+                                <h4 className="text-sm font-medium tracking-tight text-muted-foreground border-b border-border/30 pb-2">
+                                    Daily Items
+                                </h4>
+                                <div className="space-y-1 bg-card border border-border/50 p-4 rounded-xl shadow-sm">
+                                    {selectedTodo.subTasks.map(task => (
+                                        <div key={task.id} className="flex items-center gap-4 py-2 px-2">
+                                            <Circle className="h-4 w-4 text-muted-foreground/40 shrink-0" />
+                                            <span className="text-base text-muted-foreground">
+                                                {task.title}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="flex-1 flex items-center justify-center p-8">
+                        <p className="text-sm font-medium font-sans text-muted-foreground">Select a task from the sidebar</p>
+                    </div>
+                )}
+            </div>
+        </div>
     )
 }
 
@@ -532,39 +529,31 @@ function HeatmapGrid({ todo }: HeatmapGridProps) {
                                     }
 
                                     return (
-                                        <Tooltip key={key}>
-                                            <TooltipTrigger asChild>
-                                                <div
-                                                    style={{
-                                                        backgroundColor:
-                                                            isFuture
-                                                                ? 'var(--heatmap-future)'
-                                                                : intensity === 0
-                                                                    ? 'var(--heatmap-empty)'
-                                                                    : undefined,
-                                                    }}
-                                                    className={cn(
-                                                        "h-3 w-3 rounded-sm transition-all duration-300 cursor-default",
-                                                        !isFuture && intensity > 0 && (
-                                                            intensity <= 0.25
-                                                                ? "bg-primary/30"
-                                                                : intensity <= 0.5
-                                                                    ? "bg-primary/55"
-                                                                    : intensity <= 0.75
-                                                                        ? "bg-primary/80"
-                                                                        : "bg-primary"
-                                                        ),
-                                                        isToday && "ring-2 ring-primary ring-offset-1 ring-offset-background z-10"
-                                                    )}
-                                                />
-                                            </TooltipTrigger>
-                                            <TooltipContent side="top" className="rounded-none text-xs px-2 py-1 border border-foreground">
-                                                <p className="font-semibold">{format(day, "MMM d, y")}</p>
-                                                <p className="text-muted-foreground">
-                                                    {intensity > 0 ? `${Math.round(intensity * 100)}%` : "None"}
-                                                </p>
-                                            </TooltipContent>
-                                        </Tooltip>
+                                        <div
+                                            key={key}
+                                            title={`${format(day, "MMM d, y")} - ${intensity > 0 ? `${Math.round(intensity * 100)}%` : "None"}`}
+                                            style={{
+                                                backgroundColor:
+                                                    isFuture
+                                                        ? 'var(--heatmap-future)'
+                                                        : intensity === 0
+                                                            ? 'var(--heatmap-empty)'
+                                                            : undefined,
+                                            }}
+                                            className={cn(
+                                                "h-3 w-3 rounded-sm transition-all duration-300 cursor-default",
+                                                !isFuture && intensity > 0 && (
+                                                    intensity <= 0.25
+                                                        ? "bg-primary/30"
+                                                        : intensity <= 0.5
+                                                            ? "bg-primary/55"
+                                                            : intensity <= 0.75
+                                                                ? "bg-primary/80"
+                                                                : "bg-primary"
+                                                ),
+                                                isToday && "ring-2 ring-primary ring-offset-1 ring-offset-background z-10"
+                                            )}
+                                        />
                                     )
                                 })}
                             </div>
