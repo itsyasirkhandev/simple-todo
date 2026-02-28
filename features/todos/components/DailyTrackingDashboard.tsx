@@ -319,34 +319,36 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
                                 <h4 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/30 pb-2">
                                     Completion Calendar
                                 </h4>
-                                <div className="bg-card border border-border/40 p-8 shadow-sm">
+                                <div className="bg-card border border-border p-8 shadow-md">
                                     <Calendar
                                         mode="multiple"
                                         selected={completedDates}
-                                        className="rounded-none font-sans w-full [--cell-size:--spacing(12)]"
+                                        className="rounded-none font-sans w-full [--cell-size:--spacing(14)]"
                                         disabled={() => true}
                                         modifiers={{
                                             completed: completedDates,
                                             today: [today],
                                         }}
                                         modifiersClassNames={{
-                                            completed: "bg-primary/20 text-primary font-semibold",
+                                            completed: "bg-primary/40 text-primary font-bold ring-1 ring-primary/30",
                                         }}
                                         classNames={{
                                             root: "w-full",
-                                            caption_label: "select-none font-semibold text-2xl font-serif tracking-tighter",
-                                            weekday: "text-muted-foreground rounded-md flex-1 font-semibold text-sm select-none",
+                                            caption_label: "select-none font-semibold text-2xl font-serif tracking-tighter text-foreground",
+                                            weekday: "text-foreground/70 rounded-md flex-1 font-semibold text-sm select-none",
+                                            day: "text-foreground",
+                                            disabled: "text-foreground opacity-100 cursor-default",
                                         }}
                                     />
                                     {/* Legend */}
-                                    <div className="flex items-center gap-8 mt-8 pt-6 border-t border-border/30 justify-center w-full">
+                                    <div className="flex items-center gap-8 mt-8 pt-6 border-t border-border/50 justify-center w-full">
                                         <div className="flex items-center gap-2">
-                                            <div className="h-4 w-4 rounded-none bg-primary/20 border border-primary/40" />
-                                            <span className="text-sm text-muted-foreground">Completed</span>
+                                            <div className="h-5 w-5 rounded-none bg-primary/40 border border-primary/50" />
+                                            <span className="text-sm font-medium text-foreground/80">Completed</span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <div className="h-4 w-4 rounded-none bg-accent border border-border" />
-                                            <span className="text-sm text-muted-foreground">Today</span>
+                                            <div className="h-5 w-5 rounded-none bg-accent border border-border" />
+                                            <span className="text-sm font-medium text-foreground/80">Today</span>
                                         </div>
                                     </div>
                                 </div>
@@ -476,13 +478,13 @@ function HeatmapGrid({ progress, weeks }: HeatmapGridProps) {
     const dayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
     return (
-        <div className="bg-card border border-border/40 p-8 shadow-sm overflow-x-auto">
+        <div className="bg-card border border-border p-8 shadow-md overflow-x-auto">
             <div className="flex gap-2 min-w-fit">
                 {/* Day labels */}
                 <div className="flex flex-col gap-2 mr-2 pt-8">
                     {dayLabels.map((label, i) => (
                         <div key={label} className={cn(
-                            "h-6 flex items-center text-sm text-muted-foreground",
+                            "h-7 w-7 flex items-center text-sm font-medium text-foreground/70",
                             i % 2 !== 0 && "opacity-0" // show only Mon, Wed, Fri, Sun
                         )}>
                             {label}
@@ -496,7 +498,7 @@ function HeatmapGrid({ progress, weeks }: HeatmapGridProps) {
                         {/* Month label for first day of month */}
                         <div className="h-8 flex items-end">
                             {week[0] && week[0].getDate() <= 7 && (
-                                <span className="text-sm text-muted-foreground">
+                                <span className="text-sm font-medium text-foreground/70">
                                     {format(week[0], "MMM")}
                                 </span>
                             )}
@@ -513,11 +515,11 @@ function HeatmapGrid({ progress, weeks }: HeatmapGridProps) {
                                     <TooltipTrigger asChild>
                                         <div
                                             className={cn(
-                                                "h-6 w-6 rounded-sm transition-colors duration-200 cursor-default",
+                                                "h-7 w-7 rounded-sm transition-colors duration-200 cursor-default",
                                                 isCompleted
-                                                    ? "bg-primary/60"
-                                                    : "bg-muted/40",
-                                                isToday && "ring-1 ring-primary ring-offset-1 ring-offset-background"
+                                                    ? "bg-primary/70"
+                                                    : "bg-muted/60 border border-border/40",
+                                                isToday && "ring-2 ring-primary ring-offset-1 ring-offset-background"
                                             )}
                                         />
                                     </TooltipTrigger>
@@ -535,11 +537,11 @@ function HeatmapGrid({ progress, weeks }: HeatmapGridProps) {
             </div>
 
             {/* Heatmap Legend */}
-            <div className="flex items-center gap-2 mt-6 pt-4 border-t border-border/30">
-                <span className="text-sm text-muted-foreground mr-1">Less</span>
-                <div className="h-4 w-4 rounded-sm bg-muted/40" />
-                <div className="h-4 w-4 rounded-sm bg-primary/60" />
-                <span className="text-sm text-muted-foreground ml-1">More</span>
+            <div className="flex items-center gap-2 mt-6 pt-4 border-t border-border/50">
+                <span className="text-sm font-medium text-foreground/70 mr-1">Less</span>
+                <div className="h-5 w-5 rounded-sm bg-muted/60 border border-border/40" />
+                <div className="h-5 w-5 rounded-sm bg-primary/70" />
+                <span className="text-sm font-medium text-foreground/70 ml-1">More</span>
             </div>
         </div>
     )

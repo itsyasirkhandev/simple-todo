@@ -97,44 +97,44 @@ export const EisenhowerMatrix = () => {
     }
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground p-6 md:p-8 pt-20 md:pt-24">
+        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground p-6 md:p-8 pt-24 md:pt-28">
             {/* Floating Mode Toggle */}
             <div className="fixed top-6 right-6 z-50">
                 <ModeToggle />
             </div>
 
             {/* Sticky Navigation - Tab Switchers */}
-            <nav className="anim-matrix-header fixed top-6 left-1/2 -translate-x-1/2 z-40 flex items-center gap-1 p-1 rounded-full bg-background/70 backdrop-blur-xl border border-border/60 shadow-lg transition-all">
+            <nav className="anim-matrix-header fixed top-4 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 p-2 rounded-full bg-background/80 backdrop-blur-xl border border-border/60 shadow-lg transition-all">
                 <button
                     onClick={() => setActiveTab('view')}
                     className={cn(
-                        "px-4 py-1.5 rounded-full text-sm font-semibold tracking-tight transition-all duration-300 whitespace-nowrap",
-                        activeTab === 'view' ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        "px-6 py-3 rounded-full text-base font-semibold tracking-tight transition-all duration-300 whitespace-nowrap",
+                        activeTab === 'view' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                     )}
                 >
-                    Tasks
+                    View Tasks
                 </button>
                 <button
                     onClick={() => setActiveTab('create')}
                     className={cn(
-                        "px-4 py-1.5 rounded-full text-sm font-semibold tracking-tight transition-all duration-300 whitespace-nowrap",
-                        activeTab === 'create' ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        "px-6 py-3 rounded-full text-base font-semibold tracking-tight transition-all duration-300 whitespace-nowrap",
+                        activeTab === 'create' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                     )}
                 >
-                    New
+                    Create Task
                 </button>
                 <button
                     onClick={() => setActiveTab('track')}
                     className={cn(
-                        "px-4 py-1.5 rounded-full text-sm font-semibold tracking-tight transition-all duration-300 whitespace-nowrap flex items-center gap-2",
-                        activeTab === 'track' ? "bg-foreground text-background shadow-sm" : "text-muted-foreground hover:text-foreground"
+                        "px-6 py-3 rounded-full text-base font-semibold tracking-tight transition-all duration-300 whitespace-nowrap flex items-center gap-2",
+                        activeTab === 'track' ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/30"
                     )}
                 >
-                    <span className="relative flex h-1.5 w-1.5">
+                    <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-60"></span>
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                     </span>
-                    Track
+                    Track Tasks
                 </button>
             </nav>
 
