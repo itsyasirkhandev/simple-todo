@@ -30,6 +30,10 @@ import Link from 'next/link'
 /**
  * Editor sub-component for the Journal.
  * Uses a key from parent to reset state on date change without useEffect.
+ * 
+ * @param {object} props - Component properties.
+ * @param {Function} props.onSave - Callback function to save the entry.
+ * @returns {JSX.Element} The rendered editor.
  */
 const JournalEditor = ({
     onSave
@@ -49,16 +53,16 @@ const JournalEditor = ({
     return (
         <div className="space-y-6 relative group">
             {/* Soft background glow on hover */}
-            <div className="absolute -inset-4 bg-gradient-to-br from-primary/10 via-transparent to-transparent rounded-[2.5rem] blur-2xl opacity-0 transition-opacity duration-700 group-hover:opacity-100 pointer-events-none" />
+            <div className="absolute -inset-4 bg-gradient-to-br from-primary/10 via-transparent to-transparent rounded-3xl blur-2xl opacity-0 transition-opacity duration-700 group-hover:opacity-100 pointer-events-none" />
 
-            <Card className="relative bg-background/80 backdrop-blur-2xl border-border/40 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] overflow-hidden transition-all duration-500 rounded-[2rem] flex flex-col ring-1 ring-inset ring-foreground/5 h-full">
+            <Card className="relative bg-background/80 backdrop-blur-2xl border-border/40 shadow-sm dark:shadow-md overflow-hidden transition-all duration-500 rounded-2xl flex flex-col ring-1 ring-inset ring-foreground/5 h-full">
                 <CardContent className="p-0 flex flex-col h-full relative z-10">
                     <div className="px-6 sm:px-10 pt-10 pb-4 relative group/header transition-colors duration-500 focus-within:bg-muted/10">
                         <Input
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="A New Reflection..."
-                            className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-3xl sm:text-4xl lg:text-5xl font-serif font-medium tracking-tight transition-all duration-300 placeholder:text-muted-foreground/30 text-foreground"
+                            className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-4xl sm:text-5xl lg:text-6xl font-serif font-semibold tracking-tight transition-all duration-300 placeholder:text-muted-foreground/30 text-foreground"
                         />
                     </div>
                     <div className="flex-1 px-6 sm:px-10 pb-10 relative flex flex-col">
@@ -66,7 +70,7 @@ const JournalEditor = ({
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="It was a quiet morning..."
-                            className="flex-1 min-h-[40vh] border-none focus-visible:ring-0 bg-transparent resize-none p-0 text-lg sm:text-xl font-sans leading-relaxed placeholder:italic placeholder:text-muted-foreground/30 text-foreground/90 transition-all duration-500"
+                            className="flex-1 min-h-96 border-none focus-visible:ring-0 bg-transparent resize-none p-0 text-base sm:text-2xl font-sans leading-relaxed placeholder:italic placeholder:text-muted-foreground/30 text-foreground/90 transition-all duration-500"
                         />
                     </div>
                 </CardContent>
@@ -74,7 +78,7 @@ const JournalEditor = ({
 
             <div className="flex justify-between items-center px-2">
                 <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 text-[10px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-widest px-3 py-1.5 bg-background shadow-sm rounded-full border border-border/50 backdrop-blur-sm">
+                    <div className="flex items-center gap-2 text-sm sm:text-base font-semibold text-muted-foreground uppercase tracking-widest px-3 py-1.5 bg-background shadow-sm rounded-full border border-border/50 backdrop-blur-sm">
                         <span className="relative flex h-2 w-2">
                             {content.length > 0 && (
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary/60 opacity-75"></span>
@@ -129,8 +133,8 @@ export const JournalView = () => {
         <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary/30 selection:text-foreground relative overflow-hidden">
             {/* Ambient Background Gradient Mesh */}
             <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/5 rounded-[100%] blur-[120px] mix-blend-multiply dark:mix-blend-screen opacity-60"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-secondary/5 rounded-[100%] blur-[120px] mix-blend-multiply dark:mix-blend-screen opacity-60"></div>
+                <div className="absolute top-0 left-0 w-full h-full bg-primary/5 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen opacity-60"></div>
+                <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-secondary/5 rounded-full blur-3xl mix-blend-multiply dark:mix-blend-screen opacity-60"></div>
             </div>
 
             {/* Custom Noise Grain */}
@@ -149,30 +153,30 @@ export const JournalView = () => {
                         </Link>
                         <div className="flex items-center gap-2 text-primary opacity-80 bg-primary/5 px-3 py-1.5 rounded-full border border-primary/10">
                             <Sparkles className="h-3.5 w-3.5" />
-                            <span className="text-[10px] font-bold tracking-widest uppercase">Reflection Space</span>
+                            <span className="text-sm font-semibold tracking-widest uppercase">Reflection Space</span>
                         </div>
                     </div>
 
                     <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mt-4">
                         <div className="space-y-2">
-                            <h1 className="text-5xl sm:text-6xl md:text-7xl font-serif font-medium tracking-tighter text-foreground leading-[1.1]">
+                            <h1 className="text-5xl sm:text-6xl md:text-7xl font-serif font-semibold tracking-tighter text-foreground leading-[1.1]">
                                 Today&apos;s <br className="hidden sm:block md:hidden" />
-                                <span className="text-muted-foreground/60 italic font-light">Thoughts</span>
+                                <span className="text-muted-foreground/60 italic font-normal">Thoughts</span>
                             </h1>
                         </div>
                         <div className="flex items-center gap-3 text-muted-foreground bg-muted/30 px-5 py-3 rounded-2xl border border-border/40 backdrop-blur-md self-start md:self-end">
                             <CalendarIcon className="h-5 w-5 text-primary/60" />
                             <div className="flex flex-col">
-                                <span className="text-xs font-semibold uppercase tracking-wider opacity-70">Date</span>
-                                <span className="text-sm font-sans font-medium text-foreground">{format(new Date(), 'MMMM do, yyyy')}</span>
+                                <span className="text-sm font-semibold uppercase tracking-wider opacity-70">Date</span>
+                                <span className="text-sm font-sans font-semibold text-foreground">{format(new Date(), 'MMMM do, yyyy')}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-12 lg:gap-16">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-16">
                     {/* Editor Section */}
-                    <div className="anim-journal-editor h-full flex flex-col min-h-[500px]">
+                    <div className="lg:col-span-3 anim-journal-editor h-full flex flex-col min-h-96">
                         <JournalEditor
                             onSave={(title, content) => saveEntry(title, content)}
                         />
@@ -185,18 +189,18 @@ export const JournalView = () => {
                                 <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                                     <History className="h-4 w-4" />
                                 </div>
-                                <h2 className="text-sm font-bold tracking-widest text-foreground uppercase">Archive</h2>
+                                <h2 className="text-sm font-semibold tracking-widest text-foreground uppercase">Archive</h2>
                             </div>
-                            <span className="text-[10px] font-bold text-muted-foreground bg-muted/60 px-2 py-1 rounded-md border border-border/50 shadow-sm">{entries.length} items</span>
+                            <span className="text-sm font-semibold text-muted-foreground bg-muted/60 px-2 py-1 rounded-md border border-border/50 shadow-sm">{entries.length} items</span>
                         </div>
 
                         <div className="relative pl-1">
                             {/* Timeline guide line */}
                             {Object.keys(groupedEntries).length > 0 && (
-                                <div className="absolute left-[11px] top-6 bottom-4 w-px bg-gradient-to-b from-primary/30 py-transparent to-transparent z-0" />
+                                <div className="absolute left-3 top-6 bottom-4 w-px bg-gradient-to-b from-primary/30 py-transparent to-transparent z-0" />
                             )}
 
-                            <div className="space-y-8 max-h-[calc(100vh-400px)] min-h-[400px] overflow-y-auto pr-2 custom-scrollbar relative z-10 pb-10 scroll-smooth">
+                            <div className="space-y-8 h-96 min-h-96 md:h-[500px] md:min-h-[500px] overflow-y-auto pr-2 custom-scrollbar relative z-10 pb-10 scroll-smooth">
                                 {Object.keys(groupedEntries).length === 0 ? (
                                     <div className="flex flex-col items-center justify-center py-16 text-center space-y-4 opacity-60">
                                         <div className="p-4 bg-muted/50 rounded-full">
@@ -208,9 +212,9 @@ export const JournalView = () => {
                                     Object.entries(groupedEntries).map(([date, dayEntries]) => (
                                         <div key={date} className="space-y-5 relative mt-4">
                                             <div className="flex items-center gap-4 bg-background py-2 sticky top-0 z-20">
-                                                <div className="h-[7px] w-[7px] bg-background border-2 border-primary rounded-full ml-[8px] flex-shrink-0 shadow-[0_0_10px_rgba(var(--primary),0.5)] z-10" />
-                                                <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground bg-muted/40 px-3 py-1 rounded-full border border-border/30">
-                                                    {format(new Date(`${date}T00:00:00`), 'MMM db')}
+                                                <div className="h-2 w-2 bg-background border-2 border-primary rounded-full ml-2 flex-shrink-0 shadow-sm z-10" />
+                                                <h3 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground bg-muted/40 px-3 py-1 rounded-full border border-border/30">
+                                                    {format(new Date(`${date}T00:00:00`), 'MMM do')}
                                                 </h3>
                                             </div>
 
@@ -225,11 +229,11 @@ export const JournalView = () => {
                                                             <ArrowUpRight className="h-4 w-4 text-primary" />
                                                         </div>
                                                         <div className="flex items-center gap-2 mb-3">
-                                                            <span className="text-[10px] font-bold uppercase tracking-widest text-primary/70 bg-primary/10 px-2.5 py-1 rounded-md">
+                                                            <span className="text-sm font-semibold uppercase tracking-widest text-primary/70 bg-primary/10 px-2.5 py-1 rounded-md">
                                                                 {format(new Date(entry.createdAt), 'h:mm a')}
                                                             </span>
                                                         </div>
-                                                        <h4 className="font-serif font-medium text-lg mb-2 truncate pr-6 group-hover:text-primary transition-colors">
+                                                        <h4 className="font-serif font-semibold text-2xl mb-2 truncate pr-6 group-hover:text-primary transition-colors">
                                                             {entry.title || "Untitled Session"}
                                                         </h4>
                                                         <p className="text-sm text-muted-foreground font-sans line-clamp-2 leading-relaxed opacity-80">
@@ -248,31 +252,31 @@ export const JournalView = () => {
             </main>
 
             <Dialog open={!!selectedEntry} onOpenChange={(open) => !open && setSelectedEntry(null)}>
-                <DialogContent className="sm:max-w-2xl lg:max-w-4xl max-h-[85vh] p-0 overflow-hidden bg-background/80 backdrop-blur-3xl border-border/40 shadow-2xl !rounded-[2rem]">
+                <DialogContent className="sm:max-w-2xl lg:max-w-4xl max-h-[85vh] p-0 overflow-hidden bg-background/80 backdrop-blur-3xl border-border/40 shadow-2xl rounded-2xl">
                     <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
                     <div className="p-8 sm:p-12 border-b border-border/10 bg-muted/10 relative">
                         <DialogHeader>
                             <div className="flex flex-wrap items-center gap-3 text-muted-foreground mb-6">
                                 <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full border border-border/40 shadow-sm">
                                     <CalendarIcon className="h-3.5 w-3.5 text-primary" />
-                                    <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">
+                                    <span className="text-sm font-semibold uppercase tracking-wider">
                                         {selectedEntry && format(new Date(selectedEntry.createdAt), 'MMMM do, yyyy')}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2 bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full border border-border/40 shadow-sm">
                                     <History className="h-3.5 w-3.5 text-primary" />
-                                    <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-wider">
+                                    <span className="text-sm font-semibold uppercase tracking-wider">
                                         {selectedEntry && format(new Date(selectedEntry.createdAt), 'h:mm a')}
                                     </span>
                                 </div>
                             </div>
-                            <DialogTitle className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium tracking-tight text-foreground leading-tight">
+                            <DialogTitle className="text-4xl sm:text-5xl md:text-6xl font-serif font-semibold tracking-tight text-foreground leading-tight">
                                 {selectedEntry?.title || "Untitled Session"}
                             </DialogTitle>
                         </DialogHeader>
                     </div>
-                    <ScrollArea className="p-8 sm:p-12 max-h-[60vh] relative">
-                        <div className="font-sans text-lg sm:text-xl leading-[1.8] text-foreground/90 whitespace-pre-wrap max-w-3xl">
+                    <ScrollArea className="p-8 sm:p-12 max-h-128 relative">
+                        <div className="font-sans text-base sm:text-2xl leading-[1.8] text-foreground/90 whitespace-pre-wrap max-w-3xl">
                             {selectedEntry?.content || <span className="italic opacity-50 font-serif">This entry has no content.</span>}
                         </div>
                     </ScrollArea>

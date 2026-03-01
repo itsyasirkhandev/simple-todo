@@ -19,6 +19,7 @@ import Link from 'next/link'
 /**
  * Journal List View component.
  * Displays all created journals organized by date in a premium layout.
+ * 
  * @returns {JSX.Element} The rendered journal list page.
  */
 export const JournalListView = () => {
@@ -57,7 +58,7 @@ export const JournalListView = () => {
                             <p className="text-muted-foreground max-w-sm mx-auto">You haven&apos;t chronicled any thoughts yet. Start your journey of self-reflection today.</p>
                         </div>
                         <Link href="/journal/create">
-                            <Button className="mt-4 px-8 py-6 rounded-full text-base font-medium shadow-lg shadow-primary/20 transition-all duration-500 hover:scale-105">
+                            <Button className="mt-4 px-8 py-6 rounded-full text-base font-semibold shadow-lg shadow-primary/20 transition-all duration-500 hover:scale-105">
                                 <Plus className="mr-2 h-5 w-5" /> Write First Entry
                             </Button>
                         </Link>
@@ -67,20 +68,20 @@ export const JournalListView = () => {
                         {Object.entries(groupedEntries).map(([monthYear, monthEntries]) => (
                             <section key={monthYear} className="space-y-8">
                                 <div className="anim-list-header flex items-center gap-4">
-                                    <h2 className="text-2xl sm:text-3xl font-serif font-medium tracking-tight text-foreground/80">{monthYear}</h2>
+                                    <h2 className="text-2xl sm:text-3xl font-serif font-semibold tracking-tight text-foreground/80">{monthYear}</h2>
                                     <div className="h-px flex-1 bg-border/40" />
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                                     {monthEntries.map((entry) => (
                                         <div key={entry.id} className="anim-list-card h-full">
                                             <div
-                                                className="w-full group relative text-left bg-card hover:bg-card/80 backdrop-blur-xl border border-border rounded-3xl p-6 sm:p-8 transition-all duration-700 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 overflow-hidden flex flex-col h-[280px]"
+                                                className="w-full group relative text-left bg-card hover:bg-card/80 backdrop-blur-xl border border-border rounded-3xl p-6 sm:p-8 transition-all duration-700 ease-out hover:-translate-y-2 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 overflow-hidden flex flex-col h-72"
                                             >
                                                 {/* Decorative gradient blur in background of card */}
-                                                <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                                                <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
                                                 <div className="flex items-center justify-between mb-6 text-muted-foreground w-full relative z-10 transition-colors duration-500 group-hover:text-primary">
-                                                    <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.15em]">
+                                                    <span className="text-xs font-semibold uppercase tracking-widest">
                                                         {format(new Date(entry.createdAt), 'MMM do')}
                                                     </span>
                                                     <div className="flex items-center gap-4">
@@ -100,7 +101,7 @@ export const JournalListView = () => {
                                                             className="flex items-center gap-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary/50 rounded"
                                                             onClick={() => setSelectedEntry(entry)}
                                                         >
-                                                            <span className="text-[10px] font-medium tracking-wider uppercase">Read</span>
+                                                            <span className="text-xs font-semibold tracking-wider uppercase">Read</span>
                                                             <ChevronRight className="h-3 w-3" />
                                                         </button>
                                                     </div>
@@ -130,7 +131,7 @@ export const JournalListView = () => {
                                                             <History className="h-3.5 w-3.5" />
                                                             <span>{format(new Date(entry.createdAt), 'h:mm a')}</span>
                                                         </div>
-                                                        <span className="font-mono text-[10px] uppercase tracking-widest">{entry.id.split('-')[0]}</span>
+                                                        <span className="font-mono text-xs uppercase tracking-widest">{entry.id.split('-')[0]}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -177,13 +178,13 @@ export const JournalListView = () => {
                                     </span>
                                 </div>
                             </div>
-                            <DialogTitle className="text-3xl sm:text-4xl md:text-5xl font-serif font-medium tracking-tight text-foreground leading-[1.1]">
+                            <DialogTitle className="text-3xl sm:text-4xl md:text-5xl font-serif font-semibold tracking-tight text-foreground leading-[1.1]">
                                 {selectedEntry?.title || "Untitled Session"}
                             </DialogTitle>
                         </DialogHeader>
                     </div>
                     <ScrollArea className="p-6 sm:p-8 md:p-12 max-h-[55vh]">
-                        <div className="font-serif text-lg sm:text-xl leading-[1.8] text-foreground/80 whitespace-pre-wrap max-w-prose mx-auto pb-8">
+                        <div className="font-serif text-base sm:text-2xl leading-[1.8] text-foreground/80 whitespace-pre-wrap max-w-prose mx-auto pb-8">
                             {selectedEntry?.content || <span className="italic opacity-50">This entry has no content.</span>}
                         </div>
                     </ScrollArea>

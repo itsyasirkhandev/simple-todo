@@ -80,7 +80,7 @@ export const TopNav = () => {
                 <Link
                     href={ROUTES.JOURNAL}
                     className={cn(
-                        "group flex items-center justify-center gap-2 px-3 sm:px-6 py-2.5 text-[11px] sm:text-[13px] font-semibold font-sans tracking-tight transition-all duration-300 rounded-full",
+                        "group flex items-center justify-center gap-2 px-3 sm:px-6 py-2.5 text-xs sm:text-sm font-semibold font-sans tracking-tight transition-all duration-300 rounded-full",
                         isJournal ? "bg-foreground text-background shadow-md" : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     )}
                 >

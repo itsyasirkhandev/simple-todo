@@ -30,11 +30,11 @@ export default function ErrorPage({
                 <AlertCircle className="text-destructive relative z-10 h-24 w-24 drop-shadow-md" strokeWidth={1.5} />
             </div>
 
-            <h1 className="text-foreground mb-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
+            <h1 className="text-foreground mb-4 text-4xl font-semibold tracking-tight sm:text-5xl">
                 Something went wrong!
             </h1>
 
-            <p className="text-muted-foreground mb-10 max-w-md text-base leading-relaxed sm:text-lg">
+            <p className="text-muted-foreground mb-10 max-w-md text-base leading-relaxed">
                 An unexpected error occurred. We have been notified and are looking into it. Please try again or return later.
             </p>
 

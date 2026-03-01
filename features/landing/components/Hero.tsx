@@ -18,7 +18,7 @@ export function Hero() {
                         <span className="text-primary">Next.js 16</span> Excellence
                     </h1>
 
-                    <p className="anim-hero-subtitle mx-auto max-w-xl text-balance text-lg font-normal text-muted-foreground/80 sm:text-xl">
+                    <p className="anim-hero-subtitle mx-auto max-w-xl text-balance text-base font-normal text-muted-foreground/80 sm:text-2xl">
                         A minimalist starting point for enterprise-grade applications.
                         React 19 + Tailwind v4 + GSAP.
                     </p>
@@ -37,8 +37,8 @@ export function Hero() {
             </div>
 
             {/* Decorative Blur Elements */}
-            <div className="anim-hero-blob absolute top-[40%] left-1/2 -z-10 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[120px]" />
-            <div className="anim-hero-blob absolute bottom-0 right-0 -z-10 h-[300px] w-[300px] rounded-full bg-primary/10 blur-[100px]" />
+            <div className="anim-hero-blob absolute top-[40%] left-1/2 -z-10 h-128 w-128 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-3xl" />
+            <div className="anim-hero-blob absolute bottom-0 right-0 -z-10 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
         </section>
     );
 }

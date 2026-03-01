@@ -109,9 +109,9 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                     <header className="space-y-2 border-b border-border/50 pb-6 md:pb-8">
                         <div className="flex items-center gap-2 text-primary">
                             <Sparkles className="h-5 w-5" />
-                            <span className="text-sm font-medium font-sans tracking-tight">New Objective</span>
+                            <span className="text-sm font-semibold font-sans tracking-tight">New Objective</span>
                         </div>
-                        <h2 className="text-2xl md:text-3xl font-sans font-bold tracking-tighter text-foreground">
+                        <h2 className="text-2xl md:text-3xl font-sans font-semibold tracking-tighter text-foreground">
                             Define your next task
                         </h2>
                     </header>
@@ -122,12 +122,12 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                             name="title"
                             render={({ field }) => (
                                 <FormItem className="space-y-3">
-                                    <FormLabel className="text-sm font-medium font-sans text-muted-foreground/80">Title of Action</FormLabel>
+                                    <FormLabel className="text-sm font-semibold font-sans text-muted-foreground/80">Title of Action</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="What needs to be achieved?"
                                             {...field}
-                                            className="h-14 font-sans text-lg tracking-tight bg-background border-border/50 transition-all focus:border-primary focus:ring-1 focus:ring-primary rounded-lg placeholder:text-muted-foreground/50"
+                                            className="h-14 font-sans text-base tracking-tight bg-background border-border/50 transition-all focus:border-primary focus:ring-1 focus:ring-primary rounded-lg placeholder:text-muted-foreground/50"
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -140,7 +140,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                             name="description"
                             render={({ field }) => (
                                 <FormItem className="space-y-3">
-                                    <FormLabel className="text-sm font-medium font-sans text-muted-foreground/80">Context & Nuance</FormLabel>
+                                    <FormLabel className="text-sm font-semibold font-sans text-muted-foreground/80">Context & Nuance</FormLabel>
                                     <FormControl>
                                         <Textarea
                                             placeholder="Add the necessary details..."
@@ -159,10 +159,10 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                 name="priority"
                                 render={({ field }) => (
                                     <FormItem className="space-y-3">
-                                        <FormLabel className="text-sm font-medium font-sans text-muted-foreground/80">Strategic Priority</FormLabel>
+                                        <FormLabel className="text-sm font-semibold font-sans text-muted-foreground/80">Strategic Priority</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
-                                                <SelectTrigger className="h-14 bg-background border-border/50 transition-all focus:border-primary rounded-lg font-sans font-medium">
+                                                <SelectTrigger className="h-14 bg-background border-border/50 transition-all focus:border-primary rounded-lg font-sans font-semibold">
                                                     <SelectValue placeholder="Categorize by impact" />
                                                 </SelectTrigger>
                                             </FormControl>
@@ -203,9 +203,9 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                 name="isDaily"
                                 render={({ field }) => (
                                     <FormItem className="space-y-3">
-                                        <FormLabel className="text-sm font-medium font-sans text-muted-foreground/80">Repetition Protocol</FormLabel>
+                                        <FormLabel className="text-sm font-semibold font-sans text-muted-foreground/80">Repetition Protocol</FormLabel>
                                         <div className="flex items-center justify-between h-14 px-4 border border-border/50 bg-background transition-all hover:border-primary/50 rounded-lg">
-                                            <span className="text-sm font-medium font-sans text-foreground">Daily Cycle</span>
+                                            <span className="text-sm font-semibold font-sans text-foreground">Daily Cycle</span>
                                             <FormControl>
                                                 <Switch
                                                     checked={field.value}
@@ -221,7 +221,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                         {isDaily && (
                             <div className="space-y-6 pt-4 animate-in fade-in slide-in-from-top-4 duration-500">
                                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/50 pb-4">
-                                    <FormLabel className="text-sm font-medium font-sans text-primary">
+                                    <FormLabel className="text-sm font-semibold font-sans text-primary">
                                         Layered Objectives (Sub-tasks)
                                     </FormLabel>
                                     <Button
@@ -229,7 +229,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                         variant="outline"
                                         size="sm"
                                         onClick={() => append({ id: crypto.randomUUID(), title: '' })}
-                                        className="h-10 px-4 font-sans font-medium text-sm rounded-md border-border/50 hover:bg-primary hover:text-primary-foreground transition-all"
+                                        className="h-10 px-4 font-sans font-semibold text-sm rounded-md border-border/50 hover:bg-primary hover:text-primary-foreground transition-all"
                                     >
                                         <PlusCircle className="h-4 w-4 mr-2" /> Append Objective
                                     </Button>

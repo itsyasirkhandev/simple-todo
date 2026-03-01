@@ -10,7 +10,7 @@
 
 import React, { useRef, useState } from 'react'
 import { Trash2, CheckCircle2, Clock, Pencil, X, Check, CalendarDays, ChevronDown, ListChecks, Layers, Plus } from 'lucide-react'
-import { Draggable } from '@hello-pangea/dnd'
+import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd'
 import { Todo, DailyProgress } from '../types/todo.types'
 import { useTodoItemAnimations } from '../hooks/useTodoAnimations'
 import { cn } from '@/lib/utils'
@@ -20,6 +20,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { format, startOfDay } from 'date-fns'
+import { JSX } from 'react/jsx-runtime'
 
 /**
  * Props for the TodoItem component.
@@ -130,7 +131,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
 
     return (
         <Draggable draggableId={todo.id} index={index} isDragDisabled={isDragDisabled}>
-            {(provided, snapshot) => (
+            {(provided: DraggableProvided, snapshot: DraggableStateSnapshot) => (
                 <div
                     ref={provided.innerRef}
                     {...provided.draggableProps}
@@ -197,7 +198,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                                 <Input
                                                     value={editTitle}
                                                     onChange={(e) => setEditTitle(e.target.value)}
-                                                    className="h-12 text-base font-medium font-sans tracking-tight bg-background/50 border-border/50 focus-visible:border-primary rounded-lg"
+                                                    className="h-12 text-base font-semibold font-sans tracking-tight bg-background/50 border-border/50 focus-visible:border-primary rounded-lg"
                                                     autoFocus
                                                 />
                                                 <Textarea
@@ -206,10 +207,10 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                                     className="min-h-24 text-sm font-normal font-sans bg-background/50 border-border/50 focus-visible:border-primary rounded-lg resize-none"
                                                 />
                                                 <div className="flex gap-2">
-                                                    <Button size="sm" onClick={handleSave} className="h-10 px-4 text-sm font-medium rounded-md tracking-tight">
+                                                    <Button size="sm" onClick={handleSave} className="h-10 px-4 text-sm font-semibold rounded-md tracking-tight">
                                                         <Check className="h-4 w-4 mr-2" /> Save Changes
                                                     </Button>
-                                                    <Button size="sm" variant="ghost" onClick={cancelEdit} className="h-10 px-4 text-sm font-medium rounded-md">
+                                                    <Button size="sm" variant="ghost" onClick={cancelEdit} className="h-10 px-4 text-sm font-semibold rounded-md">
                                                         <X className="h-4 w-4 mr-2" /> Discard
                                                     </Button>
                                                 </div>
@@ -225,7 +226,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                                             {todo.title}
                                                         </h3>
                                                         {isDaily && (
-                                                            <span className="text-xs font-medium font-sans text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full shrink-0">
+                                                            <span className="text-xs font-semibold font-sans text-primary/80 bg-primary/10 px-2 py-0.5 rounded-full shrink-0">
                                                                 {totalSubTasks > 0 ? `${completedCount}/${totalSubTasks}` : 'Daily Routine'}
                                                             </span>
                                                         )}
@@ -237,7 +238,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                                     )}
                                                 </div>
 
-                                                <div className="flex items-center gap-4 text-xs font-medium text-muted-foreground/70 font-sans">
+                                                <div className="flex items-center gap-4 text-xs font-semibold text-muted-foreground/70 font-sans">
                                                     <span className="flex items-center gap-1.5">
                                                         <Clock className="h-3 w-3" />
                                                         {format(new Date(todo.createdAt), "MMM d, yyyy")}
@@ -293,7 +294,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                 <Collapsible open={isSubTasksOpen} onOpenChange={setIsSubTasksOpen}>
                                     <CollapsibleTrigger asChild>
                                         <button className="w-full flex items-center justify-between px-4 sm:px-6 py-3 border-t border-border/20 bg-muted/5 hover:bg-muted/10 transition-colors">
-                                            <span className="text-xs font-medium font-sans text-muted-foreground flex items-center gap-2">
+                                            <span className="text-xs font-semibold font-sans text-muted-foreground flex items-center gap-2">
                                                 <Plus className={cn("h-3 w-3 transition-transform duration-300", isSubTasksOpen && "rotate-45")} />
                                                 Progress Details
                                             </span>

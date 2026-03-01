@@ -180,7 +180,7 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
         return (
             <div className="flex flex-col items-center justify-center h-96 border border-dashed border-border/40 bg-card/50 p-12 text-center">
                 <CalendarDays className="h-16 w-16 text-muted-foreground mb-4 opacity-50" />
-                <h2 className="text-xl font-sans font-semibold tracking-tight mb-2">No Daily Tasks</h2>
+                <h2 className="text-2xl font-sans font-semibold tracking-tight mb-2">No Daily Tasks</h2>
                 <p className="text-muted-foreground max-w-md">Activate the &quot;Daily Task&quot; switch when creating a new task to see your analytics here.</p>
             </div>
         )
@@ -192,17 +192,17 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
             <div className="flex flex-wrap items-center gap-6 py-4 border-b border-border/30">
                 <div className="flex items-center gap-2">
                     <Eye className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium tracking-tight text-muted-foreground">Analytics</span>
+                    <span className="text-sm font-semibold tracking-tight text-muted-foreground">Analytics</span>
                 </div>
                 <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">Today:</span>
-                    <Badge variant="secondary" className="rounded-full font-medium">
+                    <Badge variant="secondary" className="rounded-full font-semibold">
                         {globalAnalytics.todayCompletedCount} / {globalAnalytics.totalTasks}
                     </Badge>
                 </div>
                 <div className="flex items-center gap-2">
                     <span className="text-sm text-muted-foreground">All time:</span>
-                    <Badge variant="outline" className="rounded-full font-medium">
+                    <Badge variant="outline" className="rounded-full font-semibold">
                         {globalAnalytics.totalCompletionsAcrossAll} completions
                     </Badge>
                 </div>
@@ -214,7 +214,7 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
             <div className="flex flex-col md:flex-row gap-8">
                 {/* Task Selector Sidebar */}
                 <div className="w-full md:w-64 shrink-0 space-y-4">
-                    <h3 className="text-sm font-medium tracking-tight text-muted-foreground pb-2 border-b border-border/30">
+                    <h3 className="text-sm font-semibold tracking-tight text-muted-foreground pb-2 border-b border-border/30">
                         Tasks
                     </h3>
                     <ScrollArea className="max-h-96">
@@ -265,7 +265,7 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
                     <div className="flex-1 min-w-0 space-y-8">
                         {/* Task Title Header */}
                         <div className="space-y-1">
-                            <h2 className="text-2xl font-sans font-bold tracking-tight">
+                            <h2 className="text-2xl font-sans font-semibold tracking-tight">
                                 {selectedTodo.title}
                             </h2>
                             <div className="flex items-center gap-4">
@@ -316,7 +316,7 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
 
                         {/* Calendar View — Large & Prominent */}
                         <div className="space-y-4">
-                            <h4 className="text-sm font-medium tracking-tight text-muted-foreground border-b border-border/30 pb-2">
+                            <h4 className="text-sm font-semibold tracking-tight text-muted-foreground border-b border-border/30 pb-2">
                                 Completion Calendar
                             </h4>
                             <div className="bg-card border border-border/50 p-6 rounded-xl shadow-sm">
@@ -331,11 +331,11 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
                                         today: [today],
                                     }}
                                     modifiersClassNames={{
-                                        completed: "bg-primary/40 text-primary font-bold ring-1 ring-primary/30",
+                                        completed: "bg-primary/40 text-primary font-semibold ring-1 ring-primary/30",
                                     }}
                                     classNames={{
                                         root: "w-full",
-                                        caption_label: "select-none font-bold text-xl font-sans tracking-tight text-foreground",
+                                        caption_label: "select-none font-semibold text-2xl font-sans tracking-tight text-foreground",
                                         weekday: "text-foreground/70 rounded-md flex-1 font-semibold text-sm select-none flex items-center justify-center min-w-(--cell-size)",
                                         day: "relative w-full h-full p-0 text-center aspect-square select-none text-foreground",
                                         disabled: "opacity-100 cursor-default",
@@ -345,11 +345,11 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
                                 <div className="flex items-center gap-8 mt-8 pt-6 border-t border-border/50 justify-center w-full">
                                     <div className="flex items-center gap-2">
                                         <div className="h-5 w-5 rounded-md bg-primary/40 border border-primary/50" />
-                                        <span className="text-sm font-medium text-foreground/80">Completed</span>
+                                        <span className="text-sm font-semibold text-foreground/80">Completed</span>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <div className="h-5 w-5 rounded-md bg-accent border border-border" />
-                                        <span className="text-sm font-medium text-foreground/80">Today</span>
+                                        <span className="text-sm font-semibold text-foreground/80">Today</span>
                                     </div>
                                 </div>
                             </div>
@@ -359,7 +359,7 @@ export function DailyTrackingDashboard({ dailyTodos }: DailyTrackingDashboardPro
                     </div>
                 ) : (
                     <div className="flex-1 flex items-center justify-center p-8">
-                        <p className="text-sm font-medium font-sans text-muted-foreground">Select a task from the sidebar</p>
+                        <p className="text-sm font-semibold font-sans text-muted-foreground">Select a task from the sidebar</p>
                     </div>
                 )}
             </div>
@@ -398,9 +398,9 @@ function StatCard({ icon, label, value, highlight }: StatCardProps) {
         )}>
             <div className="flex items-center gap-2 text-muted-foreground">
                 {icon}
-                <span className="text-sm font-medium tracking-tight">{label}</span>
+                <span className="text-sm font-semibold tracking-tight">{label}</span>
             </div>
-            <p className="text-3xl font-sans font-bold tracking-tight">{value}</p>
+            <p className="text-3xl font-sans font-semibold tracking-tight">{value}</p>
         </div>
     )
 }

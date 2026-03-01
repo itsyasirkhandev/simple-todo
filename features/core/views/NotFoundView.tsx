@@ -21,7 +21,7 @@ export function NotFoundView() {
                 <FileQuestion className="text-primary relative z-10 h-24 w-24 drop-shadow-md" strokeWidth={1.5} />
             </div>
 
-            <h1 className="text-foreground mb-4 text-6xl font-extrabold tracking-tight sm:text-7xl">
+            <h1 className="text-foreground mb-4 text-6xl font-semibold tracking-tight sm:text-7xl">
                 404
             </h1>
 
@@ -29,7 +29,7 @@ export function NotFoundView() {
                 Page Not Found
             </h2>
 
-            <p className="text-muted-foreground mb-10 max-w-md text-base leading-relaxed sm:text-lg">
+            <p className="text-muted-foreground mb-10 max-w-md text-base leading-relaxed">
                 The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
             </p>
 

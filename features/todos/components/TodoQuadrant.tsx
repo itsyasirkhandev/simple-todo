@@ -10,9 +10,10 @@
 import React from 'react'
 import { Todo, DailyProgress } from '../types/todo.types'
 import { TodoItem } from './TodoItem'
-import { Droppable } from '@hello-pangea/dnd'
+import { Droppable, DroppableProvided, DroppableStateSnapshot } from '@hello-pangea/dnd'
 import { cn } from '@/lib/utils'
 import { AlertCircle, Zap, Target, Cloud, MousePointer2 } from 'lucide-react'
+import { JSX } from 'react/jsx-runtime'
 
 /**
  * Props for the TodoQuadrant component.
@@ -66,12 +67,12 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, o
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2 md:mb-4">
                     <div className="flex items-center gap-3">
                         {icons[type]}
-                        <h2 className="text-lg font-sans font-semibold tracking-tight text-foreground transition-all">
+                        <h2 className="text-2xl font-sans font-semibold tracking-tight text-foreground transition-all">
                             {title}
                         </h2>
                     </div>
                     {todos.length > 0 && (
-                        <span className="text-xs font-medium font-sans text-muted-foreground/70 bg-muted/50 px-2.5 py-1 rounded-full">
+                        <span className="text-sm font-semibold font-sans text-muted-foreground/70 bg-muted/50 px-2.5 py-1 rounded-full">
                             {todos.length} Active
                         </span>
                     )}
@@ -79,7 +80,7 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, o
             </div>
 
             <Droppable droppableId={type} isDropDisabled={isDragDisabled}>
-                {(provided, snapshot) => (
+                {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
                     <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
@@ -105,7 +106,7 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, o
                         ) : (
                             <div className="flex flex-col items-center justify-center py-20 opacity-20 transition-all duration-500 group-hover/quadrant:opacity-40">
                                 <MousePointer2 className="h-10 w-10 text-muted-foreground mb-4 rotate-12" />
-                                <p className="text-sm font-medium font-sans tracking-tight text-muted-foreground">
+                                <p className="text-sm font-semibold font-sans tracking-tight text-muted-foreground">
                                     Awaiting Precision
                                 </p>
                             </div>

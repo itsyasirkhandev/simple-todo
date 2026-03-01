@@ -21,7 +21,7 @@ export function UnauthorizedView() {
                 <ShieldX className="text-destructive relative z-10 h-24 w-24 drop-shadow-md" strokeWidth={1.5} />
             </div>
 
-            <h1 className="text-foreground mb-4 text-5xl font-extrabold tracking-tight sm:text-6xl">
+            <h1 className="text-foreground mb-4 text-5xl font-semibold tracking-tight sm:text-6xl">
                 401
             </h1>
 
@@ -29,7 +29,7 @@ export function UnauthorizedView() {
                 Unauthorized Access
             </h2>
 
-            <p className="text-muted-foreground mb-10 max-w-md text-base leading-relaxed sm:text-lg">
+            <p className="text-muted-foreground mb-10 max-w-md text-base leading-relaxed">
                 You must be logged in to access this page. Please sign in with your credentials to continue.
             </p>
 

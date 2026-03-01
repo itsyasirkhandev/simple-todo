@@ -25,7 +25,7 @@ export function TechStack() {
                 <Badge
                     key={tech.name}
                     variant="secondary"
-                    className="anim-tech-badge h-8 px-4 text-sm font-medium transition-colors hover:bg-primary hover:text-primary-foreground"
+                    className="anim-tech-badge h-8 px-4 text-sm font-semibold transition-colors hover:bg-primary hover:text-primary-foreground"
                 >
                     {tech.name}
                 </Badge>

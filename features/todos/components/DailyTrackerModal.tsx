@@ -106,12 +106,12 @@ export function DailyTrackerModal({ isOpen, onClose, todo, onSave }: DailyTracke
                 <DialogHeader className="p-6 sm:p-12 pb-6 sm:pb-8 relative z-10 border-b border-border/10">
                     <div className="flex items-center gap-2 text-primary mb-4">
                         <Calendar className="h-4 w-4" />
-                        <span className="text-sm font-medium font-sans tracking-tight">Chronos Protocol</span>
+                        <span className="text-sm font-semibold font-sans tracking-tight">Chronos Protocol</span>
                     </div>
-                    <DialogTitle className="text-2xl sm:text-3xl font-sans font-bold tracking-tighter text-foreground mb-2">
+                    <DialogTitle className="text-2xl sm:text-3xl font-sans font-semibold tracking-tighter text-foreground mb-2">
                         {todo.title}
                     </DialogTitle>
-                    <DialogDescription className="text-sm font-medium font-sans text-muted-foreground">
+                    <DialogDescription className="text-sm font-semibold font-sans text-muted-foreground">
                         {format(today, "EEEE, MMMM do, yyyy")}
                     </DialogDescription>
                 </DialogHeader>
@@ -122,22 +122,22 @@ export function DailyTrackerModal({ isOpen, onClose, todo, onSave }: DailyTracke
                         <div className="space-y-2">
                             <div className="flex items-center gap-3">
                                 <Sparkles className="h-4 w-4 text-primary" />
-                                <span className="text-sm font-medium font-sans text-muted-foreground">Progression</span>
+                                <span className="text-sm font-semibold font-sans text-muted-foreground">Progression</span>
                             </div>
                             <div className="flex items-baseline gap-2">
                                 <span className={cn(
-                                    "text-5xl font-sans font-bold tracking-tighter transition-all duration-500",
+                                    "text-5xl font-sans font-semibold tracking-tighter transition-all duration-500",
                                     allCompleted ? "text-primary" : "text-foreground"
                                 )}>
                                     {completedCount}
                                 </span>
-                                <span className="text-xl font-sans font-medium text-muted-foreground/50">of {totalSubTasks}</span>
+                                <span className="text-2xl font-sans font-semibold text-muted-foreground/50">of {totalSubTasks}</span>
                             </div>
                         </div>
                         {allCompleted ? (
                             <div className="flex flex-col items-end gap-2 text-primary animate-in zoom-in duration-500">
                                 <Trophy className="h-10 w-10" />
-                                <span className="text-sm font-medium font-sans">Absolute Compliance</span>
+                                <span className="text-sm font-semibold font-sans">Absolute Compliance</span>
                             </div>
                         ) : (
                             <div className="h-16 w-16 rounded-full border border-border/20 flex items-center justify-center relative">
@@ -150,11 +150,11 @@ export function DailyTrackerModal({ isOpen, onClose, todo, onSave }: DailyTracke
                     {/* Objective List */}
                     <div className="space-y-6">
                         <header className="flex items-center justify-between">
-                            <h3 className="text-sm font-medium font-sans text-muted-foreground">Operational Objectives</h3>
+                            <h3 className="text-sm font-semibold font-sans text-muted-foreground">Operational Objectives</h3>
                             {!allCompleted && totalSubTasks > 0 && (
                                 <button
                                     onClick={handleMarkAllComplete}
-                                    className="text-sm font-medium font-sans text-primary hover:text-foreground transition-colors"
+                                    className="text-sm font-semibold font-sans text-primary hover:text-foreground transition-colors"
                                 >
                                     Fulfill All
                                 </button>
@@ -185,7 +185,7 @@ export function DailyTrackerModal({ isOpen, onClose, todo, onSave }: DailyTracke
                                                 <label
                                                     htmlFor={`modal-subtask-${subTask.id}`}
                                                     className={cn(
-                                                        "text-base sm:text-lg font-sans font-normal cursor-pointer leading-tight transition-all duration-500",
+                                                        "text-base font-sans font-normal cursor-pointer leading-tight transition-all duration-500",
                                                         isChecked ? "line-through text-muted-foreground" : "text-foreground"
                                                     )}
                                                 >
@@ -199,7 +199,7 @@ export function DailyTrackerModal({ isOpen, onClose, todo, onSave }: DailyTracke
                         ) : (
                             <div className="py-24 border border-dashed border-border/50 rounded-xl flex flex-col items-center justify-center text-center opacity-40">
                                 <Sparkles className="h-12 w-12 mb-4" />
-                                <p className="text-sm font-medium font-sans tracking-tight">No objectives defined</p>
+                                <p className="text-sm font-semibold font-sans tracking-tight">No objectives defined</p>
                             </div>
                         )}
                     </div>

@@ -21,7 +21,7 @@ export function ForbiddenView() {
                 <Ban className="text-destructive relative z-10 h-24 w-24 drop-shadow-md" strokeWidth={1.5} />
             </div>
 
-            <h1 className="text-foreground mb-4 text-5xl font-extrabold tracking-tight sm:text-6xl">
+            <h1 className="text-foreground mb-4 text-5xl font-semibold tracking-tight sm:text-6xl">
                 403
             </h1>
 
@@ -29,7 +29,7 @@ export function ForbiddenView() {
                 Access Denied
             </h2>
 
-            <p className="text-muted-foreground mb-10 max-w-md text-base leading-relaxed sm:text-lg">
+            <p className="text-muted-foreground mb-10 max-w-md text-base leading-relaxed">
                 You do not have the required permissions to view this content or perform this action.
             </p>
 

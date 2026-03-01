@@ -113,9 +113,9 @@ export const EisenhowerMatrix = () => {
                     <div className="space-y-3 opacity-90 animate-in fade-in slide-in-from-bottom-4 duration-1000">
                         <div className="flex items-center gap-2 text-primary">
                             <Sparkles className="h-4 w-4" />
-                            <span className="text-sm font-medium font-sans tracking-tight">Command Center</span>
+                            <span className="text-sm font-semibold font-sans tracking-tight">Command Center</span>
                         </div>
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-sans font-bold tracking-tighter text-foreground">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-sans font-semibold tracking-tighter text-foreground">
                             Yasir&apos;s <span className="text-muted-foreground">Todo</span>
                         </h1>
                     </div>
