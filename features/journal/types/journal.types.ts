@@ -16,6 +16,7 @@
  */
 export interface JournalEntry {
     id: string;
+    title: string;
     date: string;
     content: string;
     createdAt: number;

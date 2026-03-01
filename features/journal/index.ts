@@ -8,3 +8,4 @@
 export * from './types/journal.types';
 export * from './hooks/useJournal';
 export * from './views/Journal.view';
+export * from './views/JournalList.view';

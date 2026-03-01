@@ -47,41 +47,32 @@ export const useJournal = () => {
         }
     }, [entries, isClient]);
 
-    const saveEntry = useCallback((date: string, content: string) => {
+    const saveEntry = useCallback((title: string, content: string) => {
+        if (!title.trim() && !content.trim()) {
+            toast.error("Journal entry needs a title or content");
+            return;
+        }
+
         setEntries((prev) => {
-            const existingIndex = prev.findIndex((e) => e.date === date);
             const now = Date.now();
+            const dateStr = new Date(now).toISOString().split('T')[0];
 
-            if (existingIndex !== -1) {
-                const newEntries = [...prev];
-                newEntries[existingIndex] = {
-                    ...newEntries[existingIndex],
-                    content,
-                    updatedAt: now,
-                };
-                return newEntries;
-            } else {
-                const newEntry: JournalEntry = {
-                    id: crypto.randomUUID(),
-                    date,
-                    content,
-                    createdAt: now,
-                    updatedAt: now,
-                };
-                return [newEntry, ...prev];
-            }
+            const newEntry: JournalEntry = {
+                id: crypto.randomUUID(),
+                title: title.trim() || 'Untitled Session',
+                date: dateStr,
+                content,
+                createdAt: now,
+                updatedAt: now,
+            };
+            return [newEntry, ...prev];
         });
-        toast.success(`Journal saved successfully.`);
+        toast.success(`Journal entry saved.`);
     }, []);
-
-    const getEntryByDate = useCallback((date: string) => {
-        return entries.find((e) => e.date === date);
-    }, [entries]);
 
     return {
         entries,
         isLoaded: isClient,
         saveEntry,
-        getEntryByDate,
     };
 };

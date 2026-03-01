@@ -7,15 +7,15 @@
 
 import dynamic from "next/dynamic";
 
-const JournalView = dynamic(() => import("@/features/journal").then((mod) => mod.JournalView), {
+const JournalListView = dynamic(() => import("@/features/journal").then((mod) => mod.JournalListView), {
     ssr: true,
 });
 
 /**
- * The journal page route (/journal).
+ * The journal list page route (/journal).
  * Uses dynamic loading for better initial bundle performance.
- * @returns {JSX.Element} The rendered journal page.
+ * @returns {JSX.Element} The rendered journal list page.
  */
 export default function JournalPage() {
-    return <JournalView />;
+    return <JournalListView />;
 }
