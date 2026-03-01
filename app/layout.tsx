@@ -53,9 +53,6 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: [siteConfig.ogImage],
   },
-  icons: {
-    icon: "/favicon.ico",
-  },
   manifest: `/manifest.json`,
 };
 
