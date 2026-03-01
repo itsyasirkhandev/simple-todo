@@ -18,7 +18,7 @@ const emptySubscribe = () => () => { };
 /**
  * Hook to manage journal entries.
  * Persists data to localStorage and provides methods to get/save daily entries.
- * @returns {object} { entries, isLoaded, saveEntry, getEntryByDate }
+ * @returns {object} { entries, isLoaded, saveEntry, deleteEntry }
  */
 export const useJournal = () => {
     const isClient = useSyncExternalStore(
@@ -70,9 +70,15 @@ export const useJournal = () => {
         toast.success(`Journal entry saved.`);
     }, []);
 
+    const deleteEntry = useCallback((id: string) => {
+        setEntries((prev) => prev.filter(entry => entry.id !== id));
+        toast.success(`Journal entry deleted.`);
+    }, []);
+
     return {
         entries,
         isLoaded: isClient,
         saveEntry,
+        deleteEntry,
     };
 };

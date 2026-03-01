@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useRef, useState } from 'react'
-import { Calendar as CalendarIcon, History, Plus, FileText, ChevronRight } from 'lucide-react'
+import { Calendar as CalendarIcon, History, Plus, FileText, ChevronRight, Trash2 } from 'lucide-react'
 import { useJournal } from '../hooks/useJournal'
 import { useJournalListAnimations } from '../hooks/useJournalListAnimations'
 import { format } from 'date-fns'
@@ -22,7 +22,7 @@ import Link from 'next/link'
  * @returns {JSX.Element} The rendered journal list page.
  */
 export const JournalListView = () => {
-    const { entries, isLoaded } = useJournal()
+    const { entries, isLoaded, deleteEntry } = useJournal()
     const containerRef = useRef<HTMLDivElement>(null)
     const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null);
 
@@ -73,8 +73,7 @@ export const JournalListView = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                                     {monthEntries.map((entry) => (
                                         <div key={entry.id} className="anim-list-card h-full">
-                                            <button
-                                                onClick={() => setSelectedEntry(entry)}
+                                            <div
                                                 className="w-full group relative text-left bg-card hover:bg-card/80 backdrop-blur-xl border border-border rounded-3xl p-6 sm:p-8 transition-all duration-700 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 overflow-hidden flex flex-col h-[280px]"
                                             >
                                                 {/* Decorative gradient blur in background of card */}
@@ -84,28 +83,57 @@ export const JournalListView = () => {
                                                     <span className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.15em]">
                                                         {format(new Date(entry.createdAt), 'MMM do')}
                                                     </span>
-                                                    <div className="flex items-center gap-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
-                                                        <span className="text-[10px] font-medium tracking-wider uppercase">Read</span>
-                                                        <ChevronRight className="h-3 w-3" />
+                                                    <div className="flex items-center gap-4">
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                if (window.confirm("Are you sure you want to delete this journal entry?")) {
+                                                                    deleteEntry(entry.id);
+                                                                }
+                                                            }}
+                                                            className="p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500 hover:bg-destructive/10 text-muted-foreground hover:text-destructive focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-destructive/50"
+                                                            title="Delete Entry"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </button>
+                                                        <button
+                                                            className="flex items-center gap-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary/50 rounded"
+                                                            onClick={() => setSelectedEntry(entry)}
+                                                        >
+                                                            <span className="text-[10px] font-medium tracking-wider uppercase">Read</span>
+                                                            <ChevronRight className="h-3 w-3" />
+                                                        </button>
                                                     </div>
                                                 </div>
 
-                                                <h3 className="font-serif font-semibold text-2xl mb-4 leading-tight line-clamp-2 relative z-10 text-foreground transition-colors duration-500">
-                                                    {entry.title || "Untitled Session"}
-                                                </h3>
+                                                <div
+                                                    className="flex-1 cursor-pointer flex flex-col"
+                                                    onClick={() => setSelectedEntry(entry)}
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter' || e.key === ' ') {
+                                                            setSelectedEntry(entry);
+                                                        }
+                                                    }}
+                                                >
+                                                    <h3 className="font-serif font-semibold text-2xl mb-4 leading-tight line-clamp-2 relative z-10 text-foreground transition-colors duration-500">
+                                                        {entry.title || "Untitled Session"}
+                                                    </h3>
 
-                                                <p className="text-muted-foreground font-sans text-sm leading-relaxed line-clamp-4 relative z-10 flex-1">
-                                                    {entry.content || <span className="italic">Observation without words...</span>}
-                                                </p>
+                                                    <p className="text-muted-foreground font-sans text-sm leading-relaxed line-clamp-4 relative z-10 flex-1">
+                                                        {entry.content || <span className="italic">Observation without words...</span>}
+                                                    </p>
 
-                                                <div className="mt-6 pt-4 border-t border-border/30 flex items-center justify-between text-xs text-muted-foreground relative z-10">
-                                                    <div className="flex items-center gap-1.5">
-                                                        <History className="h-3.5 w-3.5" />
-                                                        <span>{format(new Date(entry.createdAt), 'h:mm a')}</span>
+                                                    <div className="mt-6 pt-4 border-t border-border/30 flex items-center justify-between text-xs text-muted-foreground relative z-10">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <History className="h-3.5 w-3.5" />
+                                                            <span>{format(new Date(entry.createdAt), 'h:mm a')}</span>
+                                                        </div>
+                                                        <span className="font-mono text-[10px] uppercase tracking-widest">{entry.id.split('-')[0]}</span>
                                                     </div>
-                                                    <span className="font-mono text-[10px] uppercase tracking-widest">{entry.id.split('-')[0]}</span>
                                                 </div>
-                                            </button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

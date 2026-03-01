@@ -8,7 +8,7 @@
 "use client"
 
 import React, { useRef, useState } from 'react'
-import { Book, Save, History, Calendar as CalendarIcon, Sparkles } from 'lucide-react'
+import { Book, Save, History, Calendar as CalendarIcon, Sparkles, ArrowLeft } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -24,7 +24,7 @@ import { useJournal } from '../hooks/useJournal'
 import { useJournalAnimations } from '../hooks/useJournalAnimations'
 import { JournalEntry } from '../types/journal.types'
 import { format } from 'date-fns'
-
+import Link from 'next/link'
 /**
  * Editor sub-component for the Journal.
  * Uses a key from parent to reset state on date change without useEffect.
@@ -107,9 +107,17 @@ export const JournalView = () => {
             <main className="max-w-4xl mx-auto space-y-12 relative z-10">
                 {/* Branding & Header */}
                 <div className="anim-journal-header space-y-4 opacity-90">
-                    <div className="flex items-center gap-2 text-primary">
-                        <span className="text-sm font-semibold font-sans tracking-tight uppercase">Daily Reflection</span>
-                        <Sparkles className="h-4 w-4" />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-primary">
+                            <span className="text-sm font-semibold font-sans tracking-tight uppercase">Daily Reflection</span>
+                            <Sparkles className="h-4 w-4" />
+                        </div>
+                        <Link href="/journal">
+                            <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground transition-colors group rounded-full px-4">
+                                <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                                <span className="font-semibold tracking-tight text-sm">All Journals</span>
+                            </Button>
+                        </Link>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                         <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif font-semibold tracking-tighter text-foreground">
