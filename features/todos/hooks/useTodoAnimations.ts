@@ -44,6 +44,7 @@ export const useMatrixAnimations = (scope: React.RefObject<HTMLElement | null>) 
                 autoAlpha: 0,
                 y: -30,
                 duration: DURATION.slow,
+                clearProps: "all"
             })
                 .from('.anim-matrix-quadrant', {
                     autoAlpha: 0,
@@ -51,6 +52,7 @@ export const useMatrixAnimations = (scope: React.RefObject<HTMLElement | null>) 
                     stagger: STAGGER.normal,
                     duration: DURATION.slow,
                     ease: EASE.default,
+                    clearProps: "all"
                 }, '-=0.4')
 
             return () => gsap.set('.anim-matrix-header, .anim-matrix-quadrant', { clearProps: "all" })
@@ -83,6 +85,7 @@ export const useTodoItemAnimations = (scope: React.RefObject<HTMLElement | null>
                 y: 20,
                 duration: DURATION.fast,
                 ease: EASE.strong,
+                clearProps: "all"
             })
 
             return () => gsap.set(scope.current, { clearProps: "all" })
