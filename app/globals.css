@@ -309,6 +309,30 @@
     text-size-adjust: 100%;
   }
 
+  /* ── Global mobile chrome awareness ──────────────────
+     The MobileHeader is h-14 (56px), fixed at top on mobile.
+     The BottomNav  is h-16 (64px), fixed at bottom on mobile.
+     Padding is applied at the body level so EVERY page in the
+     app — regardless of its own padding — has safe clearance.
+     On sm+ screens both navs are hidden so we reset to 0.
+  ─────────────────────────────────────────────────────── */
+  @media (max-width: 639px) {
+    body {
+      /* Top: mobile header (h-14=56px) + notch safe area */
+      padding-top: calc(3.5rem + env(safe-area-inset-top, 0px));
+      /* Bottom: bottom nav (h-16=64px) + home indicator safe area */
+      padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  /* Reset on desktop — top/bottom nav are not body-level chrome */
+  @media (min-width: 640px) {
+    body {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+  }
+
   /* Smooth scroll globally */
   html {
     scroll-behavior: smooth;

@@ -51,7 +51,7 @@ export const JournalListView = () => {
     }, {} as Record<string, typeof entries>)
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary/25 selection:text-foreground px-4 sm:p-8 md:p-12 pt-16 sm:pt-28 md:pt-40 pb-28 sm:pb-12 relative">
+        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary/25 selection:text-foreground px-4 sm:p-8 md:p-12 pt-8 sm:pt-28 md:pt-40 pb-8 sm:pb-12 relative">
             {/* Geometric grid texture */}
             <div
                 aria-hidden
