@@ -40,37 +40,37 @@ const JournalEditor = ({ onSave }: { onSave: (title: string, content: string) =>
     }
 
     return (
-        <div className="space-y-5 relative group/editor">
+        <div className="space-y-3 sm:space-y-5 relative group/editor">
             {/* Soft ambient glow on focus */}
             <div className="absolute -inset-4 bg-gradient-to-br from-primary/8 via-transparent to-transparent rounded-3xl blur-2xl opacity-0 transition-opacity duration-700 group-hover/editor:opacity-100 pointer-events-none" />
 
-            <Card className="relative bg-background/80 backdrop-blur-2xl border-border/40 shadow-sm dark:shadow-md overflow-hidden transition-shadow duration-300 rounded-2xl flex flex-col ring-1 ring-inset ring-foreground/5 h-full focus-within:ring-primary/20 focus-within:shadow-lg">
-                <CardContent className="p-0 flex flex-col h-full relative z-10">
+            <Card className="relative bg-background/80 backdrop-blur-2xl border-border/40 shadow-sm dark:shadow-md overflow-hidden transition-shadow duration-300 rounded-2xl flex flex-col ring-1 ring-inset ring-foreground/5 focus-within:ring-primary/20 focus-within:shadow-lg">
+                <CardContent className="p-0 flex flex-col relative z-10">
                     {/* Title input */}
-                    <div className="px-6 sm:px-10 pt-10 pb-4 border-b border-border/15">
+                    <div className="px-4 sm:px-10 pt-5 sm:pt-10 pb-3 border-b border-border/15">
                         <Input
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
                             placeholder="A New Reflection…"
-                            className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-3xl sm:text-4xl lg:text-5xl font-serif font-semibold tracking-tight transition-all duration-300 placeholder:text-muted-foreground/25 text-foreground"
+                            className="border-0 p-0 h-auto bg-transparent focus-visible:ring-0 text-2xl sm:text-4xl lg:text-5xl font-serif font-semibold tracking-tight transition-all duration-300 placeholder:text-muted-foreground/25 text-foreground"
                         />
                     </div>
 
-                    {/* Body textarea */}
-                    <div className="flex-1 px-6 sm:px-10 pb-8 pt-6 relative flex flex-col">
+                    {/* Body textarea — shorter on mobile for better fit */}
+                    <div className="flex-1 px-4 sm:px-10 pb-5 sm:pb-8 pt-4 sm:pt-6 relative flex flex-col">
                         <Textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="It was a quiet morning…"
-                            className="flex-1 min-h-80 border-none focus-visible:ring-0 bg-transparent resize-none p-0 text-lg sm:text-xl font-sans leading-[1.85] placeholder:italic placeholder:text-muted-foreground/25 text-foreground/90 transition-all duration-300"
+                            className="flex-1 min-h-40 sm:min-h-80 border-none focus-visible:ring-0 bg-transparent resize-none p-0 text-base sm:text-xl font-sans leading-[1.85] placeholder:italic placeholder:text-muted-foreground/25 text-foreground/90 transition-all duration-300"
                         />
                     </div>
                 </CardContent>
             </Card>
 
             {/* Footer row */}
-            <div className="flex justify-between items-center px-1">
-                {/* Static word count — no ping dot distraction */}
+            <div className="flex justify-between items-center px-1 py-2">
+                {/* Static word count */}
                 <span className="font-mono text-xs text-muted-foreground/50 tracking-wider tabular-nums">
                     {wordCount > 0 ? `${wordCount} word${wordCount !== 1 ? 's' : ''}` : 'Ready to write'}
                 </span>
@@ -78,7 +78,7 @@ const JournalEditor = ({ onSave }: { onSave: (title: string, content: string) =>
                 <Button
                     onClick={handleSave}
                     disabled={!content.trim() && !title.trim()}
-                    className="px-7 py-5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-primary/20 bg-foreground text-background hover:bg-foreground/90 disabled:opacity-40 disabled:hover:scale-100 gap-2"
+                    className="px-6 py-4 sm:px-7 sm:py-5 rounded-full text-sm font-semibold transition-all duration-300 hover:scale-105 active:scale-95 shadow-md shadow-primary/20 bg-foreground text-background hover:bg-foreground/90 disabled:opacity-40 disabled:hover:scale-100 gap-2"
                 >
                     <Save className="h-4 w-4" />
                     Save Journal
@@ -118,11 +118,11 @@ export const JournalView = () => {
             />
             <div aria-hidden className="fixed inset-0 noise-overlay z-0" />
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-10 lg:px-12 pt-6 sm:pt-36 pb-28 sm:pb-24 relative z-10 flex flex-col gap-8 lg:gap-12">
+            <main className="max-w-7xl mx-auto px-4 sm:px-10 lg:px-12 pt-16 sm:pt-36 pb-36 sm:pb-24 relative z-10 flex flex-col gap-5 sm:gap-8 lg:gap-12">
 
                 {/* ── Header ── */}
                 <div className="anim-journal-header space-y-6">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-border/30">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border/30">
                         <Link href="/journal" className="w-fit focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 rounded-full">
                             <Button variant="outline" size="sm" className="gap-2 rounded-full px-4 bg-background/50 hover:bg-muted text-muted-foreground hover:text-foreground transition-all group border-border/50 shadow-sm backdrop-blur-sm">
                                 <ArrowLeft className="h-3.5 w-3.5 group-hover:-translate-x-1 transition-transform" />
@@ -132,16 +132,16 @@ export const JournalView = () => {
                         <p className="label-mono text-primary/70">Reflection Space</p>
                     </div>
 
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 mt-2">
-                        <div className="space-y-1">
-                            <h1 className="display-serif text-5xl sm:text-6xl md:text-7xl text-foreground">
+                    <div className="flex flex-row items-end justify-between gap-4 mt-1">
+                        <div className="space-y-0.5">
+                            <h1 className="display-serif text-3xl sm:text-6xl md:text-7xl text-foreground">
                                 Today&apos;s{' '}
                                 <em className="not-italic font-normal text-muted-foreground/60 italic">
                                     Thoughts
                                 </em>
                             </h1>
                         </div>
-                        <div className="flex items-center gap-3 text-muted-foreground bg-card/80 px-4 py-3 rounded-xl border border-border/40 backdrop-blur-md self-start md:self-end shadow-sm">
+                        <div className="hidden sm:flex items-center gap-3 text-muted-foreground bg-card/80 px-4 py-3 rounded-xl border border-border/40 backdrop-blur-md self-start md:self-end shadow-sm">
                             <CalendarIcon className="h-4 w-4 text-primary/60" />
                             <div className="flex flex-col">
                                 <span className="font-mono text-[9px] tracking-widest uppercase text-muted-foreground/50">Date</span>

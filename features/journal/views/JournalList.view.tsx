@@ -51,7 +51,7 @@ export const JournalListView = () => {
     }, {} as Record<string, typeof entries>)
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary/25 selection:text-foreground p-4 sm:p-8 md:p-12 pt-6 sm:pt-28 md:pt-40 pb-28 sm:pb-12 relative">
+        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary/25 selection:text-foreground px-4 sm:p-8 md:p-12 pt-16 sm:pt-28 md:pt-40 pb-28 sm:pb-12 relative">
             {/* Geometric grid texture */}
             <div
                 aria-hidden
@@ -63,12 +63,12 @@ export const JournalListView = () => {
             />
             <div aria-hidden className="fixed inset-0 noise-overlay z-0" />
 
-            <main className="max-w-6xl mx-auto space-y-16 relative z-10 w-full">
+            <main className="max-w-6xl mx-auto space-y-8 sm:space-y-16 relative z-10 w-full pt-2">
 
                 {/* Editorial page header */}
                 <div className="anim-list-header space-y-3">
                     <p className="label-mono text-primary">Archive</p>
-                    <h1 className="display-serif text-5xl sm:text-6xl md:text-7xl text-foreground">
+                    <h1 className="display-serif text-3xl sm:text-6xl md:text-7xl text-foreground">
                         Your{' '}
                         <em className="not-italic font-normal text-muted-foreground/60 italic">
                             Journals

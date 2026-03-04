@@ -66,7 +66,7 @@ export const EisenhowerMatrix = () => {
     return (
         <div
             ref={containerRef}
-            className="min-h-screen bg-background text-foreground selection:bg-primary/25 selection:text-foreground p-4 sm:p-8 md:p-12 pt-6 sm:pt-28 md:pt-40 pb-24 sm:pb-12 relative"
+            className="min-h-screen bg-background text-foreground selection:bg-primary/25 selection:text-foreground px-4 sm:p-8 md:p-12 pt-16 sm:pt-28 md:pt-40 pb-28 sm:pb-12 relative"
         >
             {/* Geometric grid texture */}
             <div
@@ -81,13 +81,13 @@ export const EisenhowerMatrix = () => {
             {/* Noise grain overlay */}
             <div aria-hidden className="fixed inset-0 noise-overlay z-0" />
 
-            <main className="max-w-6xl mx-auto space-y-12 relative z-10">
+            <main className="max-w-6xl mx-auto space-y-6 sm:space-y-12 relative z-10">
 
                 {/* ── Editorial Hero Header — only in View tab ── */}
                 {activeTab === 'view' && (
                     <div className="space-y-4 animate-in fade-in slide-in-from-bottom-3 duration-700">
                         <p className="label-mono text-primary">Command Center</p>
-                        <h1 className="display-serif text-5xl sm:text-6xl md:text-7xl text-foreground leading-[1.05] tracking-[-0.03em]">
+                        <h1 className="display-serif text-3xl sm:text-6xl md:text-7xl text-foreground leading-[1.05] tracking-[-0.03em]">
                             Yasir&apos;s{' '}
                             <em className="not-italic font-normal text-muted-foreground/60 italic">
                                 Focus
