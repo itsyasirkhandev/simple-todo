@@ -230,7 +230,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                     </div>
                                 </div>
 
-                                {/* Action buttons — hidden on mobile, appear on hover on desktop */}
+                                {/* Desktop: hover-reveal action column */}
                                 <div className="hidden sm:flex flex-col gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-200">
                                     {isDaily && !isEditing && onTrackDaily && (
                                         <Button
@@ -263,18 +263,52 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                     </Button>
                                 </div>
 
-                                {/* Mobile: always-visible condensed delete only */}
-                                <div className="flex sm:hidden shrink-0">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        onClick={handleDelete}
-                                        className="h-7 w-7 text-muted-foreground/40 hover:text-destructive hover:bg-destructive/10 rounded-lg transition-all"
-                                    >
-                                        <Trash2 className="h-3 w-3" />
-                                    </Button>
-                                </div>
                             </div>
+
+                            {/* Mobile: full-width action bar with labelled buttons */}
+                            {!isEditing && (
+                                <div className="sm:hidden flex items-stretch border-t border-border/20 divide-x divide-border/20">
+                                    {/* Complete / undo */}
+                                    {!isDaily && (
+                                        <button
+                                            onClick={() => onToggle(todo.id)}
+                                            className={cn(
+                                                "flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 transition-colors active:scale-95",
+                                                todo.isCompleted ? "text-primary bg-primary/5" : "text-muted-foreground hover:text-primary hover:bg-primary/5"
+                                            )}
+                                        >
+                                            <Check className="h-4 w-4" />
+                                            <span className="font-mono text-[9px] tracking-wider uppercase">{todo.isCompleted ? 'Undo' : 'Done'}</span>
+                                        </button>
+                                    )}
+                                    {/* Edit */}
+                                    <button
+                                        onClick={() => setIsEditing(true)}
+                                        className="flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors active:scale-95"
+                                    >
+                                        <Pencil className="h-4 w-4" />
+                                        <span className="font-mono text-[9px] tracking-wider uppercase">Edit</span>
+                                    </button>
+                                    {/* Track (daily only) */}
+                                    {isDaily && onTrackDaily && (
+                                        <button
+                                            onClick={() => onTrackDaily(todo)}
+                                            className="flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors active:scale-95"
+                                        >
+                                            <CalendarDays className="h-4 w-4" />
+                                            <span className="font-mono text-[9px] tracking-wider uppercase">History</span>
+                                        </button>
+                                    )}
+                                    {/* Delete */}
+                                    <button
+                                        onClick={handleDelete}
+                                        className="flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors active:scale-95"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                        <span className="font-mono text-[9px] tracking-wider uppercase">Delete</span>
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Collapsible subtask list */}
                             {isDaily && totalSubTasks > 0 && !isEditing && (

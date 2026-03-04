@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { siteConfig } from "@/lib/site-config";
-import { TopNav } from "@/features/core";
+import { TopNav, BottomNav, MobileHeader } from "@/features/core";
 import { ModeToggle } from "@/components/mode-toggle";
 import { QueryProvider } from "@/components/providers/query-provider";
 import "./globals.css";
@@ -76,11 +76,21 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TooltipProvider>
-              <div className="fixed top-8 right-8 z-50">
+              {/* Mode toggle — desktop only (mobile uses MobileHeader) */}
+              <div className="hidden sm:block fixed top-6 right-6 z-50">
                 <ModeToggle />
               </div>
+              {/* Mobile top header (shows page title + theme toggle) */}
+              <Suspense fallback={null}>
+                <MobileHeader />
+              </Suspense>
+              {/* Desktop pill nav */}
               <Suspense fallback={null}>
                 <TopNav />
+              </Suspense>
+              {/* Mobile bottom nav */}
+              <Suspense fallback={null}>
+                <BottomNav />
               </Suspense>
               {children}
               <Toaster />

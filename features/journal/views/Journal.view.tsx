@@ -118,7 +118,7 @@ export const JournalView = () => {
             />
             <div aria-hidden className="fixed inset-0 noise-overlay z-0" />
 
-            <main className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 pt-28 sm:pt-36 pb-24 relative z-10 flex flex-col gap-10 lg:gap-12">
+            <main className="max-w-7xl mx-auto px-4 sm:px-10 lg:px-12 pt-6 sm:pt-36 pb-28 sm:pb-24 relative z-10 flex flex-col gap-8 lg:gap-12">
 
                 {/* ── Header ── */}
                 <div className="anim-journal-header space-y-6">

@@ -7,3 +7,5 @@
 
 export { NotFoundView } from './views/NotFoundView';
 export { TopNav } from './components/TopNav';
+export { BottomNav } from './components/BottomNav';
+export { MobileHeader } from './components/MobileHeader';

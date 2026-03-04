@@ -51,7 +51,7 @@ export const JournalListView = () => {
     }, {} as Record<string, typeof entries>)
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary/25 selection:text-foreground p-4 sm:p-8 md:p-12 pt-28 sm:pt-32 md:pt-40 relative">
+        <div ref={containerRef} className="min-h-screen bg-background text-foreground selection:bg-primary/25 selection:text-foreground p-4 sm:p-8 md:p-12 pt-6 sm:pt-28 md:pt-40 pb-28 sm:pb-12 relative">
             {/* Geometric grid texture */}
             <div
                 aria-hidden
@@ -111,8 +111,8 @@ export const JournalListView = () => {
                                         </span>
                                     </div>
 
-                                    {/* Masonry column layout — cards breathe to natural height */}
-                                    <div className="columns-1 md:columns-2 lg:columns-3 gap-6 sm:gap-8 space-y-6">
+                                    {/* Single col on mobile, masonry from md+ */}
+                                    <div className="grid grid-cols-1 md:columns-2 lg:columns-3 gap-4 sm:gap-6 sm:gap-8 md:grid-cols-none">
                                         {monthEntries.map((entry) => (
                                             <div key={entry.id} className="anim-list-card break-inside-avoid mb-6">
                                                 <JournalCard
