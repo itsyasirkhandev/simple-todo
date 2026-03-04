@@ -102,11 +102,11 @@ export const EisenhowerMatrix = () => {
 
                 <section className="relative min-h-96">
 
-                    {/* View & Create tabs combined — Compact side-by-side or stacked layout */}
-                    {(activeTab === 'view' || activeTab === 'create') && (
+                    {/* View Tab: Matrix (with quick-add sidebar on desktop) */}
+                    {activeTab === 'view' && (
                         <div className="flex flex-col xl:flex-row gap-6 xl:gap-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            {/* Form Section: Sticky side-bar on desktop, stacked on mobile */}
-                            <div className="w-full xl:w-[320px] 2xl:w-[360px] shrink-0 xl:sticky xl:top-36 xl:self-start z-20">
+                            {/* Form Section: Sticky side-bar on desktop only */}
+                            <div className="hidden xl:block w-full xl:w-[320px] 2xl:w-[360px] shrink-0 xl:sticky xl:top-36 xl:self-start z-20">
                                 <TodoForm compact onSubmit={handleFormSubmit} />
                             </div>
 
@@ -169,6 +169,13 @@ export const EisenhowerMatrix = () => {
                                     </div>
                                 </DragDropContext>
                             </div>
+                        </div>
+                    )}
+
+                    {/* Create Tab: Full-width / Centered Form */}
+                    {activeTab === 'create' && (
+                        <div className="max-w-2xl mx-auto w-full animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <TodoForm onSubmit={handleFormSubmit} />
                         </div>
                     )}
 
