@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { siteConfig } from "@/lib/site-config";
 import { TopNav } from "@/features/core";
 import { ModeToggle } from "@/components/mode-toggle";
+import { QueryProvider } from "@/components/providers/query-provider";
 import "./globals.css";
 import { Suspense } from "react";
 
@@ -67,23 +68,25 @@ export default function RootLayout({
         className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased font-sans`}
         suppressHydrationWarning
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TooltipProvider>
-            <div className="fixed top-8 right-8 z-50">
-              <ModeToggle />
-            </div>
-            <Suspense fallback={null}>
-              <TopNav />
-            </Suspense>
-            {children}
-            <Toaster />
-          </TooltipProvider>
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TooltipProvider>
+              <div className="fixed top-8 right-8 z-50">
+                <ModeToggle />
+              </div>
+              <Suspense fallback={null}>
+                <TopNav />
+              </Suspense>
+              {children}
+              <Toaster />
+            </TooltipProvider>
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );

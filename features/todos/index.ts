@@ -8,4 +8,8 @@
 export * from './types/todo.types';
 export * from './schemas/todo.schema';
 export * from './hooks/useTodos';
+export * from './hooks/useTodoQueries';
+export * from './hooks/useTodoMutations';
+export * from './services/todo.service';
 export * from './views/EisenhowerMatrix.view';
+

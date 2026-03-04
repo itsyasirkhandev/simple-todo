@@ -7,5 +7,9 @@
 
 export * from './types/journal.types';
 export * from './hooks/useJournal';
+export * from './hooks/useJournalQueries';
+export * from './hooks/useJournalMutations';
+export * from './services/journal.service';
 export * from './views/Journal.view';
 export * from './views/JournalList.view';
+

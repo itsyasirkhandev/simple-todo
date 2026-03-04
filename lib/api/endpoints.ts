@@ -8,7 +8,6 @@
 export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 export const API_ENDPOINTS = {
-    // Example Endpoints (Add your endpoints here)
     AUTH: {
         LOGIN: '/auth/login',
         REGISTER: '/auth/register',
@@ -16,5 +15,15 @@ export const API_ENDPOINTS = {
     USERS: {
         LIST: '/users',
         DETAIL: (id: string) => `/users/${id}`,
-    }
+    },
+    TODOS: {
+        LIST: '/todos',
+        CREATE: '/todos',
+        DETAIL: (id: string) => `/todos/${id}`,
+    },
+    JOURNAL: {
+        LIST: '/journal',
+        CREATE: '/journal',
+        DETAIL: (id: string) => `/journal/${id}`,
+    },
 } as const;
