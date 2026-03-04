@@ -11,7 +11,6 @@ import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { ROUTES } from '@/constants/routes'
 import { ModeToggle } from '@/components/mode-toggle'
-import { cn } from '@/lib/utils'
 
 const pageLabels: Record<string, string> = {
     view: 'Tasks',

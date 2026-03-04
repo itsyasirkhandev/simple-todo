@@ -237,9 +237,7 @@ export function useReorderTodo() {
     return useMutation({
         mutationFn: ({
             todoId,
-            sourcePriority,
             destinationPriority,
-            sourceIndex,
             destinationIndex,
         }: {
             todoId: string;

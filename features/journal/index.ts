@@ -12,4 +12,5 @@ export * from './hooks/useJournalMutations';
 export * from './services/journal.service';
 export * from './views/Journal.view';
 export * from './views/JournalList.view';
+export * from './views/JournalDetail.view';
 

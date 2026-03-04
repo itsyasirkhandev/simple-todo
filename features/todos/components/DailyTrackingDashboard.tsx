@@ -29,12 +29,9 @@ import {
     startOfDay,
     subDays,
     eachDayOfInterval,
-    isSameDay,
     differenceInCalendarDays,
     startOfWeek,
     endOfWeek,
-    startOfYear,
-    endOfYear,
 } from 'date-fns'
 
 /**

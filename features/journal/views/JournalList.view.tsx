@@ -1,19 +1,13 @@
 "use client"
 
-import React, { useRef, useState } from 'react'
-import { Calendar as CalendarIcon, History, Plus, FileText, ChevronRight } from 'lucide-react'
+import React, { useRef } from 'react'
+import { History, Plus, FileText, ChevronRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useJournal } from '../hooks/useJournal'
 import { useJournalListAnimations } from '../hooks/useJournalListAnimations'
 import { format } from 'date-fns'
 import { JournalEntry } from '../types/journal.types'
 import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -36,7 +30,7 @@ import Link from 'next/link'
 export const JournalListView = () => {
     const { entries, isLoaded, deleteEntry } = useJournal()
     const containerRef = useRef<HTMLDivElement>(null)
-    const [selectedEntry, setSelectedEntry] = useState<JournalEntry | null>(null)
+    const router = useRouter()
 
     useJournalListAnimations(containerRef)
 
@@ -117,7 +111,7 @@ export const JournalListView = () => {
                                             <div key={entry.id} className="anim-list-card break-inside-avoid mb-6">
                                                 <JournalCard
                                                     entry={entry}
-                                                    onClick={() => setSelectedEntry(entry)}
+                                                    onClick={() => router.push(`/journal/${entry.id}`)}
                                                     onDelete={() => deleteEntry(entry.id)}
                                                 />
                                             </div>
@@ -145,39 +139,7 @@ export const JournalListView = () => {
             )}
 
 
-            {/* Reading Dialog */}
-            <Dialog open={!!selectedEntry} onOpenChange={(open) => !open && setSelectedEntry(null)}>
-                <DialogContent className="sm:max-w-2xl lg:max-w-3xl max-h-[90vh] p-0 overflow-hidden bg-background/98 backdrop-blur-2xl border-border/50">
-                    <div className="p-6 sm:p-10 border-b border-border/15 bg-muted/5 relative overflow-hidden">
-                        {/* Large decorative quotation mark */}
-                        <div className="absolute -top-6 -left-4 font-serif text-[9rem] text-primary/5 pointer-events-none select-none leading-none">&ldquo;</div>
 
-                        <DialogHeader className="relative z-10">
-                            <div className="flex flex-wrap items-center gap-2 text-muted-foreground/60 mb-5">
-                                <span className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-1.5">
-                                    <CalendarIcon className="h-3 w-3" />
-                                    {selectedEntry && format(new Date(selectedEntry.createdAt), 'MMMM do, yyyy')}
-                                </span>
-                                <span className="opacity-40">·</span>
-                                <span className="font-mono text-[10px] tracking-widest uppercase flex items-center gap-1.5">
-                                    <History className="h-3 w-3" />
-                                    {selectedEntry && format(new Date(selectedEntry.createdAt), 'h:mm a')}
-                                </span>
-                            </div>
-                            <DialogTitle className="display-serif text-3xl sm:text-4xl md:text-5xl text-foreground leading-[1.1]">
-                                {selectedEntry?.title || "Untitled Session"}
-                            </DialogTitle>
-                        </DialogHeader>
-                    </div>
-                    <ScrollArea className="max-h-[60vh]">
-                        <div className="p-6 sm:p-10 border-l-4 border-primary/15 ml-6 sm:ml-10 mr-6 sm:mr-10 my-6">
-                            <p className="font-serif text-base sm:text-lg leading-[1.9] text-foreground/85 whitespace-pre-wrap">
-                                {selectedEntry?.content || <span className="italic opacity-40">This entry has no content.</span>}
-                            </p>
-                        </div>
-                    </ScrollArea>
-                </DialogContent>
-            </Dialog>
         </div>
     )
 }
