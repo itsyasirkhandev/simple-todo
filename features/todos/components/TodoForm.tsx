@@ -14,6 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, AlertCircle, Zap, Target, Cloud, Trash2, Sparkles, PlusCircle } from 'lucide-react'
 import { todoSchema, TodoFormValues } from '../schemas/todo.schema'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import {
     Form,
     FormControl,
@@ -41,6 +42,7 @@ import {
 interface TodoFormProps {
     onSubmit: (data: TodoFormValues) => void
     defaultValues?: Partial<TodoFormValues>
+    compact?: boolean
 }
 
 /**
@@ -55,7 +57,7 @@ interface TodoFormProps {
  * @param {TodoFormProps} props - Component properties.
  * @returns {JSX.Element} The rendered form.
  */
-export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
+export function TodoForm({ onSubmit, defaultValues, compact }: TodoFormProps) {
     const form = useForm<TodoFormValues>({
         resolver: zodResolver(todoSchema),
         defaultValues: {
@@ -100,34 +102,39 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(handleFormSubmit)}
-                className="space-y-8 md:space-y-12 border border-border/50 bg-card p-6 sm:p-8 md:p-12 shadow-sm rounded-2xl relative overflow-hidden"
+                className={cn(
+                    "border border-border/50 bg-card shadow-sm rounded-2xl relative overflow-hidden",
+                    compact ? "space-y-4 p-4 md:p-6" : "space-y-8 md:space-y-12 p-6 sm:p-8 md:p-12"
+                )}
             >
                 {/* Decorative Background Element */}
                 <div className="absolute -top-24 -right-24 h-64 w-64 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
-                <div className="space-y-8 relative z-10">
-                    <header className="space-y-2 border-b border-border/50 pb-6 md:pb-8">
-                        <div className="flex items-center gap-2 text-primary">
-                            <Sparkles className="h-5 w-5" />
-                            <span className="text-sm font-semibold font-sans tracking-tight">New Objective</span>
-                        </div>
-                        <h2 className="text-2xl md:text-3xl font-sans font-semibold tracking-tighter text-foreground">
-                            Define your next task
+                <div className={cn("relative z-10", compact ? "space-y-4" : "space-y-8")}>
+                    <header className={cn("border-b border-border/50", compact ? "space-y-1 pb-4" : "space-y-2 pb-6 md:pb-8")}>
+                        {!compact && (
+                            <div className="flex items-center gap-2 text-primary">
+                                <Sparkles className="h-5 w-5" />
+                                <span className="text-sm font-semibold font-sans tracking-tight">New Objective</span>
+                            </div>
+                        )}
+                        <h2 className={cn("font-sans font-semibold tracking-tighter text-foreground", compact ? "text-xl md:text-2xl" : "text-2xl md:text-3xl")}>
+                            {compact ? "Create Task" : "Define your next task"}
                         </h2>
                     </header>
 
-                    <div className="space-y-8">
+                    <div className={cn(compact ? "space-y-4" : "space-y-8")}>
                         <FormField
                             control={form.control}
                             name="title"
                             render={({ field }) => (
-                                <FormItem className="space-y-3">
+                                <FormItem className={compact ? "space-y-1.5" : "space-y-3"}>
                                     <FormLabel className="text-sm font-semibold font-sans text-muted-foreground/80">Title of Action</FormLabel>
                                     <FormControl>
                                         <Input
                                             placeholder="What needs to be achieved?"
                                             {...field}
-                                            className="h-14 font-sans text-base tracking-tight bg-background border-border/50 transition-all focus:border-primary focus:ring-1 focus:ring-primary rounded-lg placeholder:text-muted-foreground/50"
+                                            className={cn("font-sans text-base tracking-tight bg-background border-border/50 transition-all focus:border-primary focus:ring-1 focus:ring-primary rounded-lg placeholder:text-muted-foreground/50", compact ? "h-10" : "h-14")}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -139,12 +146,12 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                             control={form.control}
                             name="description"
                             render={({ field }) => (
-                                <FormItem className="space-y-3">
+                                <FormItem className={compact ? "space-y-1.5" : "space-y-3"}>
                                     <FormLabel className="text-sm font-semibold font-sans text-muted-foreground/80">Context & Nuance</FormLabel>
                                     <FormControl>
                                         <Textarea
                                             placeholder="Add the necessary details..."
-                                            className="min-h-32 font-sans text-base leading-relaxed bg-background border-border/50 transition-all focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none placeholder:text-muted-foreground/50"
+                                            className={cn("font-sans text-base leading-relaxed bg-background border-border/50 transition-all focus:border-primary focus:ring-1 focus:ring-primary rounded-lg resize-none placeholder:text-muted-foreground/50", compact ? "min-h-20 text-sm" : "min-h-32")}
                                             {...field}
                                         />
                                     </FormControl>
@@ -153,16 +160,16 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                             )}
                         />
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8">
+                        <div className={cn("grid", compact ? "grid-cols-1 gap-4" : "grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8")}>
                             <FormField
                                 control={form.control}
                                 name="priority"
                                 render={({ field }) => (
-                                    <FormItem className="space-y-3">
+                                    <FormItem className={compact ? "space-y-1.5" : "space-y-3"}>
                                         <FormLabel className="text-sm font-semibold font-sans text-muted-foreground/80">Strategic Priority</FormLabel>
                                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                                             <FormControl>
-                                                <SelectTrigger className="h-14 bg-background border-border/50 transition-all focus:border-primary rounded-lg font-sans font-semibold">
+                                                <SelectTrigger className={cn("bg-background border-border/50 transition-all focus:border-primary rounded-lg font-sans font-semibold", compact ? "h-10" : "h-14")}>
                                                     <SelectValue placeholder="Categorize by impact" />
                                                 </SelectTrigger>
                                             </FormControl>
@@ -202,9 +209,9 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                 control={form.control}
                                 name="isDaily"
                                 render={({ field }) => (
-                                    <FormItem className="space-y-3">
+                                    <FormItem className={compact ? "space-y-1.5" : "space-y-3"}>
                                         <FormLabel className="text-sm font-semibold font-sans text-muted-foreground/80">Repetition Protocol</FormLabel>
-                                        <div className="flex items-center justify-between h-14 px-4 border border-border/50 bg-background transition-all hover:border-primary/50 rounded-lg">
+                                        <div className={cn("flex items-center justify-between px-4 border border-border/50 bg-background transition-all hover:border-primary/50 rounded-lg", compact ? "h-10" : "h-14")}>
                                             <span className="text-sm font-semibold font-sans text-foreground">Daily Cycle</span>
                                             <FormControl>
                                                 <Switch
@@ -219,17 +226,17 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                         </div>
 
                         {isDaily && (
-                            <div className="space-y-6 pt-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/50 pb-4">
+                            <div className={cn("pt-4 animate-in fade-in slide-in-from-top-4 duration-500", compact ? "space-y-4" : "space-y-6")}>
+                                <div className={cn("flex items-start sm:items-center justify-between gap-4 border-b border-border/50", compact ? "flex-row pb-2" : "flex-col sm:flex-row pb-4")}>
                                     <FormLabel className="text-sm font-semibold font-sans text-primary">
-                                        Layered Objectives (Sub-tasks)
+                                        Layered Objectives
                                     </FormLabel>
                                     <Button
                                         type="button"
                                         variant="outline"
                                         size="sm"
                                         onClick={() => append({ id: crypto.randomUUID(), title: '' })}
-                                        className="h-10 px-4 font-sans font-semibold text-sm rounded-md border-border/50 hover:bg-primary hover:text-primary-foreground transition-all"
+                                        className={cn("font-sans font-semibold text-sm rounded-md border-border/50 hover:bg-primary hover:text-primary-foreground transition-all", compact ? "h-8 px-2" : "h-10 px-4")}
                                     >
                                         <PlusCircle className="h-4 w-4 mr-2" /> Append Objective
                                     </Button>
@@ -241,12 +248,12 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                             control={form.control}
                                             name={`subTasks.${index}.title`}
                                             render={({ field: inputField }) => (
-                                                <FormItem className="flex items-start gap-4 space-y-0 relative">
+                                                <FormItem className="flex items-start gap-2 space-y-0 relative">
                                                     <FormControl>
                                                         <Input
                                                             placeholder="Component of the larger goal..."
                                                             {...inputField}
-                                                            className="h-12 pr-12 font-sans text-base bg-background border-border/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg"
+                                                            className={cn("pr-10 font-sans text-base bg-background border-border/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg", compact ? "h-10 text-sm" : "h-12")}
                                                         />
                                                     </FormControl>
                                                     <Button
@@ -254,7 +261,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                                         variant="ghost"
                                                         size="icon"
                                                         onClick={() => remove(index)}
-                                                        className="h-12 w-12 absolute top-0 right-0 text-muted-foreground hover:text-destructive hover:bg-transparent"
+                                                        className={cn("absolute top-0 right-0 text-muted-foreground hover:text-destructive hover:bg-transparent", compact ? "h-10 w-10" : "h-12 w-12")}
                                                     >
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
@@ -264,7 +271,7 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                                         />
                                     ))}
                                     {fields.length === 0 && (
-                                        <div className="py-12 border border-dashed border-border/40 flex flex-col items-center justify-center opacity-40">
+                                        <div className={cn("border border-dashed border-border/40 flex flex-col items-center justify-center opacity-40", compact ? "py-6" : "py-12")}>
                                             <Plus className="h-8 w-8 mb-2" />
                                             <p className="text-xs font-semibold font-sans uppercase tracking-widest">Add steps to your daily cycle</p>
                                         </div>
@@ -275,10 +282,10 @@ export function TodoForm({ onSubmit, defaultValues }: TodoFormProps) {
                     </div>
                 </div>
 
-                <div className="pt-8 relative z-10">
+                <div className={cn("relative z-10", compact ? "pt-4" : "pt-8")}>
                     <Button
                         type="submit"
-                        className="w-full h-14 text-sm font-semibold font-sans transition-all rounded-xl bg-foreground text-background hover:bg-primary hover:text-primary-foreground shadow-md"
+                        className={cn("w-full text-sm font-semibold font-sans transition-all rounded-xl bg-foreground text-background hover:bg-primary hover:text-primary-foreground shadow-md", compact ? "h-10" : "h-14")}
                     >
                         Commit to Action
                     </Button>

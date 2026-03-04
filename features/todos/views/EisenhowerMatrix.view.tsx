@@ -60,7 +60,10 @@ export const EisenhowerMatrix = () => {
 
     const handleFormSubmit = (data: TodoFormValues) => {
         addTodo(data)
-        router.push(`${ROUTES.HOME}?tab=view`)
+        // If we were explicitly on the create tab, move to view tab so the URL updates
+        if (activeTab === 'create') {
+            router.push(`${ROUTES.HOME}?tab=view`)
+        }
     }
 
     return (
@@ -99,72 +102,73 @@ export const EisenhowerMatrix = () => {
 
                 <section className="relative min-h-96">
 
-                    {/* View tab — Eisenhower Matrix */}
-                    {activeTab === 'view' && (
-                        <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            <DragDropContext onDragEnd={handleDragEnd}>
-                                {/* On lg+: Urgent+Important spans 2 cols, others fill remaining 2-col row */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                                    {/* Urgent + Important — wide / hero quadrant */}
-                                    <div className="anim-matrix-quadrant lg:col-span-2 relative">
-                                        <TodoQuadrant
-                                            title="Urgent & Important"
-                                            type="urgent-important"
-                                            todos={getTodosByPriority('urgent-important')}
-                                            onToggle={toggleTodo}
-                                            onDelete={deleteTodo}
-                                            onEdit={updateTodo}
-                                            onTrackDaily={setTrackingTodo}
-                                            onSaveDailyProgress={handleSaveDashboardProgress}
-                                        />
-                                    </div>
-                                    {/* Un-Urgent + Important */}
-                                    <div className="anim-matrix-quadrant relative">
-                                        <TodoQuadrant
-                                            title="Un-Urgent & Important"
-                                            type="unurgent-important"
-                                            todos={getTodosByPriority('unurgent-important')}
-                                            onToggle={toggleTodo}
-                                            onDelete={deleteTodo}
-                                            onEdit={updateTodo}
-                                            onTrackDaily={setTrackingTodo}
-                                            onSaveDailyProgress={handleSaveDashboardProgress}
-                                        />
-                                    </div>
-                                    {/* Urgent + Un-Important */}
-                                    <div className="anim-matrix-quadrant relative">
-                                        <TodoQuadrant
-                                            title="Urgent & Un-Important"
-                                            type="urgent-unimportant"
-                                            todos={getTodosByPriority('urgent-unimportant')}
-                                            onToggle={toggleTodo}
-                                            onDelete={deleteTodo}
-                                            onEdit={updateTodo}
-                                            onTrackDaily={setTrackingTodo}
-                                            onSaveDailyProgress={handleSaveDashboardProgress}
-                                        />
-                                    </div>
-                                    {/* Un-Urgent + Un-Important */}
-                                    <div className="anim-matrix-quadrant relative md:col-span-1 lg:col-span-2">
-                                        <TodoQuadrant
-                                            title="Un-Urgent & Un-Important"
-                                            type="unurgent-unimportant"
-                                            todos={getTodosByPriority('unurgent-unimportant')}
-                                            onToggle={toggleTodo}
-                                            onDelete={deleteTodo}
-                                            onEdit={updateTodo}
-                                            onTrackDaily={setTrackingTodo}
-                                            onSaveDailyProgress={handleSaveDashboardProgress}
-                                        />
-                                    </div>
-                                </div>
-                            </DragDropContext>
-                        </div>
-                    )}
+                    {/* View & Create tabs combined — Compact side-by-side or stacked layout */}
+                    {(activeTab === 'view' || activeTab === 'create') && (
+                        <div className="flex flex-col xl:flex-row gap-6 xl:gap-8 animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            {/* Form Section: Sticky side-bar on desktop, stacked on mobile */}
+                            <div className="w-full xl:w-[320px] 2xl:w-[360px] shrink-0 xl:sticky xl:top-36 xl:self-start z-20">
+                                <TodoForm compact onSubmit={handleFormSubmit} />
+                            </div>
 
-                    {activeTab === 'create' && (
-                        <div className="max-w-4xl mx-auto py-12 anim-matrix-quadrant animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            <TodoForm onSubmit={handleFormSubmit} />
+                            {/* Matrix Section */}
+                            <div className="flex-1 min-w-0">
+                                <DragDropContext onDragEnd={handleDragEnd}>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 lg:gap-6">
+                                        {/* Urgent + Important */}
+                                        <div className="anim-matrix-quadrant lg:col-span-2 relative">
+                                            <TodoQuadrant
+                                                title="Urgent & Important"
+                                                type="urgent-important"
+                                                todos={getTodosByPriority('urgent-important')}
+                                                onToggle={toggleTodo}
+                                                onDelete={deleteTodo}
+                                                onEdit={updateTodo}
+                                                onTrackDaily={setTrackingTodo}
+                                                onSaveDailyProgress={handleSaveDashboardProgress}
+                                            />
+                                        </div>
+                                        {/* Un-Urgent + Important */}
+                                        <div className="anim-matrix-quadrant relative">
+                                            <TodoQuadrant
+                                                title="Un-Urgent & Important"
+                                                type="unurgent-important"
+                                                todos={getTodosByPriority('unurgent-important')}
+                                                onToggle={toggleTodo}
+                                                onDelete={deleteTodo}
+                                                onEdit={updateTodo}
+                                                onTrackDaily={setTrackingTodo}
+                                                onSaveDailyProgress={handleSaveDashboardProgress}
+                                            />
+                                        </div>
+                                        {/* Urgent + Un-Important */}
+                                        <div className="anim-matrix-quadrant relative">
+                                            <TodoQuadrant
+                                                title="Urgent & Un-Important"
+                                                type="urgent-unimportant"
+                                                todos={getTodosByPriority('urgent-unimportant')}
+                                                onToggle={toggleTodo}
+                                                onDelete={deleteTodo}
+                                                onEdit={updateTodo}
+                                                onTrackDaily={setTrackingTodo}
+                                                onSaveDailyProgress={handleSaveDashboardProgress}
+                                            />
+                                        </div>
+                                        {/* Un-Urgent + Un-Important */}
+                                        <div className="anim-matrix-quadrant relative md:col-span-1 lg:col-span-2">
+                                            <TodoQuadrant
+                                                title="Un-Urgent & Un-Important"
+                                                type="unurgent-unimportant"
+                                                todos={getTodosByPriority('unurgent-unimportant')}
+                                                onToggle={toggleTodo}
+                                                onDelete={deleteTodo}
+                                                onEdit={updateTodo}
+                                                onTrackDaily={setTrackingTodo}
+                                                onSaveDailyProgress={handleSaveDashboardProgress}
+                                            />
+                                        </div>
+                                    </div>
+                                </DragDropContext>
+                            </div>
                         </div>
                     )}
 
