@@ -1,7 +1,7 @@
 // For adding custom fonts with other frameworks, see:
 // https://tailwindcss.com/docs/font-family
 import type { Metadata } from "next";
-import { DM_Sans, Lora, IBM_Plex_Mono } from "next/font/google";
+import { Geist, Playfair_Display, IBM_Plex_Mono } from "next/font/google";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -12,12 +12,12 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import "./globals.css";
 import { Suspense } from "react";
 
-const fontSans = DM_Sans({
+const fontSans = Geist({
   subsets: ["latin"],
   variable: "--font-sans",
 });
 
-const fontSerif = Lora({
+const fontSerif = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-serif",
 });

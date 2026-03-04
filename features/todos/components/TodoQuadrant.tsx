@@ -1,8 +1,8 @@
 /*
  * File Name:     TodoQuadrant.tsx
- * Description:   A redesigned single quadrant of the Eisenhower Matrix with editorial flair.
- * Author:        Antigravity
- * Created Date:  2026-02-28
+ * Description:   Industrial-editorial redesign. Distinct per-quadrant identity:
+ *                colored dot + mono label header, thicker gradient accent bar,
+ *                serif italic empty state, clean mono count badge.
  */
 
 "use client"
@@ -12,21 +12,10 @@ import { Todo, DailyProgress } from '../types/todo.types'
 import { TodoItem } from './TodoItem'
 import { Droppable, DroppableProvided, DroppableStateSnapshot } from '@hello-pangea/dnd'
 import { cn } from '@/lib/utils'
-import { AlertCircle, Zap, Target, Cloud, MousePointer2 } from 'lucide-react'
+import Link from 'next/link'
+import { Plus } from 'lucide-react'
 import { JSX } from 'react/jsx-runtime'
 
-/**
- * Props for the TodoQuadrant component.
- * @property {string} title - The header text for the quadrant.
- * @property {'urgent-important' | 'urgent-unimportant' | 'unurgent-important' | 'unurgent-unimportant'} type - The matrix priority level.
- * @property {Todo[]} todos - List of tasks in this quadrant.
- * @property {Function} onToggle - Logic for checking/unchecking.
- * @property {Function} onDelete - Logic for removing a task.
- * @property {Function} onEdit - Logic for updating task data.
- * @property {Function} [onTrackDaily] - Logic for opening progress history.
- * @property {Function} [onSaveDailyProgress] - Logic for updating sub-tasks inline.
- * @property {boolean} [isDragDisabled] - Whether to prevent DND interactions.
- */
 interface TodoQuadrantProps {
     title: string
     type: 'urgent-important' | 'urgent-unimportant' | 'unurgent-important' | 'unurgent-unimportant'
@@ -39,53 +28,71 @@ interface TodoQuadrantProps {
     isDragDisabled?: boolean
 }
 
-const icons = {
-    'urgent-important': <AlertCircle className="h-6 w-6 text-destructive" />,
-    'urgent-unimportant': <Zap className="h-6 w-6 text-accent" />,
-    'unurgent-important': <Target className="h-6 w-6 text-primary" />,
-    'unurgent-unimportant': <Cloud className="h-6 w-6 text-muted-foreground/40" />,
-}
+const quadrantConfig = {
+    'urgent-important': {
+        dot: 'bg-destructive',
+        bar: 'from-destructive to-orange-500',
+        label: 'DO',
+    },
+    'urgent-unimportant': {
+        dot: 'bg-amber-400',
+        bar: 'from-amber-400 to-yellow-300',
+        label: 'DELEGATE',
+    },
+    'unurgent-important': {
+        dot: 'bg-primary',
+        bar: 'from-primary to-emerald-400',
+        label: 'SCHEDULE',
+    },
+    'unurgent-unimportant': {
+        dot: 'bg-muted-foreground/40',
+        bar: 'from-muted-foreground/40 to-muted-foreground/20',
+        label: 'ELIMINATE',
+    },
+} as const
 
-/**
- * A container for a group of tasks belonging to a specific Eisenhower quadrant.
- * Redesigned for a high-end, editorial dashboard experience.
- * 
- * @param {TodoQuadrantProps} props - Component properties.
- * @returns {JSX.Element} The rendered quadrant component.
- */
-export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, onTrackDaily, onSaveDailyProgress, isDragDisabled }: TodoQuadrantProps) {
+export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, onTrackDaily, onSaveDailyProgress, isDragDisabled }: TodoQuadrantProps): JSX.Element {
+    const config = quadrantConfig[type]
+
     return (
         <div className={cn(
-            "group/quadrant flex flex-col h-full min-h-96 transition-all duration-300 rounded-2xl border border-border/50 bg-card relative shadow-sm hover:shadow-md",
-            "hover:border-primary/30",
-            type === 'urgent-important' && "before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-destructive before:opacity-60",
-            type === 'urgent-unimportant' && "before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-accent before:opacity-60",
-            type === 'unurgent-important' && "before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-primary before:opacity-60",
-            type === 'unurgent-unimportant' && "before:absolute before:inset-x-0 before:top-0 before:h-1 before:rounded-t-2xl before:bg-muted-foreground/30 before:opacity-60"
+            "group/quadrant flex flex-col h-full min-h-80 transition-all duration-300 rounded-2xl border border-border/50 bg-card relative shadow-sm hover:shadow-md overflow-hidden",
+            "hover:border-primary/30"
         )}>
-            <div className="p-5 sm:p-6 md:p-8 pb-3 md:pb-4">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2 md:mb-4">
-                    <div className="flex items-center gap-3">
-                        {icons[type]}
-                        <h2 className="text-2xl font-sans font-semibold tracking-tight text-foreground transition-all">
-                            {title}
-                        </h2>
+            {/* Gradient accent bar — 3px, full opacity */}
+            <div className={cn("absolute inset-x-0 top-0 h-[3px] bg-gradient-to-r", config.bar)} />
+
+            {/* Header */}
+            <div className="px-5 sm:px-6 pt-6 pb-3">
+                <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-2.5">
+                        {/* Colored priority dot */}
+                        <span className={cn("h-2 w-2 rounded-full flex-shrink-0", config.dot)} />
+                        <div className="flex flex-col">
+                            <span className="label-mono text-[10px] text-muted-foreground/60">{config.label}</span>
+                            <h2 className="text-sm font-semibold font-sans tracking-tight text-foreground leading-tight">
+                                {title}
+                            </h2>
+                        </div>
                     </div>
+
+                    {/* Clean mono count badge */}
                     {todos.length > 0 && (
-                        <span className="text-sm font-semibold font-sans text-muted-foreground/70 bg-muted/50 px-2.5 py-1 rounded-full">
-                            {todos.length} Active
+                        <span className="font-mono text-[11px] tracking-wider text-muted-foreground/70 bg-muted/50 px-2 py-0.5 rounded-md border border-border/30">
+                            {todos.length}
                         </span>
                     )}
                 </div>
             </div>
 
+            {/* Drop zone */}
             <Droppable droppableId={type} isDropDisabled={isDragDisabled}>
                 {(provided: DroppableProvided, snapshot: DroppableStateSnapshot) => (
                     <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
                         className={cn(
-                            "flex-1 overflow-y-auto px-4 sm:px-6 md:px-8 pb-6 md:pb-8 space-y-1 transition-colors duration-300 scrollbar-thin scrollbar-thumb-primary/10",
+                            "flex-1 overflow-y-auto px-4 sm:px-5 pb-3 space-y-1 transition-colors duration-300",
                             snapshot.isDraggingOver && "bg-primary/[0.03]"
                         )}
                     >
@@ -104,10 +111,10 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, o
                                 />
                             ))
                         ) : (
-                            <div className="flex flex-col items-center justify-center py-20 opacity-20 transition-all duration-500 group-hover/quadrant:opacity-40">
-                                <MousePointer2 className="h-10 w-10 text-muted-foreground mb-4 rotate-12" />
-                                <p className="text-sm font-semibold font-sans tracking-tight text-muted-foreground">
-                                    Awaiting Precision
+                            // Italic serif empty state — editorial & human
+                            <div className="flex flex-col items-center justify-center py-16 text-center opacity-25 group-hover/quadrant:opacity-40 transition-opacity duration-500 select-none">
+                                <p className="font-serif italic text-sm text-muted-foreground leading-relaxed">
+                                    Nothing here yet.
                                 </p>
                             </div>
                         )}
@@ -115,6 +122,18 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, o
                     </div>
                 )}
             </Droppable>
+
+            {/* Bottom add shortcut */}
+            <div className="px-5 py-3 border-t border-border/20">
+                <Link
+                    href={`/?tab=create`}
+                    className="flex items-center gap-1.5 text-muted-foreground/50 hover:text-primary transition-colors duration-200 group/add w-fit"
+                    title={`Create task in ${title}`}
+                >
+                    <Plus className="h-3.5 w-3.5 group-hover/add:rotate-90 transition-transform duration-300" />
+                    <span className="font-mono text-[10px] tracking-wider uppercase">Add task</span>
+                </Link>
+            </div>
         </div>
     )
 }
