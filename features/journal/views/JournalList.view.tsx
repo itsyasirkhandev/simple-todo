@@ -132,7 +132,7 @@ export const JournalListView = () => {
 
             {/* FAB */}
             {entries.length > 0 && (
-                <div className="anim-list-fab fixed bottom-8 right-8 z-40">
+                <div className="anim-list-fab fixed bottom-24 md:bottom-8 right-6 md:right-8 z-40">
                     <Link href="/journal/create">
                         <Button
                             size="icon"
@@ -143,6 +143,7 @@ export const JournalListView = () => {
                     </Link>
                 </div>
             )}
+
 
             {/* Reading Dialog */}
             <Dialog open={!!selectedEntry} onOpenChange={(open) => !open && setSelectedEntry(null)}>
