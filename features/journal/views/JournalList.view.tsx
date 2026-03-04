@@ -105,10 +105,10 @@ export const JournalListView = () => {
                                         </span>
                                     </div>
 
-                                    {/* Single col on mobile, masonry from md+ */}
-                                    <div className="grid grid-cols-1 md:columns-2 lg:columns-3 gap-4 sm:gap-6 sm:gap-8 md:grid-cols-none">
+                                    {/* Intrinsic CSS Grid Layout for responsive cards */}
+                                    <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] sm:grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 sm:gap-6 sm:gap-8 items-stretch">
                                         {monthEntries.map((entry) => (
-                                            <div key={entry.id} className="anim-list-card break-inside-avoid mb-6">
+                                            <div key={entry.id} className="anim-list-card h-full">
                                                 <JournalCard
                                                     entry={entry}
                                                     onClick={() => router.push(`/journal/${entry.id}`)}
@@ -152,7 +152,7 @@ interface JournalCardProps {
 }
 
 const JournalCard = ({ entry, onClick, onDelete }: JournalCardProps) => (
-    <div className="group relative text-left bg-card hover:bg-card/90 backdrop-blur-xl border border-border/50 rounded-2xl transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-lg hover:border-primary/30 overflow-hidden">
+    <div className="group relative text-left bg-card hover:bg-card/90 backdrop-blur-xl border border-border/50 rounded-2xl transition-all duration-500 ease-out hover:-translate-y-1 hover:shadow-lg hover:border-primary/30 overflow-hidden h-full flex flex-col">
         {/* Hover gradient glow */}
         <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
@@ -205,7 +205,7 @@ const JournalCard = ({ entry, onClick, onDelete }: JournalCardProps) => (
 
         {/* Card body — clickable */}
         <div
-            className="px-5 pb-5 cursor-pointer flex flex-col gap-3"
+            className="px-5 pb-5 cursor-pointer flex flex-col gap-3 flex-1"
             onClick={onClick}
             role="button"
             tabIndex={0}
@@ -221,7 +221,7 @@ const JournalCard = ({ entry, onClick, onDelete }: JournalCardProps) => (
                 </p>
             )}
 
-            <div className="flex items-center justify-between pt-2 border-t border-border/20 text-[10px] font-mono text-muted-foreground/50 tracking-wider">
+            <div className="flex items-center justify-between pt-2 border-t border-border/20 text-[10px] font-mono text-muted-foreground/50 tracking-wider mt-auto">
                 <span className="flex items-center gap-1.5">
                     <History className="h-3 w-3" />
                     {format(new Date(entry.createdAt), 'h:mm a')}
