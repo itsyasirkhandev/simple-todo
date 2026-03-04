@@ -1,9 +1,4 @@
-import dynamic from 'next/dynamic';
-
-const JournalDetailView = dynamic(
-    () => import('@/features/journal').then((mod) => mod.JournalDetailView),
-    { ssr: false } // Client-side rendering since data is in localStorage
-);
+import { JournalDetailView } from '@/features/journal';
 
 interface JournalDetailPageProps {
     params: Promise<{
