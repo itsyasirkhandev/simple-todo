@@ -171,7 +171,7 @@ export const EisenhowerMatrix = () => {
                     )}
 
                     {activeTab === 'track' && (
-                        <div className="anim-matrix-quadrant animate-in fade-in slide-in-from-bottom-2 duration-300">
+                        <div>
                             <DailyTrackingDashboard dailyTodos={todos.filter(t => t.isDaily)} />
                         </div>
                     )}
