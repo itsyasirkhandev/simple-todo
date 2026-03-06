@@ -58,3 +58,12 @@ export interface Todo {
   dailyProgress?: Record<string, DailyProgress>;
 }
 
+/**
+ * Represents a soft-deleted Todo stored in the recycle bin.
+ * @property {Todo} todo - The original Todo data, preserved for potential restoration.
+ * @property {number} deletedAt - Timestamp of when the task was moved to the recycle bin.
+ */
+export interface DeletedTodo {
+  todo: Todo;
+  deletedAt: number;
+}

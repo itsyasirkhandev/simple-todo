@@ -1,6 +1,8 @@
 /*
  * File Name:     useTodos.ts
  * Description:   Hook for managing Todo state with LocalStorage persistence.
+ *                Includes recycle bin support for soft-delete, restore, and
+ *                permanent delete operations.
  * Author:        Antigravity
  * Created Date:  2026-02-28
  */
@@ -9,18 +11,20 @@
 
 import { useState, useEffect, useCallback, useSyncExternalStore, useRef } from 'react';
 import { toast } from 'sonner';
-import { Todo, TodoPriority } from '../types/todo.types';
+import { Todo, TodoPriority, DeletedTodo } from '../types/todo.types';
 import { TodoFormValues } from '../schemas/todo.schema';
 
 const STORAGE_KEY = 'eisenhower-todos';
+const DELETED_STORAGE_KEY = 'eisenhower-deleted-todos';
 
 const emptySubscribe = () => () => { };
 
 /**
  * Custom hook to manage Todo state with LocalStorage persistence.
  * Handles adding, updating, deleting, and reordering todos across quadrants.
+ * Supports soft-delete (recycle bin), restore, and permanent delete.
  * 
- * @returns {object} { todos, isLoaded, addTodo, updateTodo, deleteTodo, toggleTodo, getTodosByPriority, reorderTodo }
+ * @returns {object} { todos, deletedTodos, isLoaded, addTodo, updateTodo, deleteTodo, toggleTodo, getTodosByPriority, reorderTodo, restoreTodo, permanentlyDeleteTodo, emptyRecycleBin }
  */
 export const useTodos = () => {
     // This safely returns false on the server and true on the client without useEffect setter
@@ -44,6 +48,20 @@ export const useTodos = () => {
         return [];
     });
 
+    const [deletedTodos, setDeletedTodos] = useState<DeletedTodo[]>(() => {
+        if (typeof window !== 'undefined') {
+            const stored = localStorage.getItem(DELETED_STORAGE_KEY);
+            if (stored) {
+                try {
+                    return JSON.parse(stored);
+                } catch (e) {
+                    console.error('Failed to parse deleted todos from localStorage', e);
+                }
+            }
+        }
+        return [];
+    });
+
     const isLoaded = isClient;
 
     const todosRef = useRef<Todo[]>(todos);
@@ -51,12 +69,19 @@ export const useTodos = () => {
         todosRef.current = todos;
     }, [todos]);
 
-    // Sync to localStorage
+    // Sync todos to localStorage
     useEffect(() => {
         if (isLoaded) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
         }
     }, [todos, isLoaded]);
+
+    // Sync deleted todos to localStorage
+    useEffect(() => {
+        if (isLoaded) {
+            localStorage.setItem(DELETED_STORAGE_KEY, JSON.stringify(deletedTodos));
+        }
+    }, [deletedTodos, isLoaded]);
 
     const addTodo = useCallback((data: TodoFormValues) => {
         setTodos((prev) => {
@@ -86,13 +111,49 @@ export const useTodos = () => {
         );
     }, []);
 
+    // Soft delete — move to recycle bin
     const deleteTodo = useCallback((id: string) => {
         const todo = todosRef.current.find((t: Todo) => t.id === id);
         if (todo) {
-            toast.success(`Task "${todo.title}" deleted!`);
+            // Move to recycle bin
+            setDeletedTodos((prev) => [
+                { todo: { ...todo }, deletedAt: Date.now() },
+                ...prev,
+            ]);
+            toast.success(`Task "${todo.title}" moved to recycle bin`);
         }
         setTodos((prev) => prev.filter((t) => t.id !== id));
     }, []);
+
+    // Restore a todo from recycle bin
+    const restoreTodo = useCallback((id: string) => {
+        setDeletedTodos((prev) => {
+            const entry = prev.find((d) => d.todo.id === id);
+            if (entry) {
+                setTodos((prevTodos) => [entry.todo, ...prevTodos]);
+                toast.success(`Task "${entry.todo.title}" restored!`);
+            }
+            return prev.filter((d) => d.todo.id !== id);
+        });
+    }, []);
+
+    // Permanently delete from recycle bin
+    const permanentlyDeleteTodo = useCallback((id: string) => {
+        setDeletedTodos((prev) => {
+            const entry = prev.find((d) => d.todo.id === id);
+            if (entry) {
+                toast.success(`Task "${entry.todo.title}" permanently deleted`);
+            }
+            return prev.filter((d) => d.todo.id !== id);
+        });
+    }, []);
+
+    // Empty the entire recycle bin
+    const emptyRecycleBin = useCallback(() => {
+        const count = deletedTodos.length;
+        setDeletedTodos([]);
+        toast.success(`${count} task${count !== 1 ? 's' : ''} permanently deleted`);
+    }, [deletedTodos.length]);
 
     const toggleTodo = useCallback((id: string) => {
         setTodos((prev) =>
@@ -172,6 +233,7 @@ export const useTodos = () => {
 
     return {
         todos,
+        deletedTodos,
         isLoaded,
         addTodo,
         updateTodo,
@@ -179,5 +241,8 @@ export const useTodos = () => {
         toggleTodo,
         getTodosByPriority,
         reorderTodo,
+        restoreTodo,
+        permanentlyDeleteTodo,
+        emptyRecycleBin,
     };
 };
