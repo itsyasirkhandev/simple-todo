@@ -7,7 +7,7 @@
 
 "use client"
 
-import React, { useRef, useState } from 'react'
+import React, { useRef } from 'react'
 import { DragDropContext, DropResult } from '@hello-pangea/dnd'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ROUTES } from '@/constants/routes'
@@ -16,9 +16,9 @@ import { useTodos } from '../hooks/useTodos'
 import { useMatrixAnimations } from '../hooks/useTodoAnimations'
 import { TodoQuadrant } from '../components/TodoQuadrant'
 import { TodoForm } from '../components/TodoForm'
-import { DailyTrackerModal } from '../components/DailyTrackerModal'
+
 import { DailyTrackingDashboard } from '../components/DailyTrackingDashboard'
-import { Todo, DailyProgress } from '../types/todo.types'
+import { DailyProgress } from '../types/todo.types'
 import { TodoFormValues } from '../schemas/todo.schema'
 
 type TabView = 'view' | 'create' | 'track'
@@ -28,7 +28,7 @@ export const EisenhowerMatrix = () => {
     const searchParams = useSearchParams()
     const router = useRouter()
     const containerRef = useRef<HTMLDivElement>(null)
-    const [trackingTodo, setTrackingTodo] = useState<Todo | null>(null)
+
 
     const activeTab = (searchParams.get('tab') as TabView) || 'view'
 
@@ -43,13 +43,7 @@ export const EisenhowerMatrix = () => {
         reorderTodo(draggableId, source.droppableId as TodoPriority, destination.droppableId as TodoPriority, source.index, destination.index)
     }
 
-    const handleSaveDailyProgress = (todoId: string, dateKey: string, progress: DailyProgress) => {
-        if (!trackingTodo) return
-        const updatedDailyProgress = { ...(trackingTodo.dailyProgress || {}), [dateKey]: progress }
-        const updatedTodo = { ...trackingTodo, dailyProgress: updatedDailyProgress }
-        updateTodo(trackingTodo.id, { dailyProgress: updatedDailyProgress })
-        setTrackingTodo(updatedTodo)
-    }
+
 
     const handleSaveDashboardProgress = (todoId: string, dateKey: string, progress: DailyProgress) => {
         const targetTodo = todos.find(t => t.id === todoId)
@@ -123,7 +117,7 @@ export const EisenhowerMatrix = () => {
                                                 onToggle={toggleTodo}
                                                 onDelete={deleteTodo}
                                                 onEdit={updateTodo}
-                                                onTrackDaily={setTrackingTodo}
+
                                                 onSaveDailyProgress={handleSaveDashboardProgress}
                                             />
                                         </div>
@@ -136,7 +130,6 @@ export const EisenhowerMatrix = () => {
                                                 onToggle={toggleTodo}
                                                 onDelete={deleteTodo}
                                                 onEdit={updateTodo}
-                                                onTrackDaily={setTrackingTodo}
                                                 onSaveDailyProgress={handleSaveDashboardProgress}
                                             />
                                         </div>
@@ -149,7 +142,6 @@ export const EisenhowerMatrix = () => {
                                                 onToggle={toggleTodo}
                                                 onDelete={deleteTodo}
                                                 onEdit={updateTodo}
-                                                onTrackDaily={setTrackingTodo}
                                                 onSaveDailyProgress={handleSaveDashboardProgress}
                                             />
                                         </div>
@@ -162,7 +154,6 @@ export const EisenhowerMatrix = () => {
                                                 onToggle={toggleTodo}
                                                 onDelete={deleteTodo}
                                                 onEdit={updateTodo}
-                                                onTrackDaily={setTrackingTodo}
                                                 onSaveDailyProgress={handleSaveDashboardProgress}
                                             />
                                         </div>
@@ -187,14 +178,7 @@ export const EisenhowerMatrix = () => {
                 </section>
             </main>
 
-            {trackingTodo && (
-                <DailyTrackerModal
-                    isOpen={!!trackingTodo}
-                    onClose={() => setTrackingTodo(null)}
-                    todo={trackingTodo}
-                    onSave={handleSaveDailyProgress}
-                />
-            )}
+
         </div>
     )
 }

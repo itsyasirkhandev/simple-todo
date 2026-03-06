@@ -8,7 +8,7 @@
 "use client"
 
 import React, { useRef, useState, useCallback } from 'react'
-import { Trash2, CheckCircle2, Clock, Pencil, X, Check, CalendarDays, ChevronDown, ListChecks, Layers, Plus, GripVertical, PlusCircle } from 'lucide-react'
+import { Trash2, CheckCircle2, Clock, Pencil, X, Check, ChevronDown, ListChecks, Layers, Plus, GripVertical, PlusCircle } from 'lucide-react'
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd'
 import { Todo, DailyProgress } from '../types/todo.types'
 import { useTodoItemAnimations } from '../hooks/useTodoAnimations'
@@ -27,13 +27,13 @@ interface TodoItemProps {
     onToggle: (id: string) => void
     onDelete: (id: string) => void
     onEdit: (id: string, data: Partial<Todo>) => void
-    onTrackDaily?: (todo: Todo) => void
+
     onSaveDailyProgress?: (todoId: string, dateKey: string, progress: DailyProgress) => void
     isDragDisabled?: boolean
     className?: string
 }
 
-export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily, onSaveDailyProgress, isDragDisabled, className }: TodoItemProps): JSX.Element {
+export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onSaveDailyProgress, isDragDisabled, className }: TodoItemProps): JSX.Element {
     const containerRef = useRef<HTMLDivElement>(null)
     const [isEditing, setIsEditing] = useState(false)
     const [editTitle, setEditTitle] = useState(todo.title)
@@ -330,17 +330,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
 
                                 {/* Desktop: hover-reveal action column */}
                                 <div className="hidden sm:flex flex-col gap-1.5 shrink-0 opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-200">
-                                    {isDaily && !isEditing && onTrackDaily && (
-                                        <Button
-                                            variant="outline"
-                                            size="icon"
-                                            onClick={() => onTrackDaily(todo)}
-                                            className="h-8 w-8 border-border/40 bg-background/80 hover:bg-primary hover:text-primary-foreground rounded-lg shadow-sm transition-all"
-                                            title="View History"
-                                        >
-                                            <CalendarDays className="h-3.5 w-3.5" />
-                                        </Button>
-                                    )}
+
                                     {!isEditing && (
                                         <Button
                                             variant="outline"
@@ -387,16 +377,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                         <Pencil className="h-4 w-4" />
                                         <span className="font-mono text-[9px] tracking-wider uppercase">Edit</span>
                                     </button>
-                                    {/* Track (daily only) */}
-                                    {isDaily && onTrackDaily && (
-                                        <button
-                                            onClick={() => onTrackDaily(todo)}
-                                            className="flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 text-muted-foreground hover:text-primary hover:bg-primary/5 transition-colors active:scale-95"
-                                        >
-                                            <CalendarDays className="h-4 w-4" />
-                                            <span className="font-mono text-[9px] tracking-wider uppercase">History</span>
-                                        </button>
-                                    )}
+
                                     {/* Delete */}
                                     <button
                                         onClick={handleDelete}

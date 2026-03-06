@@ -23,7 +23,7 @@ interface TodoQuadrantProps {
     onToggle: (id: string) => void
     onDelete: (id: string) => void
     onEdit: (id: string, data: Partial<Todo>) => void
-    onTrackDaily?: (todo: Todo) => void
+
     onSaveDailyProgress?: (todoId: string, dateKey: string, progress: DailyProgress) => void
     isDragDisabled?: boolean
 }
@@ -51,7 +51,7 @@ const quadrantConfig = {
     },
 } as const
 
-export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, onTrackDaily, onSaveDailyProgress, isDragDisabled }: TodoQuadrantProps): JSX.Element {
+export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, onSaveDailyProgress, isDragDisabled }: TodoQuadrantProps): JSX.Element {
     const config = quadrantConfig[type]
 
     return (
@@ -105,7 +105,7 @@ export function TodoQuadrant({ title, type, todos, onToggle, onDelete, onEdit, o
                                     onToggle={onToggle}
                                     onDelete={onDelete}
                                     onEdit={onEdit}
-                                    onTrackDaily={onTrackDaily}
+
                                     onSaveDailyProgress={onSaveDailyProgress}
                                     isDragDisabled={isDragDisabled}
                                 />
