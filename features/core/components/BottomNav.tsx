@@ -10,7 +10,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { useSearchParams, usePathname } from 'next/navigation'
-import { LayoutGrid, PlusCircle, Activity, BookOpen } from 'lucide-react'
+import { LayoutGrid, PlusCircle, Activity, BookOpen, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ROUTES } from '@/constants/routes'
 import { useTodos } from '@/features/todos'
@@ -31,6 +31,7 @@ export const BottomNav = () => {
     const activeTab = searchParams.get('tab') || 'view'
     const isHome = pathname === ROUTES.HOME
     const isJournal = pathname === ROUTES.JOURNAL || pathname.startsWith('/journal')
+    const isRecycleBin = pathname === ROUTES.RECYCLE_BIN
 
     const items: BottomNavItem[] = [
         {
@@ -57,6 +58,12 @@ export const BottomNav = () => {
             icon: <BookOpen className="h-5 w-5" />,
             label: 'Journal',
             isActive: isJournal,
+        },
+        {
+            href: ROUTES.RECYCLE_BIN,
+            icon: <Trash2 className="h-5 w-5" />,
+            label: 'Bin',
+            isActive: isRecycleBin,
         },
     ]
 

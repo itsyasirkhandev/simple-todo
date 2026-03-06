@@ -8,6 +8,7 @@ export const ROUTES = {
     // Public Routes
     HOME: '/',
     JOURNAL: '/journal',
+    RECYCLE_BIN: '/recycle-bin',
 
     // Auth Routes
     AUTH: {

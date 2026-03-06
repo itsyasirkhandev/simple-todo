@@ -10,7 +10,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { useSearchParams, usePathname } from 'next/navigation'
-import { LayoutGrid, PlusCircle, Activity, Book } from 'lucide-react'
+import { LayoutGrid, PlusCircle, Activity, Book, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ROUTES } from '@/constants/routes'
 import { useTodos } from '@/features/todos'
@@ -28,6 +28,7 @@ export const TopNav = () => {
     const activeTab = searchParams.get('tab') || 'view'
     const isHome = pathname === ROUTES.HOME
     const isJournal = pathname === ROUTES.JOURNAL || pathname.startsWith('/journal')
+    const isRecycleBin = pathname === ROUTES.RECYCLE_BIN
 
     return (
         <header className="hidden sm:block fixed top-6 left-8 z-40 animate-in fade-in slide-in-from-top-4 duration-700">
@@ -89,6 +90,27 @@ export const TopNav = () => {
                     <Book className={cn("h-3.5 w-3.5 transition-transform group-hover:scale-110", isJournal && "text-primary")} />
                     <span className="hidden sm:inline font-mono tracking-wider text-[10px] uppercase">Journal</span>
                     <span className="sm:hidden font-mono tracking-wider text-[10px] uppercase">J</span>
+                </Link>
+
+                {/* Recycle Bin */}
+                <Link
+                    href={ROUTES.RECYCLE_BIN}
+                    className={cn(
+                        "group relative flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 text-xs rounded-full border transition-all duration-300",
+                        isRecycleBin
+                            ? "border-destructive/50 bg-destructive/10 text-destructive font-semibold"
+                            : "border-border/40 text-muted-foreground hover:border-destructive/30 hover:text-foreground hover:bg-muted/30"
+                    )}
+                >
+                    <Trash2 className={cn("h-3.5 w-3.5 transition-transform group-hover:scale-110", isRecycleBin && "text-destructive")} />
+                    <span className="hidden sm:inline font-mono tracking-wider text-[10px] uppercase">Bin</span>
+                    <span className="sm:hidden font-mono tracking-wider text-[10px] uppercase">B</span>
+                    {/* Badge when items exist */}
+                    {isLoaded && !isRecycleBin && todos.length === 0 && false && (
+                        <span className="absolute top-2 right-2 flex h-1.5 w-1.5">
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-destructive" />
+                        </span>
+                    )}
                 </Link>
             </nav>
         </header>

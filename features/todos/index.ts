@@ -12,4 +12,5 @@ export * from './hooks/useTodoQueries';
 export * from './hooks/useTodoMutations';
 export * from './services/todo.service';
 export * from './views/EisenhowerMatrix.view';
+export * from './views/RecycleBin.view';
 
