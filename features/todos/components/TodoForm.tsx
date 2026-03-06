@@ -163,25 +163,25 @@ export function TodoForm({ onSubmit, defaultValues, compact }: TodoFormProps) {
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent className="border-border/50 bg-card rounded-lg shadow-md">
-                                                <SelectItem value="urgent-important" className="focus:bg-destructive/10 focus:text-destructive py-3">
+                                                <SelectItem value="urgent-important" className="focus:bg-transparent focus:text-current py-3">
                                                     <div className="flex items-center gap-3">
                                                         <AlertCircle className="h-5 w-5 text-destructive" />
                                                         <span className="font-semibold">Urgent & Important</span>
                                                     </div>
                                                 </SelectItem>
-                                                <SelectItem value="urgent-unimportant" className="focus:bg-accent/10 focus:text-accent py-3">
+                                                <SelectItem value="urgent-unimportant" className="focus:bg-transparent focus:text-current py-3">
                                                     <div className="flex items-center gap-3">
                                                         <Zap className="h-5 w-5 text-accent" />
                                                         <span className="font-semibold">Urgent & Un-Important</span>
                                                     </div>
                                                 </SelectItem>
-                                                <SelectItem value="unurgent-important" className="focus:bg-primary/10 focus:text-primary py-3">
+                                                <SelectItem value="unurgent-important" className="focus:bg-transparent focus:text-current py-3">
                                                     <div className="flex items-center gap-3">
                                                         <Target className="h-5 w-5 text-primary" />
                                                         <span className="font-semibold">Un-Urgent & Important</span>
                                                     </div>
                                                 </SelectItem>
-                                                <SelectItem value="unurgent-unimportant" className="focus:bg-muted/10 focus:text-muted-foreground py-3">
+                                                <SelectItem value="unurgent-unimportant" className="focus:bg-transparent focus:text-current py-3">
                                                     <div className="flex items-center gap-3">
                                                         <Cloud className="h-5 w-5 text-muted-foreground/60" />
                                                         <span className="font-semibold">Un-Urgent & Un-Important</span>
