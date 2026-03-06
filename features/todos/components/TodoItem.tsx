@@ -7,8 +7,8 @@
 
 "use client"
 
-import React, { useRef, useState } from 'react'
-import { Trash2, CheckCircle2, Clock, Pencil, X, Check, CalendarDays, ChevronDown, ListChecks, Layers, Plus, GripVertical } from 'lucide-react'
+import React, { useRef, useState, useCallback } from 'react'
+import { Trash2, CheckCircle2, Clock, Pencil, X, Check, CalendarDays, ChevronDown, ListChecks, Layers, Plus, GripVertical, PlusCircle } from 'lucide-react'
 import { Draggable, DraggableProvided, DraggableStateSnapshot } from '@hello-pangea/dnd'
 import { Todo, DailyProgress } from '../types/todo.types'
 import { useTodoItemAnimations } from '../hooks/useTodoAnimations'
@@ -38,6 +38,8 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
     const [isEditing, setIsEditing] = useState(false)
     const [editTitle, setEditTitle] = useState(todo.title)
     const [editDescription, setEditDescription] = useState(todo.description || '')
+    const [editSubTasks, setEditSubTasks] = useState<{ id: string; title: string }[]>(todo.subTasks ?? [])
+    const [newSubTaskTitle, setNewSubTaskTitle] = useState('')
     const [isSubTasksOpen, setIsSubTasksOpen] = useState(false)
 
     const { animateDelete } = useTodoItemAnimations(containerRef)
@@ -49,21 +51,51 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
     const subTasks = todo.subTasks ?? []
     const existingProgress = todo.dailyProgress?.[todayKey]
     const completedSubTaskIds = existingProgress?.completedSubTasks ?? []
-    const completedCount = subTasks.filter(st => completedSubTaskIds.includes(st.id)).length
+    // For daily tasks: use dailyProgress. For non-daily tasks: also track via dailyProgress or a simple completed list
+    const nonDailyCompletedIds = existingProgress?.completedSubTasks ?? []
+    const completedCount = isDaily
+        ? subTasks.filter(st => completedSubTaskIds.includes(st.id)).length
+        : subTasks.filter(st => nonDailyCompletedIds.includes(st.id)).length
     const totalSubTasks = subTasks.length
     const allSubTasksCompleted = totalSubTasks > 0 && completedCount === totalSubTasks
-    const isCompleted = isDaily ? allSubTasksCompleted : todo.isCompleted
+    const isCompleted = isDaily ? allSubTasksCompleted : (totalSubTasks > 0 ? allSubTasksCompleted : todo.isCompleted)
 
     const handleSave = () => {
         if (!editTitle.trim()) return
-        onEdit(todo.id, { title: editTitle, description: editDescription })
+        // Filter out any subtasks with empty titles
+        const cleanedSubTasks = editSubTasks.filter(st => st.title.trim())
+        onEdit(todo.id, { title: editTitle, description: editDescription, subTasks: cleanedSubTasks })
         setIsEditing(false)
     }
 
     const cancelEdit = () => {
         setEditTitle(todo.title)
         setEditDescription(todo.description || '')
+        setEditSubTasks(todo.subTasks ?? [])
+        setNewSubTaskTitle('')
         setIsEditing(false)
+    }
+
+    const startEditing = useCallback(() => {
+        setEditTitle(todo.title)
+        setEditDescription(todo.description || '')
+        setEditSubTasks(todo.subTasks ?? [])
+        setNewSubTaskTitle('')
+        setIsEditing(true)
+    }, [todo.title, todo.description, todo.subTasks])
+
+    const addEditSubTask = () => {
+        if (!newSubTaskTitle.trim()) return
+        setEditSubTasks(prev => [...prev, { id: crypto.randomUUID(), title: newSubTaskTitle.trim() }])
+        setNewSubTaskTitle('')
+    }
+
+    const removeEditSubTask = (id: string) => {
+        setEditSubTasks(prev => prev.filter(st => st.id !== id))
+    }
+
+    const updateEditSubTaskTitle = (id: string, title: string) => {
+        setEditSubTasks(prev => prev.map(st => st.id === id ? { ...st, title } : st))
     }
 
     const handleDelete = () => {
@@ -170,7 +202,68 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                                     onChange={(e) => setEditDescription(e.target.value)}
                                                     className="min-h-20 text-sm font-normal font-sans bg-background/50 border-border/50 focus-visible:border-primary rounded-lg resize-none"
                                                 />
-                                                <div className="flex gap-2">
+
+                                                {/* Subtasks inline editor */}
+                                                <div className="space-y-2 pt-2 border-t border-border/30">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-xs font-semibold font-sans text-primary flex items-center gap-1.5">
+                                                            <ListChecks className="h-3.5 w-3.5" />
+                                                            Sub Tasks
+                                                        </span>
+                                                        <span className="font-mono text-[10px] text-muted-foreground/60">
+                                                            {editSubTasks.length} {editSubTasks.length === 1 ? 'item' : 'items'}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Existing subtasks */}
+                                                    {editSubTasks.map((st) => (
+                                                        <div key={st.id} className="flex items-center gap-2">
+                                                            <Input
+                                                                value={st.title}
+                                                                onChange={(e) => updateEditSubTaskTitle(st.id, e.target.value)}
+                                                                className="h-9 text-sm font-sans bg-background/50 border-border/50 focus-visible:border-primary rounded-lg flex-1"
+                                                                placeholder="Sub task title..."
+                                                            />
+                                                            <Button
+                                                                type="button"
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                onClick={() => removeEditSubTask(st.id)}
+                                                                className="h-9 w-9 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                                                            >
+                                                                <Trash2 className="h-3.5 w-3.5" />
+                                                            </Button>
+                                                        </div>
+                                                    ))}
+
+                                                    {/* New subtask input */}
+                                                    <div className="flex items-center gap-2">
+                                                        <Input
+                                                            value={newSubTaskTitle}
+                                                            onChange={(e) => setNewSubTaskTitle(e.target.value)}
+                                                            onKeyDown={(e) => {
+                                                                if (e.key === 'Enter') {
+                                                                    e.preventDefault()
+                                                                    addEditSubTask()
+                                                                }
+                                                            }}
+                                                            className="h-9 text-sm font-sans bg-background/50 border-dashed border-border/50 focus-visible:border-primary rounded-lg flex-1"
+                                                            placeholder="Add a new sub task..."
+                                                        />
+                                                        <Button
+                                                            type="button"
+                                                            variant="outline"
+                                                            size="icon"
+                                                            onClick={addEditSubTask}
+                                                            disabled={!newSubTaskTitle.trim()}
+                                                            className="h-9 w-9 shrink-0 border-border/50 hover:bg-primary hover:text-primary-foreground rounded-lg transition-all"
+                                                        >
+                                                            <PlusCircle className="h-3.5 w-3.5" />
+                                                        </Button>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex gap-2 pt-1">
                                                     <Button size="sm" onClick={handleSave} className="h-8 px-3 text-xs font-semibold rounded-md">
                                                         <Check className="h-3 w-3 mr-1.5" /> Save
                                                     </Button>
@@ -195,6 +288,11 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                                                 {totalSubTasks > 0 ? `${completedCount}/${totalSubTasks}` : 'Daily'}
                                                             </span>
                                                         )}
+                                                        {!isDaily && totalSubTasks > 0 && (
+                                                            <span className="font-mono text-[10px] tracking-wider text-primary/80 bg-primary/10 px-1.5 py-0.5 rounded shrink-0">
+                                                                {completedCount}/{totalSubTasks}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                     {todo.description && (
                                                         <p className="text-xs font-normal text-muted-foreground font-sans line-clamp-2 leading-relaxed break-words">
@@ -203,8 +301,8 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                                     )}
                                                 </div>
 
-                                                {/* Subtask progress bar */}
-                                                {isDaily && totalSubTasks > 0 && (
+                                                {/* Subtask progress bar — shown for all tasks with subtasks */}
+                                                {totalSubTasks > 0 && (
                                                     <div className="w-full h-[2px] bg-muted/60 rounded-full overflow-hidden">
                                                         <div
                                                             className="h-full bg-primary rounded-full transition-all duration-500"
@@ -218,7 +316,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                                         <Clock className="h-2.5 w-2.5" />
                                                         {format(new Date(todo.createdAt), "MMM d, yyyy")}
                                                     </span>
-                                                    {isDaily && totalSubTasks > 0 && (
+                                                    {totalSubTasks > 0 && (
                                                         <span className="flex items-center gap-1 text-primary/50">
                                                             <ListChecks className="h-2.5 w-2.5" />
                                                             {totalSubTasks} steps
@@ -247,7 +345,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                         <Button
                                             variant="outline"
                                             size="icon"
-                                            onClick={() => setIsEditing(true)}
+                                            onClick={startEditing}
                                             className="h-8 w-8 border-border/40 bg-background/80 hover:bg-foreground hover:text-background rounded-lg shadow-sm transition-all"
                                         >
                                             <Pencil className="h-3.5 w-3.5" />
@@ -283,7 +381,7 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                     )}
                                     {/* Edit */}
                                     <button
-                                        onClick={() => setIsEditing(true)}
+                                        onClick={startEditing}
                                         className="flex-1 flex flex-col items-center justify-center py-2.5 gap-0.5 text-muted-foreground hover:text-foreground hover:bg-muted/20 transition-colors active:scale-95"
                                     >
                                         <Pencil className="h-4 w-4" />
@@ -310,14 +408,14 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                 </div>
                             )}
 
-                            {/* Collapsible subtask list */}
-                            {isDaily && totalSubTasks > 0 && !isEditing && (
+                            {/* Collapsible subtask list — shown for all tasks with subtasks */}
+                            {totalSubTasks > 0 && !isEditing && (
                                 <Collapsible open={isSubTasksOpen} onOpenChange={setIsSubTasksOpen}>
                                     <CollapsibleTrigger asChild>
                                         <button className="w-full flex items-center justify-between px-4 py-2.5 border-t border-border/20 bg-muted/5 hover:bg-muted/10 transition-colors">
                                             <span className="font-mono text-[10px] tracking-wider text-muted-foreground flex items-center gap-2 uppercase">
                                                 <Plus className={cn("h-3 w-3 transition-transform duration-200", isSubTasksOpen && "rotate-45")} />
-                                                Progress Details
+                                                Sub Tasks ({completedCount}/{totalSubTasks})
                                             </span>
                                             <ChevronDown className={cn("h-3 w-3 text-muted-foreground/50 transition-transform duration-200", isSubTasksOpen && "rotate-180")} />
                                         </button>
@@ -325,7 +423,9 @@ export function TodoItem({ todo, index, onToggle, onDelete, onEdit, onTrackDaily
                                     <CollapsibleContent>
                                         <div className="border-t border-border/10 bg-muted/5 px-4 py-3 space-y-2.5">
                                             {subTasks.map((subTask) => {
-                                                const isChecked = completedSubTaskIds.includes(subTask.id)
+                                                const isChecked = isDaily
+                                                    ? completedSubTaskIds.includes(subTask.id)
+                                                    : nonDailyCompletedIds.includes(subTask.id)
                                                 return (
                                                     <div
                                                         key={subTask.id}

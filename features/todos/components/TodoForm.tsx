@@ -8,8 +8,8 @@
 
 "use client"
 
-import React, { useEffect } from 'react'
-import { useForm, useFieldArray, useWatch } from 'react-hook-form'
+import React from 'react'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Plus, AlertCircle, Zap, Target, Cloud, Trash2, Sparkles, PlusCircle } from 'lucide-react'
 import { todoSchema, TodoFormValues } from '../schemas/todo.schema'
@@ -75,17 +75,6 @@ export function TodoForm({ onSubmit, defaultValues, compact }: TodoFormProps) {
         control: form.control,
     });
 
-    const isDaily = useWatch({
-        control: form.control,
-        name: "isDaily",
-    });
-
-    // Automatically manage sub-tasks lifecycle based on daily status
-    useEffect(() => {
-        if (!isDaily && fields.length > 0) {
-            form.setValue('subTasks', [], { shouldValidate: true });
-        }
-    }, [isDaily, fields.length, form]);
 
     const handleFormSubmit = (values: TodoFormValues) => {
         onSubmit(values)
@@ -225,60 +214,58 @@ export function TodoForm({ onSubmit, defaultValues, compact }: TodoFormProps) {
                             />
                         </div>
 
-                        {isDaily && (
-                            <div className={cn("pt-4 animate-in fade-in slide-in-from-top-4 duration-500", compact ? "space-y-4" : "space-y-6")}>
-                                <div className={cn("flex items-start sm:items-center justify-between gap-4 border-b border-border/50", compact ? "flex-row pb-2" : "flex-col sm:flex-row pb-4")}>
-                                    <FormLabel className="text-sm font-semibold font-sans text-primary">
-                                        Layered Objectives
-                                    </FormLabel>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => append({ id: crypto.randomUUID(), title: '' })}
-                                        className={cn("font-sans font-semibold text-sm rounded-md border-border/50 hover:bg-primary hover:text-primary-foreground transition-all", compact ? "h-8 px-2" : "h-10 px-4")}
-                                    >
-                                        <PlusCircle className="h-4 w-4 mr-2" /> Append Objective
-                                    </Button>
-                                </div>
-                                <div className="space-y-3">
-                                    {fields.map((field, index) => (
-                                        <FormField
-                                            key={field.id}
-                                            control={form.control}
-                                            name={`subTasks.${index}.title`}
-                                            render={({ field: inputField }) => (
-                                                <FormItem className="flex items-start gap-2 space-y-0 relative">
-                                                    <FormControl>
-                                                        <Input
-                                                            placeholder="Component of the larger goal..."
-                                                            {...inputField}
-                                                            className={cn("pr-10 font-sans text-base bg-background border-border/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg", compact ? "h-10 text-sm" : "h-12")}
-                                                        />
-                                                    </FormControl>
-                                                    <Button
-                                                        type="button"
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        onClick={() => remove(index)}
-                                                        className={cn("absolute top-0 right-0 text-muted-foreground hover:text-destructive hover:bg-transparent", compact ? "h-10 w-10" : "h-12 w-12")}
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </Button>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            )}
-                                        />
-                                    ))}
-                                    {fields.length === 0 && (
-                                        <div className={cn("border border-dashed border-border/40 flex flex-col items-center justify-center opacity-40", compact ? "py-6" : "py-12")}>
-                                            <Plus className="h-8 w-8 mb-2" />
-                                            <p className="text-xs font-semibold font-sans uppercase tracking-widest">Add steps to your daily cycle</p>
-                                        </div>
-                                    )}
-                                </div>
+                        <div className={cn("pt-4 animate-in fade-in slide-in-from-top-4 duration-500", compact ? "space-y-4" : "space-y-6")}>
+                            <div className={cn("flex items-start sm:items-center justify-between gap-4 border-b border-border/50", compact ? "flex-row pb-2" : "flex-col sm:flex-row pb-4")}>
+                                <FormLabel className="text-sm font-semibold font-sans text-primary">
+                                    Sub Tasks
+                                </FormLabel>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => append({ id: crypto.randomUUID(), title: '' })}
+                                    className={cn("font-sans font-semibold text-sm rounded-md border-border/50 hover:bg-primary hover:text-primary-foreground transition-all", compact ? "h-8 px-2" : "h-10 px-4")}
+                                >
+                                    <PlusCircle className="h-4 w-4 mr-2" /> Add Sub Task
+                                </Button>
                             </div>
-                        )}
+                            <div className="space-y-3">
+                                {fields.map((field, index) => (
+                                    <FormField
+                                        key={field.id}
+                                        control={form.control}
+                                        name={`subTasks.${index}.title`}
+                                        render={({ field: inputField }) => (
+                                            <FormItem className="flex items-start gap-2 space-y-0 relative">
+                                                <FormControl>
+                                                    <Input
+                                                        placeholder="Describe this sub task..."
+                                                        {...inputField}
+                                                        className={cn("pr-10 font-sans text-base bg-background border-border/50 focus:border-primary focus:ring-1 focus:ring-primary rounded-lg", compact ? "h-10 text-sm" : "h-12")}
+                                                    />
+                                                </FormControl>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => remove(index)}
+                                                    className={cn("absolute top-0 right-0 text-muted-foreground hover:text-destructive hover:bg-transparent", compact ? "h-10 w-10" : "h-12 w-12")}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                ))}
+                                {fields.length === 0 && (
+                                    <div className={cn("border border-dashed border-border/40 flex flex-col items-center justify-center opacity-40", compact ? "py-6" : "py-12")}>
+                                        <Plus className="h-8 w-8 mb-2" />
+                                        <p className="text-xs font-semibold font-sans uppercase tracking-widest">Add sub tasks to break down your goal</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
